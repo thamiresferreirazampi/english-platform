@@ -1,2 +1,622 @@
-# english-platform
-Plataforma de ensino de inglês online para professora e alunos
+<!DOCTYPE html>
+<!-- saved from url=(0048)file:///C:/Users/Thamires/Downloads/index_5.html -->
+<html lang="pt-BR"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>English Platform — Thamires</title>
+<link href="./index_files/css2" rel="stylesheet">
+<script src="./index_files/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g:#1D9E75;--gl:#E1F5EE;--gd:#0F6E56;
+  --am:#BA7517;--al:#FAEEDA;
+  --re:#A32D2D;--rl:#FCEBEB;
+  --bl:#185FA5;--bll:#E6F1FB;
+  --bg:#F7F8FA;--card:#fff;--border:#E5E7EB;
+  --text:#111827;--muted:#6B7280;
+  --r:12px;--rs:8px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:15px;min-height:100vh}
+input,select,textarea{font-family:inherit;font-size:14px;padding:9px 13px;border:1.5px solid var(--border);border-radius:var(--rs);width:100%;background:#fff;color:var(--text);outline:none;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(29,158,117,.1)}
+textarea{resize:vertical;min-height:80px}
+button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);padding:9px 18px;font-size:14px;font-weight:500;transition:all .15s}
+.bp{background:var(--g);color:#fff}.bp:hover{background:var(--gd)}
+.bs{background:#fff;border:1.5px solid var(--border);color:var(--text)}.bs:hover{background:var(--bg)}
+.bd{background:var(--rl);color:var(--re);border:1.5px solid #FCA5A5}
+.bsm{padding:6px 12px;font-size:13px}
+.card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:1.1rem 1.35rem;margin-bottom:10px}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500}
+.bg2{background:var(--gl);color:var(--gd)}.ba{background:var(--al);color:var(--am)}.br2{background:var(--rl);color:var(--re)}.bb{background:var(--bll);color:var(--bl)}.bgr{background:#F3F4F6;color:var(--muted)}
+.screen{display:none}.screen.active{display:block}
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:flex-start;justify-content:center;padding-top:40px;overflow-y:auto}
+.mo.active{display:flex}
+.mbox{background:#fff;border-radius:var(--r);padding:1.75rem;width:94%;max-width:520px;margin-bottom:40px}
+.mbox h3{font-size:17px;font-weight:600;margin-bottom:1.1rem;padding-bottom:.85rem;border-bottom:1.5px solid var(--border)}
+.fg{margin-bottom:13px}.fg label{display:block;font-size:13px;font-weight:500;color:var(--muted);margin-bottom:5px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tl{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+.sb{background:#fff;border-right:1.5px solid var(--border);display:flex;flex-direction:column}
+.sb-brand{padding:1.1rem 1.35rem;border-bottom:1.5px solid var(--border)}
+.logo-wrap{display:flex;align-items:center;gap:10px}
+.logo{width:34px;height:34px;background:var(--g);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo span{color:#fff;font-weight:700;font-size:14px}
+.sb-brand strong{font-size:15px;font-weight:600;display:block;margin-top:4px}
+.sb-brand p{font-size:12px;color:var(--muted)}
+.ni{display:flex;align-items:center;gap:10px;padding:9px 1.35rem;font-size:14px;cursor:pointer;color:var(--muted);border-left:3px solid transparent;transition:all .15s}
+.ni:hover{background:#F9FAFB;color:var(--text)}
+.ni.active{color:var(--g);background:var(--gl);border-left-color:var(--g);font-weight:500}
+.sb-nav{flex:1;padding:.6rem 0}
+.sb-foot{border-top:1.5px solid var(--border);padding:.5rem 0}
+.mc{padding:1.75rem;background:var(--bg)}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.35rem}
+.ph h2{font-size:20px;font-weight:600}
+.es{text-align:center;padding:3.5rem 1rem;color:var(--muted)}
+.lw{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem;background:var(--bg)}
+.lc{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:2.25rem;width:100%;max-width:390px;box-shadow:0 8px 32px rgba(0,0,0,.08)}
+.lc h2{text-align:center;font-size:20px;font-weight:600;margin-bottom:.25rem}
+.lc .sub{text-align:center;font-size:13px;color:var(--muted);margin-bottom:1.75rem}
+.lbtn{background:none;border:none;color:var(--g);cursor:pointer;font-size:13px;text-decoration:underline;padding:0;font-family:inherit}
+.emsg{background:var(--rl);color:var(--re);border-radius:var(--rs);padding:9px 13px;font-size:13px;margin-bottom:12px}
+.smsg{background:var(--gl);color:var(--gd);border-radius:var(--rs);padding:9px 13px;font-size:13px;margin-bottom:12px}
+.sh{background:#fff;border-bottom:1.5px solid var(--border);padding:.85rem 1.35rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.sn{display:flex;gap:4px}
+.sn button{background:transparent;border:none;padding:7px 14px;border-radius:var(--rs);font-size:14px;color:var(--muted);font-family:inherit}
+.sn button.active{background:var(--gl);color:var(--gd);font-weight:500}
+.sm3{padding:1.35rem;max-width:660px;margin:0 auto}
+.hc{background:linear-gradient(135deg,#1D9E75,#0F6E56);border-radius:var(--r);padding:1.5rem 1.75rem;color:#fff;margin-bottom:1.1rem}
+.hc h3{font-size:22px;font-weight:600;margin-bottom:3px}
+.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.1rem}
+.sc{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:1rem;text-align:center}
+.sc .num{font-size:26px;font-weight:600;color:var(--g)}.sc .lbl{font-size:12px;color:var(--muted);margin-top:2px}
+.ir{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.irc{flex:1}.irc strong{font-size:14px;font-weight:500;display:block;margin-bottom:3px}.irc p{font-size:13px;color:var(--muted)}
+.div{height:1.5px;background:var(--border);margin:1.1rem 0}
+.qb{background:#F9FAFB;border:1.5px solid var(--border);border-radius:var(--r);padding:1.1rem;margin-bottom:.85rem}
+.qb p{font-size:14px;font-weight:500;margin-bottom:.75rem}
+.ol{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--rs);border:1.5px solid var(--border);margin-bottom:6px;cursor:pointer;font-size:14px;transition:all .15s;background:#fff}
+.ol:hover{border-color:var(--g)}.ol.sel{border-color:var(--g);background:var(--gl)}.ol input{width:auto;margin:0}
+.ri{display:flex;gap:12px;align-items:flex-start;padding:.9rem 1.1rem;border-radius:var(--r);margin-bottom:8px}
+.rc{background:#DCFCE7;border:1px solid #86EFAC}.rw{background:#FEE2E2;border:1px solid #FCA5A5}.rp{background:#FEF9C3;border:1px solid #FDE047}
+.pb{background:#E5E7EB;border-radius:20px;height:8px;overflow:hidden;margin-top:6px}
+.pbi{background:var(--g);height:100%;border-radius:20px}
+.fe{display:flex;justify-content:flex-end;gap:8px;margin-top:1.1rem;padding-top:1rem;border-top:1.5px solid var(--border)}
+.ac{display:flex;align-items:center;gap:9px;padding:7px 0;font-size:14px;cursor:pointer;border-bottom:1px solid #F3F4F6}
+.ac:last-child{border-bottom:none}
+.ac input{width:auto}
+.loading{text-align:center;padding:2rem;color:var(--muted);font-size:14px}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--g);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="screen-login" class="screen active">
+  <div class="lw">
+    <div class="lc">
+      <div style="width:42px;height:42px;background:var(--g);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem"><span style="color:#fff;font-weight:700;font-size:16px">EP</span></div>
+      <h2 id="lt">Welcome back!</h2>
+      <p class="sub" id="ls">Log in to continue learning</p>
+      <div id="lerr" class="emsg" style="display:none"></div>
+      <div class="fg"><label>Email</label><input type="email" id="le" placeholder="your@email.com"></div>
+      <div class="fg"><label>Password</label><input type="password" id="lp" placeholder="••••••••" onkeydown="if(event.key===&#39;Enter&#39;)doLogin()"></div>
+      <button class="bp" style="width:100%;padding:11px" onclick="doLogin()" id="lbtn">Login</button>
+      <div style="text-align:center;margin-top:14px;display:flex;flex-direction:column;gap:9px">
+        <span id="slnk" style="font-size:13px;color:var(--muted)">Don't have an account? <button class="lbtn" onclick="show(&#39;screen-signup&#39;)">Sign up</button></span>
+        <button class="lbtn" id="tgl" onclick="toggleTL()">Professor? Clique aqui</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SIGNUP -->
+<div id="screen-signup" class="screen">
+  <div class="lw">
+    <div class="lc">
+      <div style="width:42px;height:42px;background:var(--g);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem"><span style="color:#fff;font-weight:700;font-size:16px">EP</span></div>
+      <h2>Create your account</h2>
+      <p class="sub">Start learning English today</p>
+      <div id="serr" class="emsg" style="display:none"></div>
+      <div id="ssuc" class="smsg" style="display:none">Account created! You can now log in.</div>
+      <div class="fg"><label>Full Name</label><input type="text" id="sn2" placeholder="Your full name"></div>
+      <div class="fg"><label>Email</label><input type="email" id="se" placeholder="your@email.com"></div>
+      <div class="fg"><label>Password</label><input type="password" id="sp" placeholder="At least 6 characters"></div>
+      <div class="fg"><label>Confirm Password</label><input type="password" id="sp2" placeholder="Repeat password"></div>
+      <button class="bp" style="width:100%;padding:11px" onclick="doSignup()">Sign up</button>
+      <div style="text-align:center;margin-top:14px;font-size:13px;color:var(--muted)">Already have an account? <button class="lbtn" onclick="show(&#39;screen-login&#39;)">Login</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- TEACHER -->
+<div id="screen-teacher" class="screen">
+  <div class="tl">
+    <div class="sb">
+      <div class="sb-brand">
+        <div class="logo-wrap">
+          <div class="logo"><span>EP</span></div>
+          <div><strong>English Platform</strong><p>Painel do Professor</p></div>
+        </div>
+      </div>
+      <div class="sb-nav">
+        <div class="ni active" onclick="tTab(this,&#39;tc&#39;)"><span>📘</span>Conteúdos</div>
+        <div class="ni" onclick="tTab(this,&#39;tt&#39;)"><span>📝</span>Tarefas</div>
+        <div class="ni" onclick="tTab(this,&#39;tp&#39;)"><span>🧪</span>Provas</div>
+        <div class="ni" onclick="tTab(this,&#39;ts&#39;)"><span>👩‍🎓</span>Alunos</div>
+      </div>
+      <div class="sb-foot">
+        <div class="ni" onclick="doLogout()"><span>🚪</span>Sair</div>
+      </div>
+    </div>
+    <div class="mc">
+      <div id="tc" class="tt2"><div class="ph"><h2>Conteúdos</h2><button class="bp" onclick="openM(&#39;mc2&#39;)">+ Novo Conteúdo</button></div><div id="cl"></div></div>
+      <div id="tt" class="tt2" style="display:none"><div class="ph"><h2>Tarefas</h2><button class="bp" onclick="openM(&#39;mt&#39;)">+ Nova Tarefa</button></div><div id="tl2"></div></div>
+      <div id="tp" class="tt2" style="display:none"><div class="ph"><h2>Provas</h2><button class="bp" onclick="openM(&#39;mp&#39;)">+ Nova Prova</button></div><div id="pl"></div></div>
+      <div id="ts" class="tt2" style="display:none"><div class="ph"><h2>Alunos</h2></div><div id="sl2"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- STUDENT -->
+<div id="screen-student" class="screen">
+  <div class="sh">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:30px;height:30px;background:var(--g);border-radius:7px;display:flex;align-items:center;justify-content:center"><span style="color:#fff;font-weight:700;font-size:12px">EP</span></div>
+      <span style="font-weight:600;font-size:15px">English Platform</span>
+    </div>
+    <div class="sn">
+      <button class="active" onclick="sTab(this,&#39;sd&#39;)">Home</button>
+      <button onclick="sTab(this,&#39;stk&#39;)">Tasks</button>
+      <button onclick="sTab(this,&#39;sts&#39;)">Tests</button>
+      <button onclick="sTab(this,&#39;sp2&#39;)">Progress</button>
+    </div>
+    <button class="bs bsm" onclick="doLogout()">Log out</button>
+  </div>
+  <div class="sm3">
+    <div id="sd" class="st2">
+      <div class="hc"><p style="opacity:.8;font-size:13px;margin-bottom:4px">Welcome back!</p><h3 id="wn">Student</h3><p style="margin-top:6px;opacity:.75;font-size:14px">Keep up the great work! 🎯</p></div>
+      <div class="sg">
+        <div class="sc"><div class="num" id="st1">0</div><div class="lbl">tasks pending</div></div>
+        <div class="sc"><div class="num" id="st2">0</div><div class="lbl">tests available</div></div>
+        <div class="sc"><div class="num" id="st3">—</div><div class="lbl">avg score</div></div>
+      </div>
+    </div>
+    <div id="stk" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">📚 Your Tasks</h2><div id="tkl"></div></div>
+    <div id="sts" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">🧪 Your Tests</h2><div id="tsl"></div></div>
+    <div id="sp2" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">📈 Your Progress</h2><div id="prl"></div></div>
+  </div>
+</div>
+
+<!-- TEST TAKING -->
+<div id="screen-test" class="screen">
+  <div class="sh">
+    <button class="bs bsm" onclick="show(&#39;screen-student&#39;);sTab(null,&#39;sts&#39;)">← Back</button>
+    <span id="ttn" style="font-weight:600;font-size:15px"></span>
+    <div></div>
+  </div>
+  <div class="sm3"><div id="tqw"></div><button class="bp" style="width:100%;padding:13px;margin-top:1.1rem" onclick="submitTest()">Submit test ✓</button></div>
+</div>
+
+<!-- RESULTS -->
+<div id="screen-results" class="screen">
+  <div class="sh">
+    <button class="bs bsm" onclick="show(&#39;screen-student&#39;);sTab(null,&#39;sts&#39;)">← Tests</button>
+    <span style="font-weight:600;font-size:15px">Results</span><div></div>
+  </div>
+  <div class="sm3" id="rc2"></div>
+</div>
+
+<!-- MODALS -->
+<div class="mo" id="mc2">
+  <div class="mbox">
+    <h3>Novo Conteúdo</h3>
+    <div class="fg"><label>Título</label><input type="text" id="ctit" placeholder="Ex: Lesson 1 — Greetings"></div>
+    <div class="fg"><label>Descrição</label><input type="text" id="cdesc" placeholder="Breve descrição"></div>
+    <div class="fg"><label>Tipo</label><select id="ctype"><option value="text">Texto</option><option value="exercise">Exercício</option><option value="conversation">Conversação</option></select></div>
+    <div class="fg"><label>Conteúdo</label><textarea id="cbody" rows="5"></textarea></div>
+    <div class="fe"><button class="bs" onclick="closeM(&#39;mc2&#39;)">Cancelar</button><button class="bp" onclick="saveContent()">Salvar</button></div>
+  </div>
+</div>
+
+<div class="mo" id="mt">
+  <div class="mbox">
+    <h3>Nova Tarefa</h3>
+    <div class="fg"><label>Nome</label><input type="text" id="tkname" placeholder="Ex: Week 1 — Verb to be"></div>
+    <div class="fg"><label>Instruções (em inglês)</label><textarea id="tkins" rows="4"></textarea></div>
+    <div class="fg"><label>Data de entrega</label><input type="date" id="tkdate"></div>
+    <div class="fg"><label>Atribuir para alunos</label><div id="tkasc" style="margin-top:6px;max-height:140px;overflow-y:auto;border:1.5px solid var(--border);border-radius:var(--rs);padding:4px 12px"></div></div>
+    <div class="fe"><button class="bs" onclick="closeM(&#39;mt&#39;)">Cancelar</button><button class="bp" onclick="saveTask()">Salvar</button></div>
+  </div>
+</div>
+
+<div class="mo" id="mp">
+  <div class="mbox" style="max-width:560px">
+    <h3>Nova Prova</h3>
+    <div class="fg"><label>Nome</label><input type="text" id="pname" placeholder="Ex: Test 1 — Review"></div>
+    <div class="fg"><label>Descrição</label><textarea id="pdesc" rows="2"></textarea></div>
+    <div class="fr">
+      <div class="fg"><label>Data</label><input type="date" id="pdate"></div>
+      <div class="fg"><label>Tempo (min)</label><input type="number" id="ptime" placeholder="opcional"></div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin:.85rem 0 .5rem">
+      <strong style="font-size:14px">Questões</strong>
+      <button class="bs bsm" onclick="addQ()">+ Adicionar</button>
+    </div>
+    <div id="qed"></div>
+    <div class="fg" style="margin-top:10px"><label>Atribuir para alunos</label><div id="pasc" style="margin-top:6px;max-height:140px;overflow-y:auto;border:1.5px solid var(--border);border-radius:var(--rs);padding:4px 12px"></div></div>
+    <div class="fe"><button class="bs" onclick="closeM(&#39;mp&#39;)">Cancelar</button><button class="bp" onclick="saveTest()">Salvar Prova</button></div>
+  </div>
+</div>
+
+<div class="mo" id="mg">
+  <div class="mbox" style="max-width:560px">
+    <h3>Corrigir Respostas Abertas</h3>
+    <div id="gc"></div>
+    <div class="fe"><button class="bs" onclick="closeM(&#39;mg&#39;)">Fechar</button><button class="bp" onclick="saveGrades()">Salvar Correção</button></div>
+  </div>
+</div>
+
+<script>
+const SUPA_URL='https://fkhnrliohydiylsdequb.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZraG5ybGlvaHlkaXlsc2RlcXViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3OTgxNDMsImV4cCI6MjA5MTM3NDE0M30._p20wkWgZqEhTGeW2vXrnMRshVytMU98IsiptJ4jWO0';
+const sb=supabase.createClient(SUPA_URL,SUPA_KEY);
+
+// Professor fixo
+const TEACHER={email:'professor@englishplatform.com',password:'thamires2024',name:'Professora Thamires'};
+
+let CU=null,isTeacher=false,CTI=null,CAs={},NQs=[],GT=null;
+let isTL=false;
+
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+
+function toggleTL(){
+  isTL=!isTL;
+  document.getElementById('lt').textContent=isTL?'Área do Professor':'Welcome back!';
+  document.getElementById('ls').textContent=isTL?'Faça login para gerenciar suas aulas':'Log in to continue learning';
+  document.getElementById('lbtn').textContent=isTL?'Entrar':'Login';
+  document.getElementById('slnk').style.display=isTL?'none':'block';
+  document.getElementById('tgl').textContent=isTL?'← Student login':'Professor? Clique aqui';
+  document.getElementById('lerr').style.display='none';
+}
+
+async function doLogin(){
+  const email=document.getElementById('le').value.trim();
+  const pass=document.getElementById('lp').value;
+  const err=document.getElementById('lerr');
+  err.style.display='none';
+  document.getElementById('lbtn').innerHTML='<span class="spinner"></span>';
+
+  // Login professor fixo
+  if(isTL){
+    if(email===TEACHER.email&&pass===TEACHER.password){
+      isTeacher=true;CU={id:'teacher',name:TEACHER.name,email:TEACHER.email};
+      document.getElementById('lbtn').textContent='Entrar';
+      renderTeacher();show('screen-teacher');
+    } else {
+      err.textContent='Credenciais inválidas.';err.style.display='block';
+      document.getElementById('lbtn').textContent='Entrar';
+    }
+    return;
+  }
+
+  // Login aluno via Supabase
+  const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+  document.getElementById('lbtn').textContent='Login';
+  if(error){err.textContent='Invalid credentials.';err.style.display='block';return}
+  const {data:profile}=await sb.from('profiles').select('*').eq('id',data.user.id).single();
+  isTeacher=false;
+  CU={id:data.user.id,name:profile?.full_name||email,email};
+  renderSD();show('screen-student');
+}
+
+async function doSignup(){
+  const name=document.getElementById('sn2').value.trim();
+  const email=document.getElementById('se').value.trim();
+  const p=document.getElementById('sp').value;
+  const p2=document.getElementById('sp2').value;
+  const err=document.getElementById('serr'),suc=document.getElementById('ssuc');
+  err.style.display='none';suc.style.display='none';
+  if(!name||!email||!p){err.textContent='Please fill all fields.';err.style.display='block';return}
+  if(p.length<6){err.textContent='Password must be at least 6 characters.';err.style.display='block';return}
+  if(p!==p2){err.textContent='Passwords do not match.';err.style.display='block';return}
+  const {data,error}=await sb.auth.signUp({email,password:p});
+  if(error){err.textContent=error.message;err.style.display='block';return}
+  if(data.user){
+    await sb.from('profiles').insert({id:data.user.id,full_name:name,role:'student'});
+  }
+  suc.style.display='block';
+  setTimeout(()=>{show('screen-login');document.getElementById('le').value=email},2000);
+}
+
+function doLogout(){
+  sb.auth.signOut();
+  CU=null;isTeacher=false;CTI=null;
+  show('screen-login');
+}
+
+// MODALS
+async function openM(id){
+  if(id==='mt'||id==='mp') await renderAsc(id==='mt'?'tkasc':'pasc');
+  if(id==='mp'){NQs=[];document.getElementById('qed').innerHTML=''}
+  document.getElementById(id).classList.add('active');
+}
+function closeM(id){document.getElementById(id).classList.remove('active')}
+
+async function renderAsc(cid){
+  const el=document.getElementById(cid);
+  el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando alunos...</div>';
+  const {data}=await sb.from('profiles').select('*').eq('role','student');
+  if(!data?.length){el.innerHTML='<p style="font-size:13px;color:var(--muted);padding:8px 0">Nenhum aluno cadastrado ainda.</p>';return}
+  el.innerHTML=data.map(s=>`<label class="ac"><input type="checkbox" value="${s.id}" name="asc"> <span>${s.full_name}</span></label>`).join('');
+}
+function getAsc(cid){return[...document.querySelectorAll(`#${cid} input[name="asc"]:checked`)].map(i=>i.value)}
+
+// TEACHER SAVE
+async function saveContent(){
+  const title=document.getElementById('ctit').value.trim();
+  if(!title)return alert('Preencha o título.');
+  await sb.from('contents').insert({title,description:document.getElementById('cdesc').value,type:document.getElementById('ctype').value,body:document.getElementById('cbody').value});
+  ['ctit','cdesc','cbody'].forEach(x=>document.getElementById(x).value='');
+  closeM('mc2');renderContents();
+}
+
+async function saveTask(){
+  const name=document.getElementById('tkname').value.trim();
+  if(!name)return alert('Preencha o nome.');
+  const {data:task}=await sb.from('tasks').insert({name,instructions:document.getElementById('tkins').value,due_date:document.getElementById('tkdate').value||null}).select().single();
+  const students=getAsc('tkasc');
+  if(task&&students.length) await sb.from('task_assignments').insert(students.map(sid=>({task_id:task.id,student_id:sid})));
+  closeM('mt');renderTasks();
+}
+
+async function saveTest(){
+  const name=document.getElementById('pname').value.trim();
+  if(!name)return alert('Preencha o nome.');
+  if(!NQs.length)return alert('Adicione pelo menos uma questão.');
+  const {data:test}=await sb.from('tests').insert({name,description:document.getElementById('pdesc').value,test_date:document.getElementById('pdate').value||null,time_limit:document.getElementById('ptime').value||null}).select().single();
+  if(test){
+    await sb.from('test_questions').insert(NQs.map((q,i)=>({test_id:test.id,question_type:q.type,question_text:q.text,options:q.options?.filter(o=>o).length?q.options:null,correct_answer:q.correct||null,sort_order:i})));
+    const students=getAsc('pasc');
+    if(students.length) await sb.from('test_assignments').insert(students.map(sid=>({test_id:test.id,student_id:sid})));
+  }
+  NQs=[];closeM('mp');renderTests();
+}
+
+// TEACHER RENDER
+function tTab(el,tab){
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.tt2').forEach(t=>t.style.display='none');
+  if(el)el.classList.add('active');
+  document.getElementById(tab).style.display='block';
+  if(tab==='tc')renderContents();if(tab==='tt')renderTasks();if(tab==='tp')renderTests();if(tab==='ts')renderStudents();
+}
+function renderTeacher(){renderContents()}
+
+async function renderContents(){
+  const el=document.getElementById('cl');
+  el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
+  const {data}=await sb.from('contents').select('*').order('created_at');
+  if(!data?.length){el.innerHTML='<div class="es"><div style="font-size:32px">📘</div><p>Nenhum conteúdo criado ainda.</p></div>';return}
+  const tb={text:'Texto',exercise:'Exercício',conversation:'Conversação'};
+  const tc={text:'bb',exercise:'ba',conversation:'bg2'};
+  el.innerHTML=data.map(c=>`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><strong>${c.title}</strong><span class="badge ${tc[c.type]||'bgr'}">${tb[c.type]||c.type}</span></div><p style="font-size:13px;color:var(--muted)">${c.description||''}</p></div><button class="bd bsm" onclick="delItem('contents','${c.id}',renderContents)">✕</button></div></div>`).join('');
+}
+
+async function renderTasks(){
+  const el=document.getElementById('tl2');
+  el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
+  const {data:tasks}=await sb.from('tasks').select('*').order('created_at');
+  const {data:assigns}=await sb.from('task_assignments').select('task_id,student_id,profiles(full_name)');
+  if(!tasks?.length){el.innerHTML='<div class="es"><div style="font-size:32px">📝</div><p>Nenhuma tarefa criada ainda.</p></div>';return}
+  el.innerHTML=tasks.map(t=>{
+    const chips=(assigns||[]).filter(a=>a.task_id===t.id).map(a=>`<span class="badge bg2" style="margin-right:4px">${a.profiles?.full_name||''}</span>`).join('');
+    return`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><strong>${t.name}</strong>${t.due_date?`<span style="font-size:12px;color:var(--muted);margin-left:8px">📅 ${t.due_date}</span>`:''}<p style="font-size:13px;color:var(--muted);margin-top:4px">${t.instructions||''}</p><div style="margin-top:8px">${chips||'<span class="badge bgr">Sem alunos atribuídos</span>'}</div></div><button class="bd bsm" onclick="delItem('tasks','${t.id}',renderTasks)">✕</button></div></div>`;
+  }).join('');
+}
+
+async function renderTests(){
+  const el=document.getElementById('pl');
+  el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
+  const {data:tests}=await sb.from('tests').select('*').order('created_at');
+  const {data:assigns}=await sb.from('test_assignments').select('test_id,student_id,profiles(full_name)');
+  const {data:questions}=await sb.from('test_questions').select('test_id');
+  const {data:subs}=await sb.from('test_submissions').select('test_id,needs_grade');
+  if(!tests?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🧪</div><p>Nenhuma prova criada ainda.</p></div>';return}
+  el.innerHTML=tests.map(t=>{
+    const chips=(assigns||[]).filter(a=>a.test_id===t.id).map(a=>`<span class="badge bg2" style="margin-right:4px">${a.profiles?.full_name||''}</span>`).join('');
+    const qCount=(questions||[]).filter(q=>q.test_id===t.id).length;
+    const pend=(subs||[]).filter(s=>s.test_id===t.id&&s.needs_grade).length;
+    return`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><strong>${t.name}</strong>${pend?`<span class="badge ba">⏳ ${pend} pendente(s)</span>`:''}</div><p style="font-size:13px;color:var(--muted);margin-top:3px">${t.description||''}</p><div style="display:flex;gap:6px;margin-top:6px"><span class="badge bgr">${qCount} questão(ões)</span>${t.test_date?`<span class="badge bgr">📅 ${t.test_date}</span>`:''}</div><div style="margin-top:8px">${chips||'<span class="badge bgr">Sem alunos atribuídos</span>'}</div></div><div style="display:flex;flex-direction:column;gap:6px">${pend?`<button class="bs bsm" onclick="openGrade('${t.id}')">Corrigir</button>`:''}<button class="bd bsm" onclick="delItem('tests','${t.id}',renderTests)">✕</button></div></div></div>`;
+  }).join('');
+}
+
+async function renderStudents(){
+  const el=document.getElementById('sl2');
+  el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
+  const {data:students}=await sb.from('profiles').select('*').eq('role','student');
+  const {data:subs}=await sb.from('test_submissions').select('student_id,score,total');
+  if(!students?.length){el.innerHTML='<div class="es"><div style="font-size:32px">👩‍🎓</div><p>Nenhum aluno cadastrado ainda.</p></div>';return}
+  el.innerHTML=students.map(s=>{
+    const mySubs=(subs||[]).filter(x=>x.student_id===s.id&&x.score!=null);
+    const avg=mySubs.length?Math.round(mySubs.reduce((a,b)=>a+(b.score/b.total*10),0)/mySubs.length*10)/10:null;
+    return`<div class="card"><strong style="font-size:15px">${s.full_name}</strong><div style="margin-top:8px;display:flex;gap:6px">${avg!==null?`<span class="badge bg2">Média: ${avg}/10</span>`:''}<span class="badge bgr">${mySubs.length} prova(s)</span></div></div>`;
+  }).join('');
+}
+
+async function delItem(table,id,cb){
+  if(!confirm('Confirmar exclusão?'))return;
+  await sb.from(table).delete().eq('id',id);cb();
+}
+
+// Q EDITOR
+function addQ(){NQs.push({id:Date.now().toString(36),type:'multiple_choice',text:'',options:['','',''],correct:''});renderQEditor()}
+function renderQEditor(){
+  const el=document.getElementById('qed');
+  if(!NQs.length){el.innerHTML='';return}
+  el.innerHTML=NQs.map((q,i)=>`<div class="card" style="margin-bottom:8px;padding:.9rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><span style="font-size:13px;font-weight:600;color:var(--muted)">Q${i+1}</span><button class="bd bsm" onclick="remQ(${i})">✕</button></div>
+    <div class="fg"><label>Tipo</label><select onchange="updQ(${i},'type',this.value)"><option value="multiple_choice" ${q.type==='multiple_choice'?'selected':''}>Múltipla Escolha</option><option value="fill_blank" ${q.type==='fill_blank'?'selected':''}>Preencher Lacuna</option><option value="translation" ${q.type==='translation'?'selected':''}>Tradução</option><option value="open_answer" ${q.type==='open_answer'?'selected':''}>Resposta Aberta</option></select></div>
+    <div class="fg"><label>Texto</label><input type="text" value="${q.text.replace(/"/g,'&quot;')}" onchange="updQ(${i},'text',this.value)"></div>
+    ${q.type==='multiple_choice'?`<div class="fg"><label>Opções</label>${(q.options||[]).map((o,j)=>`<input type="text" value="${o.replace(/"/g,'&quot;')}" onchange="updOpt(${i},${j},this.value)" placeholder="Opção ${String.fromCharCode(65+j)}" style="margin-bottom:5px">`).join('')}<button class="bs bsm" style="margin-top:4px" onclick="addOpt(${i})">+ Opção</button></div>`:''}
+    ${q.type!=='open_answer'?`<div class="fg"><label>Resposta correta</label><input type="text" value="${(q.correct||'').replace(/"/g,'&quot;')}" onchange="updQ(${i},'correct',this.value)"></div>`:''}
+  </div>`).join('');
+}
+function updQ(i,f,v){NQs[i][f]=v;if(f==='type')renderQEditor()}
+function updOpt(i,j,v){NQs[i].options[j]=v}
+function addOpt(i){NQs[i].options.push('');renderQEditor()}
+function remQ(i){NQs.splice(i,1);renderQEditor()}
+
+// GRADE
+async function openGrade(tid){
+  GT=tid;
+  const {data:subs}=await sb.from('test_submissions').select('*,profiles(full_name)').eq('test_id',tid).eq('needs_grade',true);
+  const {data:openQs}=await sb.from('test_questions').select('*').eq('test_id',tid).eq('question_type','open_answer');
+  const el=document.getElementById('gc');
+  if(!subs?.length){el.innerHTML='<p style="color:var(--muted)">Nenhuma resposta pendente.</p>';document.getElementById('mg').classList.add('active');return}
+  el.innerHTML=subs.map(sub=>`<div class="card"><strong>${sub.profiles?.full_name||'Aluno'}</strong>${(openQs||[]).map(q=>{
+    const ans=(sub.answers||{})[q.id]||'(sem resposta)';
+    return`<div style="margin-top:.85rem"><p style="font-size:13px;font-weight:500">${q.question_text}</p><p style="font-size:13px;color:var(--muted);font-style:italic;margin-top:3px;padding:8px;background:#F9FAFB;border-radius:6px">"${ans}"</p><div style="display:flex;gap:8px;margin-top:8px;align-items:center"><label style="font-size:13px;white-space:nowrap">Pontos (0-1):</label><input type="number" min="0" max="1" step="0.5" value="0" id="gr-${sub.id}-${q.id}" style="width:80px"><input type="text" placeholder="Feedback..." id="fb-${sub.id}-${q.id}" style="flex:1"></div></div>`;
+  }).join('')}</div>`).join('');
+  document.getElementById('mg').classList.add('active');
+}
+
+async function saveGrades(){
+  const {data:subs}=await sb.from('test_submissions').select('*').eq('test_id',GT).eq('needs_grade',true);
+  const {data:openQs}=await sb.from('test_questions').select('*').eq('test_id',GT).eq('question_type','open_answer');
+  for(const sub of(subs||[])){
+    let bonus=0,feedback={};
+    for(const q of(openQs||[])){
+      bonus+=parseFloat(document.getElementById(`gr-${sub.id}-${q.id}`)?.value||'0');
+      const fb=document.getElementById(`fb-${sub.id}-${q.id}`)?.value||'';
+      if(fb)feedback[q.id]=fb;
+    }
+    await sb.from('test_submissions').update({score:(sub.score||0)+bonus,needs_grade:false,feedback}).eq('id',sub.id);
+  }
+  closeM('mg');renderTests();alert('Correção salva!');
+}
+
+// STUDENT
+function sTab(el,tab){
+  document.querySelectorAll('.sn button').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.st2').forEach(t=>t.style.display='none');
+  if(el)el.classList.add('active');
+  document.getElementById(tab).style.display='block';
+  if(tab==='sd')renderSD();if(tab==='stk')renderSTasks();if(tab==='sts')renderSTests();if(tab==='sp2')renderSProgress();
+}
+
+async function renderSD(){
+  document.getElementById('wn').textContent=CU?.name||'Student';
+  const {data:myTests}=await sb.from('test_assignments').select('test_id').eq('student_id',CU.id);
+  const {data:subs}=await sb.from('test_submissions').select('test_id,score,total').eq('student_id',CU.id);
+  const doneIds=new Set((subs||[]).map(s=>s.test_id));
+  const pending=(myTests||[]).filter(t=>!doneIds.has(t.test_id)).length;
+  const gradedSubs=(subs||[]).filter(s=>s.score!=null);
+  const avg=gradedSubs.length?Math.round(gradedSubs.reduce((a,b)=>a+(b.score/b.total*10),0)/gradedSubs.length*10)/10:null;
+  document.getElementById('st1').textContent=(await sb.from('task_assignments').select('task_id').eq('student_id',CU.id)).data?.length||0;
+  document.getElementById('st2').textContent=pending;
+  document.getElementById('st3').textContent=avg!==null?avg:'—';
+}
+
+async function renderSTasks(){
+  const el=document.getElementById('tkl');
+  el.innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';
+  const {data:assigns}=await sb.from('task_assignments').select('task_id,tasks(*)').eq('student_id',CU.id);
+  if(!assigns?.length){el.innerHTML='<div class="es"><div style="font-size:32px">📚</div><p>No tasks assigned yet.</p></div>';return}
+  el.innerHTML=assigns.map((a,i)=>{
+    const t=a.tasks;
+    return`<div class="ir"><div style="font-size:24px">📋</div><div class="irc"><strong>Week ${i+1} — ${t.name}</strong><p>${t.instructions||''}</p>${t.due_date?`<p style="font-size:12px;margin-top:3px">Due: ${t.due_date}</p>`:''}</div></div>`;
+  }).join('');
+}
+
+async function renderSTests(){
+  const el=document.getElementById('tsl');
+  el.innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';
+  const {data:assigns}=await sb.from('test_assignments').select('test_id,tests(*)').eq('student_id',CU.id);
+  const {data:subs}=await sb.from('test_submissions').select('*').eq('student_id',CU.id);
+  if(!assigns?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🧪</div><p>No tests available yet.</p></div>';return}
+  el.innerHTML=assigns.map(a=>{
+    const t=a.tests;const sub=(subs||[]).find(s=>s.test_id===t.id);
+    return`<div class="ir"><div style="font-size:24px">${sub?'✅':'📄'}</div><div class="irc"><strong>${t.name}</strong><p>${t.description||''}</p>${sub&&sub.score!=null?`<p style="font-size:13px;color:var(--g);margin-top:4px;font-weight:500">Score: ${sub.score}/${sub.total} — ${Math.round(sub.score/sub.total*100)}%</p>`:''}</div>${sub?`<button class="bs bsm" onclick="viewRes('${t.id}')">Results</button>`:`<button class="bp bsm" onclick="startTest('${t.id}')">Start test →</button>`}</div>`;
+  }).join('');
+}
+
+async function startTest(tid){
+  CTI=tid;CAs={};
+  const {data:test}=await sb.from('tests').select('*').eq('id',tid).single();
+  const {data:questions}=await sb.from('test_questions').select('*').eq('test_id',tid).order('sort_order');
+  document.getElementById('ttn').textContent=test.name;
+  const tl={multiple_choice:'Multiple Choice',fill_blank:'Fill in the Blank',translation:'Translation',open_answer:'Open Answer'};
+  const byType={};
+  (questions||[]).forEach(q=>{if(!byType[q.question_type])byType[q.question_type]=[];byType[q.question_type].push(q)});
+  document.getElementById('tqw').innerHTML=`<div class="card" style="margin-bottom:1rem;background:var(--gl);border-color:#86EFAC"><p style="font-size:13px;color:var(--gd)">${test.description||'Answer all questions carefully.'}</p></div>`+
+  Object.entries(byType).map(([type,qs])=>`<h3 style="font-size:15px;font-weight:600;margin:.9rem 0 .75rem">${tl[type]||type}</h3>${qs.map(q=>`<div class="qb"><p>${q.question_text}</p>${
+    type==='multiple_choice'?(q.options||[]).map((o,i)=>`<label class="ol" id="o-${q.id}-${i}"><input type="radio" name="q-${q.id}" onchange="selOpt('${q.id}','${o.replace(/'/g,"\\'")}',${i})"> ${String.fromCharCode(97+i)}) ${o}</label>`).join(''):
+    type==='open_answer'?`<textarea placeholder="Write your answer..." rows="3" onchange="CAs['${q.id}']=this.value" style="width:100%"></textarea>`:
+    `<input type="text" placeholder="Type your answer..." onchange="CAs['${q.id}']=this.value">`
+  }</div>`).join('')}`).join('');
+  show('screen-test');
+}
+
+function selOpt(qid,val,idx){
+  CAs[qid]=val;
+  document.querySelectorAll(`[id^="o-${qid}-"]`).forEach(el=>el.classList.remove('sel'));
+  const el=document.getElementById(`o-${qid}-${idx}`);
+  if(el)el.classList.add('sel');
+}
+
+async function submitTest(){
+  if(!confirm('Submit your test?'))return;
+  const {data:questions}=await sb.from('test_questions').select('*').eq('test_id',CTI);
+  let correct=0,total=(questions||[]).length,needsGrade=false;
+  (questions||[]).forEach(q=>{
+    if(q.question_type==='open_answer'){needsGrade=true;return}
+    if((CAs[q.id]||'').trim().toLowerCase()===(q.correct_answer||'').trim().toLowerCase())correct++;
+  });
+  await sb.from('test_submissions').insert({test_id:CTI,student_id:CU.id,score:correct,total,needs_grade:needsGrade,answers:CAs});
+  viewRes(CTI);
+}
+
+async function viewRes(tid){
+  const {data:test}=await sb.from('tests').select('*').eq('id',tid).single();
+  const {data:sub}=await sb.from('test_submissions').select('*').eq('test_id',tid).eq('student_id',CU.id).order('created_at',{ascending:false}).limit(1).single();
+  const {data:questions}=await sb.from('test_questions').select('*').eq('test_id',tid).order('sort_order');
+  const pct=sub?Math.round(sub.score/sub.total*100):0;
+  const emoji=pct>=80?'🎉':pct>=60?'👍':'💪';
+  document.getElementById('rc2').innerHTML=`
+    <div style="text-align:center;padding:2rem 1rem 1.25rem">
+      <div style="font-size:48px;margin-bottom:.5rem">${emoji}</div>
+      <h2 style="font-size:18px;font-weight:600">${test.name}</h2>
+      <div style="font-size:48px;font-weight:700;color:var(--g);margin:.5rem 0">${sub?.score||0}/${sub?.total||0}</div>
+      <div class="pb" style="max-width:260px;margin:.75rem auto"><div class="pbi" style="width:${pct}%"></div></div>
+      <span class="badge ${pct>=70?'bg2':pct>=50?'ba':'br2'}" style="font-size:14px;padding:5px 14px">${pct}%</span>
+      ${sub?.needs_grade?'<p style="font-size:13px;color:var(--muted);margin-top:.85rem">⏳ Some answers pending teacher review.</p>':''}
+    </div>
+    <div class="div"></div>
+    <h3 style="font-size:15px;font-weight:600;margin-bottom:.85rem">Detailed Results</h3>
+    ${(questions||[]).map(q=>{
+      const ans=(sub?.answers||{})[q.id]||'';
+      const isOpen=q.question_type==='open_answer';
+      const ok=!isOpen&&ans.trim().toLowerCase()===(q.correct_answer||'').trim().toLowerCase();
+      const fb=(sub?.feedback||{})[q.id];
+      return`<div class="ri ${isOpen?'rp':ok?'rc':'rw'}"><span style="font-size:18px">${isOpen?'⏳':ok?'✅':'❌'}</span><div style="flex:1"><p style="font-size:13px;font-weight:500;margin-bottom:3px">${q.question_text}</p><p style="font-size:13px">Your answer: <strong>${ans||'(no answer)'}</strong></p>${!isOpen&&!ok&&q.correct_answer?`<p style="font-size:13px;color:var(--gd);margin-top:2px">Correct: ${q.correct_answer}</p>`:''}${isOpen?'<p style="font-size:12px;color:var(--am);margin-top:3px">Pending review</p>':''}${fb?`<p style="font-size:12px;margin-top:4px;padding:5px 8px;background:rgba(255,255,255,.6);border-radius:5px">💬 ${fb}</p>`:''}</div></div>`;
+    }).join('')}`;
+  show('screen-results');
+}
+
+async function renderSProgress(){
+  const el=document.getElementById('prl');
+  el.innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';
+  const {data:assigns}=await sb.from('test_assignments').select('test_id,tests(name)').eq('student_id',CU.id);
+  const {data:subs}=await sb.from('test_submissions').select('*').eq('student_id',CU.id).not('score','is',null);
+  const gs=(assigns||[]).map(a=>({t:a.tests,s:(subs||[]).find(s=>s.test_id===a.test_id)})).filter(x=>x.s);
+  if(!gs.length){el.innerHTML='<div class="es"><div style="font-size:32px">📈</div><p>No completed tests yet.</p></div>';return}
+  const avg=Math.round(gs.reduce((a,x)=>a+(x.s.score/x.s.total*10),0)/gs.length*10)/10;
+  el.innerHTML=`<div class="hc" style="text-align:center;padding:1.75rem"><p style="opacity:.8;font-size:13px">Your average score</p><div style="font-size:48px;font-weight:700;margin:.25rem 0">${avg}</div><p style="opacity:.75;font-size:14px">out of 10</p></div>
+  ${gs.map(x=>{const p=Math.round(x.s.score/x.s.total*100);return`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-size:14px;font-weight:500">${x.t?.name||'Test'}</span><span style="font-size:14px;font-weight:600;color:var(--g)">${x.s.score}/${x.s.total} (${p}%)</span></div><div class="pb"><div class="pbi" style="width:${p}%"></div></div></div>`}).join('')}`;
+}
+</script>
+
+
+</body></html>
