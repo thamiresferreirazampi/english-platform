@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<!-- saved from url=(0048)file:///C:/Users/Thamires/Downloads/index_7.html -->
-<html lang="pt-BR"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>English Platform — Thamires</title>
-<link href="./index_files/css2" rel="stylesheet">
-<script src="./index_files/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--g:#1D9E75;--gl:#E1F5EE;--gd:#0F6E56;--am:#BA7517;--al:#FAEEDA;--re:#A32D2D;--rl:#FCEBEB;--bl:#185FA5;--bll:#E6F1FB;--bg:#F7F8FA;--card:#fff;--border:#E5E7EB;--text:#111827;--muted:#6B7280;--r:12px;--rs:8px}
@@ -87,10 +87,10 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
       <p class="sub" id="ls">Log in to continue learning</p>
       <div id="lerr" class="emsg" style="display:none"></div>
       <div class="fg"><label>Email</label><input type="email" id="le" placeholder="your@email.com"></div>
-      <div class="fg"><label>Password</label><input type="password" id="lp" placeholder="••••••••" onkeydown="if(event.key===&#39;Enter&#39;)doLogin()"></div>
+      <div class="fg"><label>Password</label><input type="password" id="lp" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
       <button class="bp" style="width:100%;padding:11px" onclick="doLogin()" id="lbtn">Login</button>
       <div style="text-align:center;margin-top:14px;display:flex;flex-direction:column;gap:9px">
-        <span id="slnk" style="font-size:13px;color:var(--muted)">Don't have an account? <button class="lbtn" onclick="show(&#39;screen-signup&#39;)">Sign up</button></span>
+        <span id="slnk" style="font-size:13px;color:var(--muted)">Don't have an account? <button class="lbtn" onclick="show('screen-signup')">Sign up</button></span>
         <button class="lbtn" id="tgl" onclick="toggleTL()">Professor? Clique aqui</button>
       </div>
     </div>
@@ -110,7 +110,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
       <div class="fg"><label>Password</label><input type="password" id="sp" placeholder="At least 6 characters"></div>
       <div class="fg"><label>Confirm Password</label><input type="password" id="sp2" placeholder="Repeat password"></div>
       <button class="bp" style="width:100%;padding:11px" onclick="doSignup()">Sign up</button>
-      <div style="text-align:center;margin-top:14px;font-size:13px;color:var(--muted)">Already have an account? <button class="lbtn" onclick="show(&#39;screen-login&#39;)">Login</button></div>
+      <div style="text-align:center;margin-top:14px;font-size:13px;color:var(--muted)">Already have an account? <button class="lbtn" onclick="show('screen-login')">Login</button></div>
     </div>
   </div>
 </div>
@@ -122,17 +122,17 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
         <div class="logo-wrap"><div class="logo"><span>EP</span></div><div><strong>English Platform</strong><p>Painel do Professor</p></div></div>
       </div>
       <div class="sb-nav">
-        <div class="ni active" onclick="tTab(this,&#39;tc&#39;)"><span>📘</span>Conteúdos</div>
-        <div class="ni" onclick="tTab(this,&#39;tt&#39;)"><span>📝</span>Tarefas</div>
-        <div class="ni" onclick="tTab(this,&#39;tp&#39;)"><span>🧪</span>Provas</div>
-        <div class="ni" onclick="tTab(this,&#39;ts&#39;)"><span>👩‍🎓</span>Alunos</div>
+        <div class="ni active" onclick="tTab(this,'tc')"><span>📘</span>Conteúdos</div>
+        <div class="ni" onclick="tTab(this,'tt')"><span>📝</span>Tarefas</div>
+        <div class="ni" onclick="tTab(this,'tp')"><span>🧪</span>Provas</div>
+        <div class="ni" onclick="tTab(this,'ts')"><span>👩‍🎓</span>Alunos</div>
       </div>
       <div class="sb-foot"><div class="ni" onclick="doLogout()"><span>🚪</span>Sair</div></div>
     </div>
     <div class="mc">
-      <div id="tc" class="tt2"><div class="ph"><h2>Conteúdos</h2><button class="bp" onclick="openM(&#39;mc2&#39;)">+ Novo Conteúdo</button></div><div id="cl"></div></div>
-      <div id="tt" class="tt2" style="display:none"><div class="ph"><h2>Tarefas</h2><button class="bp" onclick="openM(&#39;mt&#39;)">+ Nova Tarefa</button></div><div id="tl2"></div></div>
-      <div id="tp" class="tt2" style="display:none"><div class="ph"><h2>Provas</h2><button class="bp" onclick="openM(&#39;mp&#39;)">+ Nova Prova</button></div><div id="pl"></div></div>
+      <div id="tc" class="tt2"><div class="ph"><h2>Conteúdos</h2><button class="bp" onclick="openM('mc2')">+ Novo Conteúdo</button></div><div id="cl"></div></div>
+      <div id="tt" class="tt2" style="display:none"><div class="ph"><h2>Tarefas</h2><button class="bp" onclick="openM('mt')">+ Nova Tarefa</button></div><div id="tl2"></div></div>
+      <div id="tp" class="tt2" style="display:none"><div class="ph"><h2>Provas</h2><button class="bp" onclick="openM('mp')">+ Nova Prova</button></div><div id="pl"></div></div>
       <div id="ts" class="tt2" style="display:none"><div class="ph"><h2>Alunos</h2></div><div id="sl2"></div></div>
     </div>
   </div>
@@ -145,10 +145,10 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
       <span style="font-weight:600;font-size:15px">English Platform</span>
     </div>
     <div class="sn">
-      <button class="active" onclick="sTab(this,&#39;sd&#39;)">Home</button>
-      <button onclick="sTab(this,&#39;stk&#39;)">Tasks</button>
-      <button onclick="sTab(this,&#39;sts&#39;)">Tests</button>
-      <button onclick="sTab(this,&#39;sp2&#39;)">Progress</button>
+      <button class="active" onclick="sTab(this,'sd')">Home</button>
+      <button onclick="sTab(this,'stk')">Tasks</button>
+      <button onclick="sTab(this,'sts')">Tests</button>
+      <button onclick="sTab(this,'sp2')">Progress</button>
     </div>
     <button class="bs bsm" onclick="doLogout()">Log out</button>
   </div>
@@ -169,7 +169,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
 
 <div id="screen-test" class="screen">
   <div class="sh">
-    <button class="bs bsm" onclick="show(&#39;screen-student&#39;);sTab(null,&#39;sts&#39;)">← Back</button>
+    <button class="bs bsm" onclick="show('screen-student');sTab(null,'sts')">← Back</button>
     <span id="ttn" style="font-weight:600;font-size:15px"></span><div></div>
   </div>
   <div class="sm3"><div id="tqw"></div><button class="bp" style="width:100%;padding:13px;margin-top:1.1rem" onclick="submitTest()">Submit test ✓</button></div>
@@ -177,7 +177,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
 
 <div id="screen-results" class="screen">
   <div class="sh">
-    <button class="bs bsm" onclick="show(&#39;screen-student&#39;);sTab(null,&#39;sts&#39;)">← Tests</button>
+    <button class="bs bsm" onclick="show('screen-student');sTab(null,'sts')">← Tests</button>
     <span style="font-weight:600;font-size:15px">Results</span><div></div>
   </div>
   <div class="sm3" id="rc2"></div>
@@ -191,7 +191,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
     <div class="fg"><label>Descrição</label><input type="text" id="cdesc" placeholder="Breve descrição"></div>
     <div class="fg"><label>Tipo</label><select id="ctype"><option value="text">Texto</option><option value="exercise">Exercício</option><option value="conversation">Conversação</option></select></div>
     <div class="fg"><label>Conteúdo</label><textarea id="cbody" rows="5"></textarea></div>
-    <div class="fe"><button class="bs" onclick="closeM(&#39;mc2&#39;)">Cancelar</button><button class="bp" onclick="saveContent()">Salvar</button></div>
+    <div class="fe"><button class="bs" onclick="closeM('mc2')">Cancelar</button><button class="bp" onclick="saveContent()">Salvar</button></div>
   </div>
 </div>
 
@@ -202,7 +202,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
     <div class="fg"><label>Instruções (em inglês)</label><textarea id="tkins" rows="4"></textarea></div>
     <div class="fg"><label>Data de entrega</label><input type="date" id="tkdate"></div>
     <div class="fg"><label>Atribuir para alunos</label><div id="tkasc" style="margin-top:6px;max-height:140px;overflow-y:auto;border:1.5px solid var(--border);border-radius:var(--rs);padding:4px 12px"></div></div>
-    <div class="fe"><button class="bs" onclick="closeM(&#39;mt&#39;)">Cancelar</button><button class="bp" onclick="saveTask()">Salvar</button></div>
+    <div class="fe"><button class="bs" onclick="closeM('mt')">Cancelar</button><button class="bp" onclick="saveTask()">Salvar</button></div>
   </div>
 </div>
 
@@ -221,7 +221,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
     </div>
     <div id="qed"></div>
     <div class="fg" style="margin-top:10px"><label>Atribuir para alunos</label><div id="pasc" style="margin-top:6px;max-height:140px;overflow-y:auto;border:1.5px solid var(--border);border-radius:var(--rs);padding:4px 12px"></div></div>
-    <div class="fe"><button class="bs" onclick="closeM(&#39;mp&#39;)">Cancelar</button><button class="bp" onclick="saveTest()">Salvar Prova</button></div>
+    <div class="fe"><button class="bs" onclick="closeM('mp')">Cancelar</button><button class="bp" onclick="saveTest()">Salvar Prova</button></div>
   </div>
 </div>
 
@@ -229,7 +229,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
   <div class="mbox" style="max-width:560px">
     <h3>Corrigir Respostas Abertas</h3>
     <div id="gc"></div>
-    <div class="fe"><button class="bs" onclick="closeM(&#39;mg&#39;)">Fechar</button><button class="bp" onclick="saveGrades()">Salvar Correção</button></div>
+    <div class="fe"><button class="bs" onclick="closeM('mg')">Fechar</button><button class="bp" onclick="saveGrades()">Salvar Correção</button></div>
   </div>
 </div>
 
@@ -586,6 +586,5 @@ async function renderSProgress(){
   ${gs.map(x=>{const p=Math.round(x.s.score/x.s.total*100);return`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-size:14px;font-weight:500">${x.t?.name||'Test'}</span><span style="font-size:14px;font-weight:600;color:var(--g)">${x.s.score}/${x.s.total} (${p}%)</span></div><div class="pb"><div class="pbi" style="width:${p}%"></div></div></div>`}).join('')}`;
 }
 </script>
-
-
-</body></html>
+</body>
+</html>
