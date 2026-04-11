@@ -202,8 +202,13 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
     <div class="fg"><label>Título</label><input type="text" id="ctit" placeholder="Ex: Lesson 1 — Greetings"></div>
     <div class="fg"><label>Descrição</label><input type="text" id="cdesc" placeholder="Breve descrição"></div>
     <div class="fg"><label>Tipo</label><select id="ctype"><option value="text">Texto</option><option value="exercise">Exercício</option><option value="conversation">Conversação</option></select></div>
-    <div class="fg"><label>Conteúdo</label><textarea id="cbody" rows="5"></textarea></div>
-    <div class="fe"><button class="bs" onclick="closeM('mc2')">Cancelar</button><button class="bp" onclick="saveContent()">Salvar</button></div>
+    <div class="fg"><label>Conteúdo (texto)</label><textarea id="cbody" rows="4"></textarea></div>
+    <div class="fg">
+      <label>Anexar PDF (opcional)</label>
+      <input type="file" id="cpdf" accept=".pdf" style="padding:6px">
+      <div id="cpdf-status" style="font-size:12px;color:var(--muted);margin-top:4px"></div>
+    </div>
+    <div class="fe"><button class="bs" onclick="closeM('mc2')">Cancelar</button><button class="bp" id="save-content-btn" onclick="saveContent()">Salvar</button></div>
   </div>
 </div>
 
@@ -329,8 +334,26 @@ function getAsc(cid){return[...document.querySelectorAll(`#${cid} input[name="as
 async function saveContent(){
   const title=document.getElementById('ctit').value.trim();
   if(!title)return alert('Preencha o título.');
-  await sb.from('contents').insert({title,description:document.getElementById('cdesc').value,type:document.getElementById('ctype').value,body:document.getElementById('cbody').value});
+  const btn=document.getElementById('save-content-btn');
+  btn.textContent='Salvando...';btn.disabled=true;
+  let file_url=null;
+  const fileInput=document.getElementById('cpdf');
+  if(fileInput.files.length>0){
+    const file=fileInput.files[0];
+    const fileName=Date.now()+'_'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+    const status=document.getElementById('cpdf-status');
+    status.textContent='Enviando PDF...';
+    const {data,error}=await sb.storage.from('contents').upload(fileName,file,{contentType:'application/pdf'});
+    if(error){status.textContent='Erro ao enviar PDF: '+error.message;btn.textContent='Salvar';btn.disabled=false;return;}
+    const {data:urlData}=sb.storage.from('contents').getPublicUrl(fileName);
+    file_url=urlData.publicUrl;
+    status.textContent='PDF enviado!';
+  }
+  await sb.from('contents').insert({title,description:document.getElementById('cdesc').value,type:document.getElementById('ctype').value,body:document.getElementById('cbody').value,file_url});
   ['ctit','cdesc','cbody'].forEach(x=>document.getElementById(x).value='');
+  fileInput.value='';
+  document.getElementById('cpdf-status').textContent='';
+  btn.textContent='Salvar';btn.disabled=false;
   closeM('mc2');renderContents();
 }
 
@@ -377,7 +400,7 @@ async function renderContents(){
   if(!data?.length){el.innerHTML='<div class="es"><div style="font-size:32px">📘</div><p>Nenhum conteúdo criado ainda.</p></div>';return}
   const tb={text:'Texto',exercise:'Exercício',conversation:'Conversação'};
   const tc={text:'bb',exercise:'ba',conversation:'bg2'};
-  el.innerHTML=data.map(c=>`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><strong>${c.title}</strong><span class="badge ${tc[c.type]||'bgr'}">${tb[c.type]||c.type}</span></div><p style="font-size:13px;color:var(--muted)">${c.description||''}</p></div><button class="bd bsm" onclick="delItem('contents','${c.id}',renderContents)">✕</button></div></div>`).join('');
+  el.innerHTML=data.map(c=>`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><strong>${c.title}</strong><span class="badge ${tc[c.type]||'bgr'}">${tb[c.type]||c.type}</span></div><p style="font-size:13px;color:var(--muted)">${c.description||''}</p>${c.file_url?`<a href="${c.file_url}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;margin-top:6px;font-size:13px;color:var(--bl);text-decoration:none">📄 Ver PDF</a>`:''}</div><button class="bd bsm" onclick="delItem('contents','${c.id}',renderContents)">✕</button></div></div>`).join('');
 }
 
 async function renderTasks(){
