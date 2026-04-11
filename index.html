@@ -12,6 +12,7 @@
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:15px;min-height:100vh}
 input,select,textarea{font-family:inherit;font-size:14px;padding:9px 13px;border:1.5px solid var(--border);border-radius:var(--rs);width:100%;background:#fff;color:var(--text);outline:none;transition:border-color .15s}
 input:focus,select:focus,textarea:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(29,158,117,.1)}
+input[type="file"]{padding:6px}
 textarea{resize:vertical;min-height:80px}
 button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);padding:9px 18px;font-size:14px;font-weight:500;transition:all .15s}
 .bp{background:var(--g);color:#fff}.bp:hover{background:var(--gd)}
@@ -50,10 +51,10 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
 .emsg{background:var(--rl);color:var(--re);border-radius:var(--rs);padding:9px 13px;font-size:13px;margin-bottom:12px}
 .smsg{background:var(--gl);color:var(--gd);border-radius:var(--rs);padding:9px 13px;font-size:13px;margin-bottom:12px}
 .sh{background:#fff;border-bottom:1.5px solid var(--border);padding:.85rem 1.35rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
-.sn{display:flex;gap:4px}
-.sn button{background:transparent;border:none;padding:7px 14px;border-radius:var(--rs);font-size:14px;color:var(--muted);font-family:inherit}
+.sn{display:flex;gap:4px;flex-wrap:wrap}
+.sn button{background:transparent;border:none;padding:7px 12px;border-radius:var(--rs);font-size:13px;color:var(--muted);font-family:inherit}
 .sn button.active{background:var(--gl);color:var(--gd);font-weight:500}
-.sm3{padding:1.35rem;max-width:660px;margin:0 auto}
+.sm3{padding:1.35rem;max-width:680px;margin:0 auto}
 .hc{background:linear-gradient(135deg,#1D9E75,#0F6E56);border-radius:var(--r);padding:1.5rem 1.75rem;color:#fff;margin-bottom:1.1rem}
 .hc h3{font-size:22px;font-weight:600;margin-bottom:3px}
 .sg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.1rem}
@@ -73,7 +74,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
 .fe{display:flex;justify-content:flex-end;gap:8px;margin-top:1.1rem;padding-top:1rem;border-top:1.5px solid var(--border)}
 .ac{display:flex;align-items:center;gap:9px;padding:7px 0;font-size:14px;cursor:pointer;border-bottom:1px solid #F3F4F6}
 .ac:last-child{border-bottom:none}.ac input{width:auto}
-.chat-box{display:flex;flex-direction:column;height:500px;border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;background:#fff}
+.chat-box{display:flex;flex-direction:column;height:480px;border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;background:#fff}
 .chat-header{padding:.75rem 1rem;border-bottom:1.5px solid var(--border);background:var(--gl)}
 .chat-msgs{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:8px}
 .chat-input{padding:.75rem;border-top:1.5px solid var(--border);display:flex;gap:8px}
@@ -83,10 +84,13 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
 .msg-bubble-me{max-width:75%;padding:8px 12px;border-radius:12px 12px 2px 12px;background:var(--g);color:#fff}
 .msg-bubble-other{max-width:75%;padding:8px 12px;border-radius:12px 12px 12px 2px;background:#F3F4F6;color:var(--text)}
 .msg-time{font-size:11px;color:var(--muted);margin-top:2px}
+.lesson-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:12px}
+.lesson-body{background:#F9FAFB;border-radius:var(--rs);padding:.85rem;font-size:13px;white-space:pre-line;color:var(--text);margin-top:8px;line-height:1.6}
 </style>
 </head>
 <body>
 
+<!-- LOGIN -->
 <div id="screen-login" class="screen active">
   <div class="lw">
     <div class="lc">
@@ -105,6 +109,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
   </div>
 </div>
 
+<!-- SIGNUP -->
 <div id="screen-signup" class="screen">
   <div class="lw">
     <div class="lc">
@@ -123,6 +128,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
   </div>
 </div>
 
+<!-- TEACHER -->
 <div id="screen-teacher" class="screen">
   <div class="tl">
     <div class="sb">
@@ -148,6 +154,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
   </div>
 </div>
 
+<!-- STUDENT -->
 <div id="screen-student" class="screen">
   <div class="sh">
     <div style="display:flex;align-items:center;gap:10px">
@@ -156,10 +163,11 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
     </div>
     <div class="sn">
       <button class="active" onclick="sTab(this,'sd')">Home</button>
+      <button onclick="sTab(this,'sls')">Lessons</button>
       <button onclick="sTab(this,'stk')">Tasks</button>
       <button onclick="sTab(this,'sts')">Tests</button>
       <button onclick="sTab(this,'sp2')">Progress</button>
-      <button onclick="sTab(this,'sms')">💬 Chat</button>
+      <button onclick="sTab(this,'sms')">Messages</button>
     </div>
     <button class="bs bsm" onclick="doLogout()">Log out</button>
   </div>
@@ -167,19 +175,23 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
     <div id="sd" class="st2">
       <div class="hc"><p style="opacity:.8;font-size:13px;margin-bottom:4px">Welcome back!</p><h3 id="wn">Student</h3><p style="margin-top:6px;opacity:.75;font-size:14px">Keep up the great work! 🎯</p></div>
       <div class="sg">
-        <div class="sc"><div class="num" id="st1">0</div><div class="lbl">tasks pending</div></div>
+        <div class="sc"><div class="num" id="st1">0</div><div class="lbl">tasks</div></div>
         <div class="sc"><div class="num" id="st2">0</div><div class="lbl">tests available</div></div>
         <div class="sc"><div class="num" id="st3">—</div><div class="lbl">avg score</div></div>
       </div>
     </div>
+    <div id="sls" class="st2" style="display:none">
+      <h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">📚 Lessons</h2>
+      <div id="student-lessons-list"></div>
+    </div>
     <div id="stk" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">📚 Your Tasks</h2><div id="tkl"></div></div>
     <div id="sts" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">🧪 Your Tests</h2><div id="tsl"></div></div>
     <div id="sp2" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">📈 Your Progress</h2><div id="prl"></div></div>
-    <div id="sls" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">📚 Lessons</h2><div id="student-lessons-list"></div></div>
-    <div id="sms" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">💬 Chat</h2><div id="student-chat-wrap"></div></div>
+    <div id="sms" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">💬 Messages</h2><div id="student-chat-wrap"></div></div>
   </div>
 </div>
 
+<!-- TEST -->
 <div id="screen-test" class="screen">
   <div class="sh">
     <button class="bs bsm" onclick="show('screen-student');sTab(null,'sts')">← Back</button>
@@ -188,6 +200,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
   <div class="sm3"><div id="tqw"></div><button class="bp" style="width:100%;padding:13px;margin-top:1.1rem" onclick="submitTest()">Submit test ✓</button></div>
 </div>
 
+<!-- RESULTS -->
 <div id="screen-results" class="screen">
   <div class="sh">
     <button class="bs bsm" onclick="show('screen-student');sTab(null,'sts')">← Tests</button>
@@ -206,7 +219,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
     <div class="fg"><label>Conteúdo (texto)</label><textarea id="cbody" rows="4"></textarea></div>
     <div class="fg">
       <label>Anexar PDF (opcional)</label>
-      <input type="file" id="cpdf" accept=".pdf" style="padding:6px">
+      <input type="file" id="cpdf" accept=".pdf">
       <div id="cpdf-status" style="font-size:12px;color:var(--muted);margin-top:4px"></div>
     </div>
     <div class="fe"><button class="bs" onclick="closeM('mc2')">Cancelar</button><button class="bp" id="save-content-btn" onclick="saveContent()">Salvar</button></div>
@@ -217,7 +230,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
   <div class="mbox">
     <h3>Nova Tarefa</h3>
     <div class="fg"><label>Nome</label><input type="text" id="tkname" placeholder="Ex: Week 1 — Verb to be"></div>
-    <div class="fg"><label>Instruções (em inglês)</label><textarea id="tkins" rows="4"></textarea></div>
+    <div class="fg"><label>Instruções</label><textarea id="tkins" rows="4"></textarea></div>
     <div class="fg"><label>Data de entrega</label><input type="date" id="tkdate"></div>
     <div class="fg"><label>Atribuir para alunos</label><div id="tkasc" style="margin-top:6px;max-height:140px;overflow-y:auto;border:1.5px solid var(--border);border-radius:var(--rs);padding:4px 12px"></div></div>
     <div class="fe"><button class="bs" onclick="closeM('mt')">Cancelar</button><button class="bp" onclick="saveTask()">Salvar</button></div>
@@ -307,7 +320,7 @@ async function doSignup(){
   if(p!==p2){err.textContent='Passwords do not match.';err.style.display='block';return}
   const {data,error}=await sb.auth.signUp({email,password:p});
   if(error){err.textContent=error.message;err.style.display='block';return}
-  if(data.user) await sb.from('profiles').insert({id:data.user.id,full_name:name,role:'student'});
+  if(data.user){await sb.from('profiles').insert({id:data.user.id,full_name:name,role:'student'})}
   suc.style.display='block';
   setTimeout(()=>{show('screen-login');document.getElementById('le').value=email},2000);
 }
@@ -345,10 +358,10 @@ async function saveContent(){
     const status=document.getElementById('cpdf-status');
     status.textContent='Enviando PDF...';
     const {data,error}=await sb.storage.from('contents').upload(fileName,file,{contentType:'application/pdf'});
-    if(error){status.textContent='Erro ao enviar PDF: '+error.message;btn.textContent='Salvar';btn.disabled=false;return;}
+    if(error){status.textContent='Erro: '+error.message;btn.textContent='Salvar';btn.disabled=false;return}
     const {data:urlData}=sb.storage.from('contents').getPublicUrl(fileName);
     file_url=urlData.publicUrl;
-    status.textContent='PDF enviado!';
+    status.textContent='✅ PDF enviado!';
   }
   await sb.from('contents').insert({title,description:document.getElementById('cdesc').value,type:document.getElementById('ctype').value,body:document.getElementById('cbody').value,file_url});
   ['ctit','cdesc','cbody'].forEach(x=>document.getElementById(x).value='');
@@ -380,7 +393,7 @@ async function saveTest(){
   NQs=[];closeM('mp');renderTests();
 }
 
-// TEACHER RENDER
+// TEACHER TABS
 function tTab(el,tab){
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
   document.querySelectorAll('.tt2').forEach(t=>t.style.display='none');
@@ -412,7 +425,7 @@ async function renderTasks(){
   if(!tasks?.length){el.innerHTML='<div class="es"><div style="font-size:32px">📝</div><p>Nenhuma tarefa criada ainda.</p></div>';return}
   el.innerHTML=tasks.map(t=>{
     const chips=(assigns||[]).filter(a=>a.task_id===t.id).map(a=>`<span class="badge bg2" style="margin-right:4px">${a.profiles?.full_name||''}</span>`).join('');
-    return`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><strong>${t.name}</strong>${t.due_date?`<span style="font-size:12px;color:var(--muted);margin-left:8px">📅 ${t.due_date}</span>`:''}<p style="font-size:13px;color:var(--muted);margin-top:4px">${t.instructions||''}</p><div style="margin-top:8px">${chips||'<span class="badge bgr">Sem alunos atribuídos</span>'}</div></div><button class="bd bsm" onclick="delItem('tasks','${t.id}',renderTasks)">✕</button></div></div>`;
+    return`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><strong>${t.name}</strong>${t.due_date?`<span style="font-size:12px;color:var(--muted);margin-left:8px">📅 ${t.due_date}</span>`:''}<p style="font-size:13px;color:var(--muted);margin-top:4px">${t.instructions||''}</p><div style="margin-top:8px">${chips||'<span class="badge bgr">Sem alunos</span>'}</div></div><button class="bd bsm" onclick="delItem('tasks','${t.id}',renderTasks)">✕</button></div></div>`;
   }).join('');
 }
 
@@ -428,7 +441,7 @@ async function renderTests(){
     const chips=(assigns||[]).filter(a=>a.test_id===t.id).map(a=>`<span class="badge bg2" style="margin-right:4px">${a.profiles?.full_name||''}</span>`).join('');
     const qCount=(questions||[]).filter(q=>q.test_id===t.id).length;
     const pend=(subs||[]).filter(s=>s.test_id===t.id&&s.needs_grade).length;
-    return`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><strong>${t.name}</strong>${pend?`<span class="badge ba">⏳ ${pend} pendente(s)</span>`:''}</div><p style="font-size:13px;color:var(--muted);margin-top:3px">${t.description||''}</p><div style="display:flex;gap:6px;margin-top:6px"><span class="badge bgr">${qCount} questão(ões)</span>${t.test_date?`<span class="badge bgr">📅 ${t.test_date}</span>`:''}</div><div style="margin-top:8px">${chips||'<span class="badge bgr">Sem alunos atribuídos</span>'}</div></div><div style="display:flex;flex-direction:column;gap:6px">${pend?`<button class="bs bsm" onclick="openGrade('${t.id}')">Corrigir</button>`:''}<button class="bd bsm" onclick="delItem('tests','${t.id}',renderTests)">✕</button></div></div></div>`;
+    return`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><strong>${t.name}</strong>${pend?`<span class="badge ba">⏳ ${pend} pendente(s)</span>`:''}</div><p style="font-size:13px;color:var(--muted);margin-top:3px">${t.description||''}</p><div style="display:flex;gap:6px;margin-top:6px"><span class="badge bgr">${qCount} questão(ões)</span>${t.test_date?`<span class="badge bgr">📅 ${t.test_date}</span>`:''}</div><div style="margin-top:8px">${chips||'<span class="badge bgr">Sem alunos</span>'}</div></div><div style="display:flex;flex-direction:column;gap:6px">${pend?`<button class="bs bsm" onclick="openGrade('${t.id}')">Corrigir</button>`:''}<button class="bd bsm" onclick="delItem('tests','${t.id}',renderTests)">✕</button></div></div></div>`;
   }).join('');
 }
 
@@ -445,103 +458,7 @@ async function renderStudents(){
   }).join('');
 }
 
-async function delItem(table,id,cb){
-  if(!confirm('Confirmar exclusão?'))return;
-  await sb.from(table).delete().eq('id',id);cb();
-}
-
-// CHAT
-function buildChatUI(containerId, myId, otherId, otherName){
-  const el=document.getElementById(containerId);
-  el.innerHTML=`
-    <div class="chat-box">
-      <div class="chat-header"><strong style="font-size:14px;color:var(--gd)">💬 ${otherName}</strong></div>
-      <div class="chat-msgs" id="msgs-${containerId}"><p style="text-align:center;color:var(--muted);font-size:13px">Carregando...</p></div>
-      <div class="chat-input">
-        <input type="text" id="msg-input-${containerId}" placeholder="Digite uma mensagem..." onkeydown="if(event.key==='Enter')sendMsg('${containerId}','${myId}','${otherId}')">
-        <button class="bp bsm" onclick="sendMsg('${containerId}','${myId}','${otherId}')">Enviar</button>
-      </div>
-    </div>`;
-  loadMsgs(containerId,myId,otherId);
-}
-
-async function loadMsgs(containerId,myId,otherId){
-  const el=document.getElementById('msgs-'+containerId);
-  if(!el)return;
-  const {data}=await sb.from('messages').select('*')
-    .or(`and(sender_id.eq.${myId},receiver_id.eq.${otherId}),and(sender_id.eq.${otherId},receiver_id.eq.${myId})`)
-    .order('created_at',{ascending:true});
-  if(!data?.length){el.innerHTML='<p style="text-align:center;color:var(--muted);font-size:13px">Nenhuma mensagem ainda. Diga olá! 👋</p>';return}
-  el.innerHTML=data.map(m=>{
-    const isMe=m.sender_id===myId;
-    return`<div class="${isMe?'msg-me':'msg-other'}">
-      <div class="${isMe?'msg-bubble-me':'msg-bubble-other'}"><p style="font-size:14px">${m.content}</p></div>
-      <span class="msg-time">${m.sender_name} • ${new Date(m.created_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span>
-    </div>`;
-  }).join('');
-  el.scrollTop=el.scrollHeight;
-}
-
-async function sendMsg(containerId,myId,otherId){
-  const input=document.getElementById('msg-input-'+containerId);
-  const content=input.value.trim();
-  if(!content)return;
-  const senderName=myId===TEACHER_ID?'Professora Thamires':CU.name;
-  await sb.from('messages').insert({sender_id:myId,sender_name:senderName,receiver_id:otherId,content});
-  input.value='';
-  loadMsgs(containerId,myId,otherId);
-}
-
-async function renderTeacherChat(){
-  const el=document.getElementById('teacher-chat-wrap');
-  el.innerHTML='<p style="color:var(--muted);padding:1rem">Carregando...</p>';
-  const {data:students}=await sb.from('profiles').select('*').eq('role','student');
-  if(!students?.length){el.innerHTML='<div class="es"><div style="font-size:32px">💬</div><p>Nenhum aluno cadastrado ainda.</p></div>';return}
-  if(students.length===1){
-    buildChatUI('teacher-chat-wrap',TEACHER_ID,students[0].id,students[0].full_name);
-    return;
-  }
-  el.innerHTML=`<div class="fg"><label>Selecionar aluno</label>
-    <select onchange="selectStudentChat(this.value)" style="margin-bottom:1rem;max-width:300px">
-      <option value="">Escolha um aluno...</option>
-      ${students.map(s=>`<option value="${s.id}|${s.full_name}">${s.full_name}</option>`).join('')}
-    </select></div>
-    <div id="teacher-chat-inner"></div>`;
-}
-
-function selectStudentChat(val){
-  if(!val)return;
-  const[id,name]=val.split('|');
-  buildChatUI('teacher-chat-inner',TEACHER_ID,id,name);
-}
-
-async function renderSLessons(){
-  const el=document.getElementById('student-lessons-list');
-  el.innerHTML='<p style="color:var(--muted);padding:1rem">Loading...</p>';
-  const {data}=await sb.from('contents').select('*').order('created_at');
-  if(!data?.length){el.innerHTML='<div class="es"><div style="font-size:32px">📚</div><p>No lessons available yet.</p></div>';return}
-  const tb={text:'Text',exercise:'Exercise',conversation:'Conversation'};
-  const tc={text:'bb',exercise:'ba',conversation:'bg2'};
-  el.innerHTML=data.map(c=>`
-    <div class="card" style="margin-bottom:12px">
-      <div style="display:flex;align-items:flex-start;gap:12px">
-        <div style="font-size:28px">${c.type==='conversation'?'💬':c.type==='exercise'?'✏️':'📖'}</div>
-        <div style="flex:1">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-            <strong style="font-size:15px">${c.title}</strong>
-            <span class="badge ${tc[c.type]||'bgr'}">${tb[c.type]||c.type}</span>
-          </div>
-          <p style="font-size:13px;color:var(--muted);margin-bottom:8px">${c.description||''}</p>
-          ${c.body?`<div style="background:#F9FAFB;border-radius:var(--rs);padding:.85rem;font-size:13px;white-space:pre-line;color:var(--text);margin-bottom:8px">${c.body}</div>`:''}
-          ${c.file_url?`<a href="${c.file_url}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:var(--bll);color:var(--bl);border-radius:var(--rs);font-size:13px;font-weight:500;text-decoration:none">📄 Open PDF</a>`:''}
-        </div>
-      </div>
-    </div>`).join('');
-}
-
-function renderStudentChat(){
-  buildChatUI('student-chat-wrap',CU.id,TEACHER_ID,'Professora Thamires');
-}
+async function delItem(table,id,cb){if(!confirm('Confirmar exclusão?'))return;await sb.from(table).delete().eq('id',id);cb()}
 
 // Q EDITOR
 function addQ(){NQs.push({id:uid(),type:'multiple_choice',text:'',options:['','',''],correct:''});renderQEditor()}
@@ -590,13 +507,79 @@ async function saveGrades(){
   closeM('mg');renderTests();alert('Correção salva!');
 }
 
-// STUDENT
+// CHAT
+function buildChatUI(containerId,myId,otherId,otherName){
+  const el=document.getElementById(containerId);
+  el.innerHTML=`<div class="chat-box">
+    <div class="chat-header"><strong style="font-size:14px;color:var(--gd)">💬 ${otherName}</strong></div>
+    <div class="chat-msgs" id="msgs-${containerId}"><p style="text-align:center;color:var(--muted);font-size:13px">Carregando...</p></div>
+    <div class="chat-input">
+      <input type="text" id="msg-input-${containerId}" placeholder="Digite uma mensagem..." onkeydown="if(event.key==='Enter')sendMsg('${containerId}','${myId}','${otherId}')">
+      <button class="bp bsm" onclick="sendMsg('${containerId}','${myId}','${otherId}')">Enviar</button>
+    </div>
+  </div>`;
+  loadMsgs(containerId,myId,otherId);
+}
+
+async function loadMsgs(containerId,myId,otherId){
+  const el=document.getElementById('msgs-'+containerId);
+  if(!el)return;
+  const {data}=await sb.from('messages').select('*')
+    .or(`and(sender_id.eq.${myId},receiver_id.eq.${otherId}),and(sender_id.eq.${otherId},receiver_id.eq.${myId})`)
+    .order('created_at',{ascending:true});
+  if(!data?.length){el.innerHTML='<p style="text-align:center;color:var(--muted);font-size:13px">Nenhuma mensagem ainda. Diga olá! 👋</p>';return}
+  el.innerHTML=data.map(m=>{
+    const isMe=m.sender_id===myId;
+    return`<div class="${isMe?'msg-me':'msg-other'}">
+      <div class="${isMe?'msg-bubble-me':'msg-bubble-other'}"><p style="font-size:14px">${m.content}</p></div>
+      <span class="msg-time">${m.sender_name} • ${new Date(m.created_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span>
+    </div>`;
+  }).join('');
+  el.scrollTop=el.scrollHeight;
+}
+
+async function sendMsg(containerId,myId,otherId){
+  const input=document.getElementById('msg-input-'+containerId);
+  const content=input.value.trim();
+  if(!content)return;
+  const senderName=myId===TEACHER_ID?'Professora Thamires':CU.name;
+  await sb.from('messages').insert({sender_id:myId,sender_name:senderName,receiver_id:otherId,content});
+  input.value='';
+  loadMsgs(containerId,myId,otherId);
+}
+
+async function renderTeacherChat(){
+  const el=document.getElementById('teacher-chat-wrap');
+  el.innerHTML='<p style="color:var(--muted);padding:1rem">Carregando...</p>';
+  const {data:students}=await sb.from('profiles').select('*').eq('role','student');
+  if(!students?.length){el.innerHTML='<div class="es"><div style="font-size:32px">💬</div><p>Nenhum aluno cadastrado ainda.</p></div>';return}
+  if(students.length===1){buildChatUI('teacher-chat-wrap',TEACHER_ID,students[0].id,students[0].full_name);return}
+  el.innerHTML=`<div class="fg"><label>Selecionar aluno</label>
+    <select onchange="selectStudentChat(this.value)" style="max-width:300px;margin-bottom:1rem">
+      <option value="">Escolha um aluno...</option>
+      ${students.map(s=>`<option value="${s.id}|${s.full_name}">${s.full_name}</option>`).join('')}
+    </select></div>
+    <div id="teacher-chat-inner"></div>`;
+}
+
+function selectStudentChat(val){
+  if(!val)return;
+  const[id,name]=val.split('|');
+  buildChatUI('teacher-chat-inner',TEACHER_ID,id,name);
+}
+
+function renderStudentChat(){
+  buildChatUI('student-chat-wrap',CU.id,TEACHER_ID,'Professora Thamires');
+}
+
+// STUDENT TABS
 function sTab(el,tab){
   document.querySelectorAll('.sn button').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.st2').forEach(t=>t.style.display='none');
   if(el)el.classList.add('active');
   document.getElementById(tab).style.display='block';
   if(tab==='sd')renderSD();
+  if(tab==='sls')renderSLessons();
   if(tab==='stk')renderSTasks();
   if(tab==='sts')renderSTests();
   if(tab==='sp2')renderSProgress();
@@ -615,6 +598,31 @@ async function renderSD(){
   document.getElementById('st1').textContent=(myTasks||[]).length;
   document.getElementById('st2').textContent=pending;
   document.getElementById('st3').textContent=avg!==null?avg:'—';
+}
+
+async function renderSLessons(){
+  const el=document.getElementById('student-lessons-list');
+  el.innerHTML='<p style="color:var(--muted);padding:1rem">Loading...</p>';
+  const {data}=await sb.from('contents').select('*').order('created_at');
+  if(!data?.length){el.innerHTML='<div class="es"><div style="font-size:32px">📚</div><p>No lessons available yet.</p></div>';return}
+  const icons={text:'📖',exercise:'✏️',conversation:'💬'};
+  const tb={text:'Text',exercise:'Exercise',conversation:'Conversation'};
+  const tc={text:'bb',exercise:'ba',conversation:'bg2'};
+  el.innerHTML=data.map(c=>`
+    <div class="lesson-card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <span style="font-size:24px">${icons[c.type]||'📖'}</span>
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <strong style="font-size:15px">${c.title}</strong>
+            <span class="badge ${tc[c.type]||'bgr'}">${tb[c.type]||c.type}</span>
+          </div>
+          <p style="font-size:13px;color:var(--muted);margin-top:2px">${c.description||''}</p>
+        </div>
+      </div>
+      ${c.body?`<div class="lesson-body">${c.body}</div>`:''}
+      ${c.file_url?`<a href="${c.file_url}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:7px 14px;background:var(--bll);color:var(--bl);border-radius:var(--rs);font-size:13px;font-weight:500;text-decoration:none">📄 Open PDF</a>`:''}
+    </div>`).join('');
 }
 
 async function renderSTasks(){
