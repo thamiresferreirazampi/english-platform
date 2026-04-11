@@ -175,6 +175,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
     <div id="stk" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">📚 Your Tasks</h2><div id="tkl"></div></div>
     <div id="sts" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">🧪 Your Tests</h2><div id="tsl"></div></div>
     <div id="sp2" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">📈 Your Progress</h2><div id="prl"></div></div>
+    <div id="sls" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">📚 Lessons</h2><div id="student-lessons-list"></div></div>
     <div id="sms" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">💬 Chat</h2><div id="student-chat-wrap"></div></div>
   </div>
 </div>
@@ -512,6 +513,30 @@ function selectStudentChat(val){
   if(!val)return;
   const[id,name]=val.split('|');
   buildChatUI('teacher-chat-inner',TEACHER_ID,id,name);
+}
+
+async function renderSLessons(){
+  const el=document.getElementById('student-lessons-list');
+  el.innerHTML='<p style="color:var(--muted);padding:1rem">Loading...</p>';
+  const {data}=await sb.from('contents').select('*').order('created_at');
+  if(!data?.length){el.innerHTML='<div class="es"><div style="font-size:32px">📚</div><p>No lessons available yet.</p></div>';return}
+  const tb={text:'Text',exercise:'Exercise',conversation:'Conversation'};
+  const tc={text:'bb',exercise:'ba',conversation:'bg2'};
+  el.innerHTML=data.map(c=>`
+    <div class="card" style="margin-bottom:12px">
+      <div style="display:flex;align-items:flex-start;gap:12px">
+        <div style="font-size:28px">${c.type==='conversation'?'💬':c.type==='exercise'?'✏️':'📖'}</div>
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <strong style="font-size:15px">${c.title}</strong>
+            <span class="badge ${tc[c.type]||'bgr'}">${tb[c.type]||c.type}</span>
+          </div>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:8px">${c.description||''}</p>
+          ${c.body?`<div style="background:#F9FAFB;border-radius:var(--rs);padding:.85rem;font-size:13px;white-space:pre-line;color:var(--text);margin-bottom:8px">${c.body}</div>`:''}
+          ${c.file_url?`<a href="${c.file_url}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:var(--bll);color:var(--bl);border-radius:var(--rs);font-size:13px;font-weight:500;text-decoration:none">📄 Open PDF</a>`:''}
+        </div>
+      </div>
+    </div>`).join('');
 }
 
 function renderStudentChat(){
