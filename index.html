@@ -69,6 +69,152 @@ async function renderStudentVideo(){
     </div>`;
 }
 
+
+// SPEAKING
+let mediaRecorder=null, audioChunks=[], currentActivityId=null, currentStream=null;
+
+async function saveSpeakingActivity(){
+  const title=document.getElementById('sp-title').value.trim();
+  if(!title)return alert('Preencha o título.');
+  await sb.from('speaking_activities').insert({
+    title,
+    type:document.getElementById('sp-type').value,
+    instructions:document.getElementById('sp-instructions').value,
+    content:document.getElementById('sp-content').value
+  });
+  ['sp-title','sp-instructions','sp-content'].forEach(x=>document.getElementById(x).value='');
+  closeM('msp');renderTeacherSpeaking();
+}
+
+async function renderTeacherSpeaking(){
+  const el=document.getElementById('speaking-list-teacher');
+  el.innerHTML='<p style="color:var(--muted);padding:1rem">Carregando...</p>';
+  const {data:activities}=await sb.from('speaking_activities').select('*').order('created_at');
+  const {data:subs}=await sb.from('speaking_submissions').select('*,profiles(full_name)');
+  if(!activities?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🎤</div><p>Nenhuma atividade criada ainda.</p></div>';return}
+  const types={read_aloud:'Leitura',answer_question:'Pergunta',describe:'Livre',repeat:'Shadowing'};
+  const tc={read_aloud:'bg2',answer_question:'bb',describe:'ba',repeat:'bgr'};
+  el.innerHTML=activities.map(a=>{
+    const mySubs=(subs||[]).filter(s=>s.activity_id===a.id);
+    return`<div class="card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <strong>${a.title}</strong>
+            <span class="badge ${tc[a.type]||'bgr'}">${types[a.type]||a.type}</span>
+          </div>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:8px">${a.instructions||''}</p>
+          ${a.content?`<div style="background:#F9FAFB;border-radius:var(--rs);padding:.75rem;font-size:13px;white-space:pre-line;margin-bottom:8px">${a.content}</div>`:''}
+          ${mySubs.length?mySubs.map(sub=>`
+            <div style="background:var(--gl);border-radius:var(--rs);padding:.75rem;margin-top:6px">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+                <strong style="font-size:13px;color:var(--gd)">${sub.profiles?.full_name||'Aluno'}</strong>
+                ${sub.feedback?`<span class="badge bg2">Corrigido</span>`:`<span class="badge ba">Pendente</span>`}
+              </div>
+              ${sub.audio_url?`<audio controls src="${sub.audio_url}" style="width:100%;margin-bottom:8px"></audio>`:''}
+              ${!sub.feedback?`<div style="display:flex;gap:8px;margin-top:6px">
+                <input type="text" id="fb-${sub.id}" placeholder="Deixe um feedback..." style="flex:1;font-size:13px">
+                <button class="bp bsm" onclick="saveSpeakingFeedback('${sub.id}')">Enviar</button>
+              </div>`:`<p style="font-size:13px;color:var(--gd)">💬 ${sub.feedback}</p>`}
+            </div>`).join(''):'<p style="font-size:13px;color:var(--muted)">Nenhuma resposta ainda.</p>'}
+        </div>
+        <button class="bd bsm" onclick="delItem('speaking_activities','${a.id}',renderTeacherSpeaking)">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function saveSpeakingFeedback(subId){
+  const fb=document.getElementById('fb-'+subId).value.trim();
+  if(!fb)return alert('Escreva um feedback.');
+  await sb.from('speaking_submissions').update({feedback:fb}).eq('id',subId);
+  renderTeacherSpeaking();
+}
+
+async function renderStudentSpeaking(){
+  const el=document.getElementById('speaking-list-student');
+  el.innerHTML='<p style="color:var(--muted);padding:1rem">Loading...</p>';
+  const {data:activities}=await sb.from('speaking_activities').select('*').order('created_at');
+  const {data:mySubs}=await sb.from('speaking_submissions').select('*').eq('student_id',CU.id);
+  if(!activities?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🎤</div><p>No speaking activities yet.</p></div>';return}
+  const types={read_aloud:'Read Aloud',answer_question:'Answer the Question',describe:'Speak Freely',repeat:'Shadowing'};
+  const tc={read_aloud:'bg2',answer_question:'bb',describe:'ba',repeat:'bgr'};
+  el.innerHTML=activities.map(a=>{
+    const sub=(mySubs||[]).find(s=>s.activity_id===a.id);
+    return`<div class="card" style="margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span style="font-size:22px">🎤</span>
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <strong style="font-size:15px">${a.title}</strong>
+            <span class="badge ${tc[a.type]||'bgr'}">${types[a.type]||a.type}</span>
+          </div>
+        </div>
+        ${sub?'<span class="badge bg2">✅ Done</span>':''}
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:8px">${a.instructions||''}</p>
+      ${a.content?`<div style="background:#F9FAFB;border-radius:var(--rs);padding:.85rem;font-size:14px;white-space:pre-line;margin-bottom:12px;line-height:1.7;border-left:3px solid var(--g)">${a.content}</div>`:''}
+      ${sub?.audio_url?`<div style="margin-bottom:8px"><p style="font-size:12px;color:var(--muted);margin-bottom:4px">Your recording:</p><audio controls src="${sub.audio_url}" style="width:100%"></audio></div>`:''}
+      ${sub?.feedback?`<div style="background:var(--gl);border-radius:var(--rs);padding:.75rem;margin-bottom:8px"><p style="font-size:13px;color:var(--gd)">💬 Teacher feedback: ${sub.feedback}</p></div>`:''}
+      <div id="recorder-${a.id}">
+        ${!sub?`<button class="bp" onclick="startRecording('${a.id}')" id="rec-btn-${a.id}" style="width:100%;padding:11px">🎤 Start Recording</button>`:`<button class="bs" onclick="startRecording('${a.id}')" id="rec-btn-${a.id}" style="width:100%;padding:11px">🔄 Record Again</button>`}
+        <div id="rec-status-${a.id}" style="text-align:center;font-size:13px;color:var(--muted);margin-top:6px"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function startRecording(activityId){
+  if(currentStream){currentStream.getTracks().forEach(t=>t.stop())}
+  currentActivityId=activityId;
+  audioChunks=[];
+  const btn=document.getElementById('rec-btn-'+activityId);
+  const status=document.getElementById('rec-status-'+activityId);
+  try{
+    currentStream=await navigator.mediaDevices.getUserMedia({audio:true});
+    mediaRecorder=new MediaRecorder(currentStream);
+    mediaRecorder.ondataavailable=e=>audioChunks.push(e.data);
+    mediaRecorder.onstop=()=>uploadAudio(activityId);
+    mediaRecorder.start();
+    btn.textContent='⏹ Stop Recording';
+    btn.onclick=()=>stopRecording(activityId);
+    btn.style.background='var(--re)';
+    status.textContent='🔴 Recording... click Stop when done';
+  } catch(e){
+    status.textContent='❌ Microphone access denied. Please allow microphone in your browser.';
+  }
+}
+
+function stopRecording(activityId){
+  if(mediaRecorder&&mediaRecorder.state!=='inactive'){
+    mediaRecorder.stop();
+    currentStream.getTracks().forEach(t=>t.stop());
+  }
+  const btn=document.getElementById('rec-btn-'+activityId);
+  const status=document.getElementById('rec-status-'+activityId);
+  btn.textContent='⏳ Uploading...';
+  btn.disabled=true;
+  status.textContent='Saving your recording...';
+}
+
+async function uploadAudio(activityId){
+  const blob=new Blob(audioChunks,{type:'audio/webm'});
+  const fileName=activityId+'-'+CU.id+'-'+Date.now()+'.webm';
+  const status=document.getElementById('rec-status-'+activityId);
+  const {data,error}=await sb.storage.from('audio').upload(fileName,blob,{contentType:'audio/webm',upsert:true});
+  if(error){status.textContent='❌ Error saving: '+error.message;return}
+  const {data:urlData}=sb.storage.from('audio').getPublicUrl(fileName);
+  const audioUrl=urlData.publicUrl;
+  // Check if already submitted
+  const {data:existing}=await sb.from('speaking_submissions').select('id').eq('activity_id',activityId).eq('student_id',CU.id);
+  if(existing?.length){
+    await sb.from('speaking_submissions').update({audio_url:audioUrl,feedback:null}).eq('id',existing[0].id);
+  } else {
+    await sb.from('speaking_submissions').insert({activity_id:activityId,student_id:CU.id,audio_url:audioUrl});
+  }
+  renderStudentSpeaking();
+}
+
 </script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -206,6 +352,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
         <div class="ni" onclick="tTab(this,'ts')"><span>👩‍🎓</span>Alunos</div>
         <div class="ni" onclick="tTab(this,'tm')"><span>💬</span>Mensagens</div>
         <div class="ni" onclick="tTab(this,'tv')"><span>🎥</span>Aula ao Vivo</div>
+        <div class="ni" onclick="tTab(this,'tsp')"><span>🎤</span>Speaking</div>
       </div>
       <div class="sb-foot"><div class="ni" onclick="doLogout()"><span>🚪</span>Sair</div></div>
     </div>
@@ -214,6 +361,10 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
       <div id="tt" class="tt2" style="display:none"><div class="ph"><h2>Tarefas</h2><button class="bp" onclick="openM('mt')">+ Nova Tarefa</button></div><div id="tl2"></div></div>
       <div id="tp" class="tt2" style="display:none"><div class="ph"><h2>Provas</h2><button class="bp" onclick="openM('mp')">+ Nova Prova</button></div><div id="pl"></div></div>
       <div id="ts" class="tt2" style="display:none"><div class="ph"><h2>Alunos</h2></div><div id="sl2"></div></div>
+      <div id="tsp" class="tt2" style="display:none">
+        <div class="ph"><h2>Speaking</h2><button class="bp" onclick="openM('msp')">+ Nova Atividade</button></div>
+        <div id="speaking-list-teacher"></div>
+      </div>
       <div id="tm" class="tt2" style="display:none"><div class="ph"><h2>Mensagens</h2></div><div id="teacher-chat-wrap"></div></div>
       <div id="tv" class="tt2" style="display:none">
         <div class="ph"><h2>Aula ao Vivo</h2></div>
@@ -245,6 +396,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
       <button onclick="sTab(this,'sts')">Tests</button>
       <button onclick="sTab(this,'sp2')">Progress</button>
       <button onclick="sTab(this,'svd')">Live Class</button>
+      <button onclick="sTab(this,'sspk')">Speaking</button>
       <button onclick="sTab(this,'sms')">Messages</button>
     </div>
     <button class="bs bsm" onclick="doLogout()">Log out</button>
@@ -265,6 +417,10 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
     <div id="stk" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">📚 Your Tasks</h2><div id="tkl"></div></div>
     <div id="sts" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">🧪 Your Tests</h2><div id="tsl"></div></div>
     <div id="sp2" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">📈 Your Progress</h2><div id="prl"></div></div>
+    <div id="sspk" class="st2" style="display:none">
+      <h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">🎤 Speaking Practice</h2>
+      <div id="speaking-list-student"></div>
+    </div>
     <div id="svd" class="st2" style="display:none">
       <h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">🎥 Live Class</h2>
       <div id="student-video-wrap"></div>
@@ -335,6 +491,24 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
     <div id="qed"></div>
     <div class="fg" style="margin-top:10px"><label>Atribuir para alunos</label><div id="pasc" style="margin-top:6px;max-height:140px;overflow-y:auto;border:1.5px solid var(--border);border-radius:var(--rs);padding:4px 12px"></div></div>
     <div class="fe"><button class="bs" onclick="closeM('mp')">Cancelar</button><button class="bp" onclick="saveTest()">Salvar Prova</button></div>
+  </div>
+</div>
+
+<div class="mo" id="msp">
+  <div class="mbox">
+    <h3>Nova Atividade de Speaking</h3>
+    <div class="fg"><label>Título</label><input type="text" id="sp-title" placeholder="Ex: Read Aloud — Daily Routine"></div>
+    <div class="fg"><label>Tipo</label>
+      <select id="sp-type">
+        <option value="read_aloud">Leitura em Voz Alta</option>
+        <option value="answer_question">Responder Pergunta</option>
+        <option value="describe">Descrever / Falar Livremente</option>
+        <option value="repeat">Repetição (Shadowing)</option>
+      </select>
+    </div>
+    <div class="fg"><label>Instruções para a aluna</label><textarea id="sp-instructions" rows="3" placeholder="Ex: Read the text below aloud clearly and slowly."></textarea></div>
+    <div class="fg"><label>Conteúdo (texto, pergunta ou frases)</label><textarea id="sp-content" rows="5" placeholder="Ex: I wake up at 7am. I have breakfast and go to work..."></textarea></div>
+    <div class="fe"><button class="bs" onclick="closeM('msp')">Cancelar</button><button class="bp" onclick="saveSpeakingActivity()">Salvar</button></div>
   </div>
 </div>
 
@@ -487,6 +661,7 @@ function tTab(el,tab){
   if(tab==='ts')renderStudents();
   if(tab==='tm')renderTeacherChat();
   if(tab==='tv')renderTeacherVideo();
+  if(tab==='tsp')renderTeacherSpeaking();
 }
 function renderTeacher(){renderContents()}
 
@@ -666,6 +841,7 @@ function sTab(el,tab){
   if(tab==='stk')renderSTasks();
   if(tab==='sts')renderSTests();
   if(tab==='sp2')renderSProgress();
+  if(tab==='sspk')renderStudentSpeaking();
   if(tab==='svd')renderStudentVideo();
   if(tab==='sms')renderStudentChat();
 }
@@ -868,6 +1044,152 @@ async function renderStudentVideo(){
       </div>
       <iframe src="https://meet.jit.si/${session.room_name}" allow="camera; microphone; fullscreen; display-capture" style="width:100%;height:500px;border:none;border-radius:var(--rs)"></iframe>
     </div>`;
+}
+
+
+// SPEAKING
+let mediaRecorder=null, audioChunks=[], currentActivityId=null, currentStream=null;
+
+async function saveSpeakingActivity(){
+  const title=document.getElementById('sp-title').value.trim();
+  if(!title)return alert('Preencha o título.');
+  await sb.from('speaking_activities').insert({
+    title,
+    type:document.getElementById('sp-type').value,
+    instructions:document.getElementById('sp-instructions').value,
+    content:document.getElementById('sp-content').value
+  });
+  ['sp-title','sp-instructions','sp-content'].forEach(x=>document.getElementById(x).value='');
+  closeM('msp');renderTeacherSpeaking();
+}
+
+async function renderTeacherSpeaking(){
+  const el=document.getElementById('speaking-list-teacher');
+  el.innerHTML='<p style="color:var(--muted);padding:1rem">Carregando...</p>';
+  const {data:activities}=await sb.from('speaking_activities').select('*').order('created_at');
+  const {data:subs}=await sb.from('speaking_submissions').select('*,profiles(full_name)');
+  if(!activities?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🎤</div><p>Nenhuma atividade criada ainda.</p></div>';return}
+  const types={read_aloud:'Leitura',answer_question:'Pergunta',describe:'Livre',repeat:'Shadowing'};
+  const tc={read_aloud:'bg2',answer_question:'bb',describe:'ba',repeat:'bgr'};
+  el.innerHTML=activities.map(a=>{
+    const mySubs=(subs||[]).filter(s=>s.activity_id===a.id);
+    return`<div class="card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <strong>${a.title}</strong>
+            <span class="badge ${tc[a.type]||'bgr'}">${types[a.type]||a.type}</span>
+          </div>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:8px">${a.instructions||''}</p>
+          ${a.content?`<div style="background:#F9FAFB;border-radius:var(--rs);padding:.75rem;font-size:13px;white-space:pre-line;margin-bottom:8px">${a.content}</div>`:''}
+          ${mySubs.length?mySubs.map(sub=>`
+            <div style="background:var(--gl);border-radius:var(--rs);padding:.75rem;margin-top:6px">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+                <strong style="font-size:13px;color:var(--gd)">${sub.profiles?.full_name||'Aluno'}</strong>
+                ${sub.feedback?`<span class="badge bg2">Corrigido</span>`:`<span class="badge ba">Pendente</span>`}
+              </div>
+              ${sub.audio_url?`<audio controls src="${sub.audio_url}" style="width:100%;margin-bottom:8px"></audio>`:''}
+              ${!sub.feedback?`<div style="display:flex;gap:8px;margin-top:6px">
+                <input type="text" id="fb-${sub.id}" placeholder="Deixe um feedback..." style="flex:1;font-size:13px">
+                <button class="bp bsm" onclick="saveSpeakingFeedback('${sub.id}')">Enviar</button>
+              </div>`:`<p style="font-size:13px;color:var(--gd)">💬 ${sub.feedback}</p>`}
+            </div>`).join(''):'<p style="font-size:13px;color:var(--muted)">Nenhuma resposta ainda.</p>'}
+        </div>
+        <button class="bd bsm" onclick="delItem('speaking_activities','${a.id}',renderTeacherSpeaking)">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function saveSpeakingFeedback(subId){
+  const fb=document.getElementById('fb-'+subId).value.trim();
+  if(!fb)return alert('Escreva um feedback.');
+  await sb.from('speaking_submissions').update({feedback:fb}).eq('id',subId);
+  renderTeacherSpeaking();
+}
+
+async function renderStudentSpeaking(){
+  const el=document.getElementById('speaking-list-student');
+  el.innerHTML='<p style="color:var(--muted);padding:1rem">Loading...</p>';
+  const {data:activities}=await sb.from('speaking_activities').select('*').order('created_at');
+  const {data:mySubs}=await sb.from('speaking_submissions').select('*').eq('student_id',CU.id);
+  if(!activities?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🎤</div><p>No speaking activities yet.</p></div>';return}
+  const types={read_aloud:'Read Aloud',answer_question:'Answer the Question',describe:'Speak Freely',repeat:'Shadowing'};
+  const tc={read_aloud:'bg2',answer_question:'bb',describe:'ba',repeat:'bgr'};
+  el.innerHTML=activities.map(a=>{
+    const sub=(mySubs||[]).find(s=>s.activity_id===a.id);
+    return`<div class="card" style="margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span style="font-size:22px">🎤</span>
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <strong style="font-size:15px">${a.title}</strong>
+            <span class="badge ${tc[a.type]||'bgr'}">${types[a.type]||a.type}</span>
+          </div>
+        </div>
+        ${sub?'<span class="badge bg2">✅ Done</span>':''}
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:8px">${a.instructions||''}</p>
+      ${a.content?`<div style="background:#F9FAFB;border-radius:var(--rs);padding:.85rem;font-size:14px;white-space:pre-line;margin-bottom:12px;line-height:1.7;border-left:3px solid var(--g)">${a.content}</div>`:''}
+      ${sub?.audio_url?`<div style="margin-bottom:8px"><p style="font-size:12px;color:var(--muted);margin-bottom:4px">Your recording:</p><audio controls src="${sub.audio_url}" style="width:100%"></audio></div>`:''}
+      ${sub?.feedback?`<div style="background:var(--gl);border-radius:var(--rs);padding:.75rem;margin-bottom:8px"><p style="font-size:13px;color:var(--gd)">💬 Teacher feedback: ${sub.feedback}</p></div>`:''}
+      <div id="recorder-${a.id}">
+        ${!sub?`<button class="bp" onclick="startRecording('${a.id}')" id="rec-btn-${a.id}" style="width:100%;padding:11px">🎤 Start Recording</button>`:`<button class="bs" onclick="startRecording('${a.id}')" id="rec-btn-${a.id}" style="width:100%;padding:11px">🔄 Record Again</button>`}
+        <div id="rec-status-${a.id}" style="text-align:center;font-size:13px;color:var(--muted);margin-top:6px"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function startRecording(activityId){
+  if(currentStream){currentStream.getTracks().forEach(t=>t.stop())}
+  currentActivityId=activityId;
+  audioChunks=[];
+  const btn=document.getElementById('rec-btn-'+activityId);
+  const status=document.getElementById('rec-status-'+activityId);
+  try{
+    currentStream=await navigator.mediaDevices.getUserMedia({audio:true});
+    mediaRecorder=new MediaRecorder(currentStream);
+    mediaRecorder.ondataavailable=e=>audioChunks.push(e.data);
+    mediaRecorder.onstop=()=>uploadAudio(activityId);
+    mediaRecorder.start();
+    btn.textContent='⏹ Stop Recording';
+    btn.onclick=()=>stopRecording(activityId);
+    btn.style.background='var(--re)';
+    status.textContent='🔴 Recording... click Stop when done';
+  } catch(e){
+    status.textContent='❌ Microphone access denied. Please allow microphone in your browser.';
+  }
+}
+
+function stopRecording(activityId){
+  if(mediaRecorder&&mediaRecorder.state!=='inactive'){
+    mediaRecorder.stop();
+    currentStream.getTracks().forEach(t=>t.stop());
+  }
+  const btn=document.getElementById('rec-btn-'+activityId);
+  const status=document.getElementById('rec-status-'+activityId);
+  btn.textContent='⏳ Uploading...';
+  btn.disabled=true;
+  status.textContent='Saving your recording...';
+}
+
+async function uploadAudio(activityId){
+  const blob=new Blob(audioChunks,{type:'audio/webm'});
+  const fileName=activityId+'-'+CU.id+'-'+Date.now()+'.webm';
+  const status=document.getElementById('rec-status-'+activityId);
+  const {data,error}=await sb.storage.from('audio').upload(fileName,blob,{contentType:'audio/webm',upsert:true});
+  if(error){status.textContent='❌ Error saving: '+error.message;return}
+  const {data:urlData}=sb.storage.from('audio').getPublicUrl(fileName);
+  const audioUrl=urlData.publicUrl;
+  // Check if already submitted
+  const {data:existing}=await sb.from('speaking_submissions').select('id').eq('activity_id',activityId).eq('student_id',CU.id);
+  if(existing?.length){
+    await sb.from('speaking_submissions').update({audio_url:audioUrl,feedback:null}).eq('id',existing[0].id);
+  } else {
+    await sb.from('speaking_submissions').insert({activity_id:activityId,student_id:CU.id,audio_url:audioUrl});
+  }
+  renderStudentSpeaking();
 }
 
 </script>
