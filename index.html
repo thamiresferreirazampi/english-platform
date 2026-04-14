@@ -4,298 +4,151 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>English Platform — Thamires</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-// VIDEO
-function generateRoomName(){
-  return 'englishplatform-'+Math.random().toString(36).slice(2,10);
-}
-
-function renderTeacherVideo(){
-  // just show the static UI, already in HTML
-}
-
-async function startLiveSession(){
-  // End any existing session first
-  await sb.from('live_sessions').update({is_active:false}).eq('is_active',true);
-  const roomName=generateRoomName();
-  await sb.from('live_sessions').insert({room_name:roomName,is_active:true});
-  showTeacherRoom(roomName);
-}
-
-function showTeacherRoom(roomName){
-  const wrap=document.getElementById('teacher-video-frame');
-  wrap.innerHTML=`
-    <div class="card" style="padding:1rem">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
-        <div><span class="badge br2" style="margin-right:8px">● AO VIVO</span><strong>Sala ativa</strong></div>
-        <button class="bd bsm" onclick="endLiveSession()">Encerrar aula</button>
-      </div>
-      <iframe src="https://meet.jit.si/${roomName}" allow="camera; microphone; fullscreen; display-capture" style="width:100%;height:500px;border:none;border-radius:var(--rs)"></iframe>
-    </div>`;
-  // hide start button
-  document.querySelector('#teacher-video-wrap .card:first-child').style.display='none';
-}
-
-async function endLiveSession(){
-  if(!confirm('Encerrar a aula ao vivo?'))return;
-  await sb.from('live_sessions').update({is_active:false}).eq('is_active',true);
-  document.getElementById('teacher-video-frame').innerHTML='';
-  document.querySelector('#teacher-video-wrap .card:first-child').style.display='block';
-}
-
-async function renderStudentVideo(){
-  const el=document.getElementById('student-video-wrap');
-  el.innerHTML='<p style="color:var(--muted);padding:1rem">Verificando aula ao vivo...</p>';
-  const {data}=await sb.from('live_sessions').select('*').eq('is_active',true).order('started_at',{ascending:false}).limit(1);
-  if(!data?.length){
-    el.innerHTML=`<div class="card" style="text-align:center;padding:2.5rem 1.5rem">
-      <div style="font-size:48px;margin-bottom:1rem">📡</div>
-      <h3 style="font-size:17px;font-weight:600;margin-bottom:.5rem">No live class right now</h3>
-      <p style="font-size:14px;color:var(--muted)">Your teacher will start a class soon. Come back here to join!</p>
-      <button class="bs bsm" style="margin-top:1rem" onclick="renderStudentVideo()">🔄 Refresh</button>
-    </div>`;
-    return;
-  }
-  const session=data[0];
-  el.innerHTML=`
-    <div class="card" style="padding:1rem">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem">
-        <span class="badge br2">● LIVE</span>
-        <strong>Your teacher is live! Join now</strong>
-        <button class="bs bsm" style="margin-left:auto" onclick="renderStudentVideo()">🔄</button>
-      </div>
-      <iframe src="https://meet.jit.si/${session.room_name}" allow="camera; microphone; fullscreen; display-capture" style="width:100%;height:500px;border:none;border-radius:var(--rs)"></iframe>
-    </div>`;
-}
-
-
-// SPEAKING
-let mediaRecorder=null, audioChunks=[], currentActivityId=null, currentStream=null;
-
-async function saveSpeakingActivity(){
-  const title=document.getElementById('sp-title').value.trim();
-  if(!title)return alert('Preencha o título.');
-  await sb.from('speaking_activities').insert({
-    title,
-    type:document.getElementById('sp-type').value,
-    instructions:document.getElementById('sp-instructions').value,
-    content:document.getElementById('sp-content').value
-  });
-  ['sp-title','sp-instructions','sp-content'].forEach(x=>document.getElementById(x).value='');
-  closeM('msp');renderTeacherSpeaking();
-}
-
-async function renderTeacherSpeaking(){
-  const el=document.getElementById('speaking-list-teacher');
-  el.innerHTML='<p style="color:var(--muted);padding:1rem">Carregando...</p>';
-  const {data:activities}=await sb.from('speaking_activities').select('*').order('created_at');
-  const {data:subs}=await sb.from('speaking_submissions').select('*,profiles(full_name)');
-  if(!activities?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🎤</div><p>Nenhuma atividade criada ainda.</p></div>';return}
-  const types={read_aloud:'Leitura',answer_question:'Pergunta',describe:'Livre',repeat:'Shadowing'};
-  const tc={read_aloud:'bg2',answer_question:'bb',describe:'ba',repeat:'bgr'};
-  el.innerHTML=activities.map(a=>{
-    const mySubs=(subs||[]).filter(s=>s.activity_id===a.id);
-    return`<div class="card">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
-        <div style="flex:1">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-            <strong>${a.title}</strong>
-            <span class="badge ${tc[a.type]||'bgr'}">${types[a.type]||a.type}</span>
-          </div>
-          <p style="font-size:13px;color:var(--muted);margin-bottom:8px">${a.instructions||''}</p>
-          ${a.content?`<div style="background:#F9FAFB;border-radius:var(--rs);padding:.75rem;font-size:13px;white-space:pre-line;margin-bottom:8px">${a.content}</div>`:''}
-          ${mySubs.length?mySubs.map(sub=>`
-            <div style="background:var(--gl);border-radius:var(--rs);padding:.75rem;margin-top:6px">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-                <strong style="font-size:13px;color:var(--gd)">${sub.profiles?.full_name||'Aluno'}</strong>
-                ${sub.feedback?`<span class="badge bg2">Corrigido</span>`:`<span class="badge ba">Pendente</span>`}
-              </div>
-              ${sub.audio_url?`<audio controls src="${sub.audio_url}" style="width:100%;margin-bottom:8px"></audio>`:''}
-              ${!sub.feedback?`<div style="display:flex;gap:8px;margin-top:6px">
-                <input type="text" id="fb-${sub.id}" placeholder="Deixe um feedback..." style="flex:1;font-size:13px">
-                <button class="bp bsm" onclick="saveSpeakingFeedback('${sub.id}')">Enviar</button>
-              </div>`:`<p style="font-size:13px;color:var(--gd)">💬 ${sub.feedback}</p>`}
-            </div>`).join(''):'<p style="font-size:13px;color:var(--muted)">Nenhuma resposta ainda.</p>'}
-        </div>
-        <button class="bd bsm" onclick="delItem('speaking_activities','${a.id}',renderTeacherSpeaking)">✕</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-async function saveSpeakingFeedback(subId){
-  const fb=document.getElementById('fb-'+subId).value.trim();
-  if(!fb)return alert('Escreva um feedback.');
-  await sb.from('speaking_submissions').update({feedback:fb}).eq('id',subId);
-  renderTeacherSpeaking();
-}
-
-async function renderStudentSpeaking(){
-  const el=document.getElementById('speaking-list-student');
-  el.innerHTML='<p style="color:var(--muted);padding:1rem">Loading...</p>';
-  const {data:activities}=await sb.from('speaking_activities').select('*').order('created_at');
-  const {data:mySubs}=await sb.from('speaking_submissions').select('*').eq('student_id',CU.id);
-  if(!activities?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🎤</div><p>No speaking activities yet.</p></div>';return}
-  const types={read_aloud:'Read Aloud',answer_question:'Answer the Question',describe:'Speak Freely',repeat:'Shadowing'};
-  const tc={read_aloud:'bg2',answer_question:'bb',describe:'ba',repeat:'bgr'};
-  el.innerHTML=activities.map(a=>{
-    const sub=(mySubs||[]).find(s=>s.activity_id===a.id);
-    return`<div class="card" style="margin-bottom:12px">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-        <span style="font-size:22px">🎤</span>
-        <div style="flex:1">
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <strong style="font-size:15px">${a.title}</strong>
-            <span class="badge ${tc[a.type]||'bgr'}">${types[a.type]||a.type}</span>
-          </div>
-        </div>
-        ${sub?'<span class="badge bg2">✅ Done</span>':''}
-      </div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:8px">${a.instructions||''}</p>
-      ${a.content?`<div style="background:#F9FAFB;border-radius:var(--rs);padding:.85rem;font-size:14px;white-space:pre-line;margin-bottom:12px;line-height:1.7;border-left:3px solid var(--g)">${a.content}</div>`:''}
-      ${sub?.audio_url?`<div style="margin-bottom:8px"><p style="font-size:12px;color:var(--muted);margin-bottom:4px">Your recording:</p><audio controls src="${sub.audio_url}" style="width:100%"></audio></div>`:''}
-      ${sub?.feedback?`<div style="background:var(--gl);border-radius:var(--rs);padding:.75rem;margin-bottom:8px"><p style="font-size:13px;color:var(--gd)">💬 Teacher feedback: ${sub.feedback}</p></div>`:''}
-      <div id="recorder-${a.id}">
-        ${!sub?`<button class="bp" onclick="startRecording('${a.id}')" id="rec-btn-${a.id}" style="width:100%;padding:11px">🎤 Start Recording</button>`:`<button class="bs" onclick="startRecording('${a.id}')" id="rec-btn-${a.id}" style="width:100%;padding:11px">🔄 Record Again</button>`}
-        <div id="rec-status-${a.id}" style="text-align:center;font-size:13px;color:var(--muted);margin-top:6px"></div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-async function startRecording(activityId){
-  if(currentStream){currentStream.getTracks().forEach(t=>t.stop())}
-  currentActivityId=activityId;
-  audioChunks=[];
-  const btn=document.getElementById('rec-btn-'+activityId);
-  const status=document.getElementById('rec-status-'+activityId);
-  try{
-    currentStream=await navigator.mediaDevices.getUserMedia({audio:true});
-    mediaRecorder=new MediaRecorder(currentStream);
-    mediaRecorder.ondataavailable=e=>audioChunks.push(e.data);
-    mediaRecorder.onstop=()=>uploadAudio(activityId);
-    mediaRecorder.start();
-    btn.textContent='⏹ Stop Recording';
-    btn.onclick=()=>stopRecording(activityId);
-    btn.style.background='var(--re)';
-    status.textContent='🔴 Recording... click Stop when done';
-  } catch(e){
-    status.textContent='❌ Microphone access denied. Please allow microphone in your browser.';
-  }
-}
-
-function stopRecording(activityId){
-  if(mediaRecorder&&mediaRecorder.state!=='inactive'){
-    mediaRecorder.stop();
-    currentStream.getTracks().forEach(t=>t.stop());
-  }
-  const btn=document.getElementById('rec-btn-'+activityId);
-  const status=document.getElementById('rec-status-'+activityId);
-  btn.textContent='⏳ Uploading...';
-  btn.disabled=true;
-  status.textContent='Saving your recording...';
-}
-
-async function uploadAudio(activityId){
-  const blob=new Blob(audioChunks,{type:'audio/webm'});
-  const fileName=activityId+'-'+CU.id+'-'+Date.now()+'.webm';
-  const status=document.getElementById('rec-status-'+activityId);
-  const {data,error}=await sb.storage.from('audio').upload(fileName,blob,{contentType:'audio/webm',upsert:true});
-  if(error){status.textContent='❌ Error saving: '+error.message;return}
-  const {data:urlData}=sb.storage.from('audio').getPublicUrl(fileName);
-  const audioUrl=urlData.publicUrl;
-  // Check if already submitted
-  const {data:existing}=await sb.from('speaking_submissions').select('id').eq('activity_id',activityId).eq('student_id',CU.id);
-  if(existing?.length){
-    await sb.from('speaking_submissions').update({audio_url:audioUrl,feedback:null}).eq('id',existing[0].id);
-  } else {
-    await sb.from('speaking_submissions').insert({activity_id:activityId,student_id:CU.id,audio_url:audioUrl});
-  }
-  renderStudentSpeaking();
-}
-
-</script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--g:#1D9E75;--gl:#E1F5EE;--gd:#0F6E56;--am:#BA7517;--al:#FAEEDA;--re:#A32D2D;--rl:#FCEBEB;--bl:#185FA5;--bll:#E6F1FB;--bg:#F7F8FA;--card:#fff;--border:#E5E7EB;--text:#111827;--muted:#6B7280;--r:12px;--rs:8px}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:15px;min-height:100vh}
-input,select,textarea{font-family:inherit;font-size:14px;padding:9px 13px;border:1.5px solid var(--border);border-radius:var(--rs);width:100%;background:#fff;color:var(--text);outline:none;transition:border-color .15s}
-input:focus,select:focus,textarea:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(29,158,117,.1)}
-input[type="file"]{padding:6px}
-textarea{resize:vertical;min-height:80px}
-button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);padding:9px 18px;font-size:14px;font-weight:500;transition:all .15s}
-.bp{background:var(--g);color:#fff}.bp:hover{background:var(--gd)}
-.bs{background:#fff;border:1.5px solid var(--border);color:var(--text)}.bs:hover{background:var(--bg)}
-.bd{background:var(--rl);color:var(--re);border:1.5px solid #FCA5A5}
-.bsm{padding:6px 12px;font-size:13px}
-.card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:1.1rem 1.35rem;margin-bottom:10px}
-.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500}
-.bg2{background:var(--gl);color:var(--gd)}.ba{background:var(--al);color:var(--am)}.br2{background:var(--rl);color:var(--re)}.bb{background:var(--bll);color:var(--bl)}.bgr{background:#F3F4F6;color:var(--muted)}
+:root{
+  --primary:#7C3AED;
+  --primary-dark:#5B21B6;
+  --primary-light:#A78BFA;
+  --primary-soft:#EDE9FE;
+  --accent:#D4A574;
+  --accent-light:#F5EBE0;
+  --success:#059669;
+  --success-light:#D1FAE5;
+  --warning:#D97706;
+  --warning-light:#FEF3C7;
+  --danger:#DC2626;
+  --danger-light:#FEE2E2;
+  --info:#0284C7;
+  --info-light:#E0F2FE;
+  --bg:#FAFAFA;
+  --bg-warm:#F8F6F4;
+  --card:#FFFFFF;
+  --border:#E8E4E0;
+  --border-light:#F0ECE8;
+  --text:#1F1F1F;
+  --text-secondary:#6B6B6B;
+  --text-muted:#9CA3AF;
+  --r:16px;
+  --rs:10px;
+  --shadow-sm:0 2px 8px rgba(124,58,237,.06);
+  --shadow-md:0 8px 24px rgba(124,58,237,.1);
+  --shadow-lg:0 16px 48px rgba(124,58,237,.12);
+  --gradient-primary:linear-gradient(135deg,#7C3AED 0%,#A78BFA 100%);
+  --gradient-soft:linear-gradient(180deg,#FAFAFA 0%,#F3F0FF 100%);
+  --gradient-card:linear-gradient(145deg,#FFFFFF 0%,#FDFCFF 100%)
+}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);font-size:15px;min-height:100vh;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:'Cormorant Garamond',serif;font-weight:600;line-height:1.3}
+input,select,textarea{font-family:'Outfit',sans-serif;font-size:14px;padding:12px 16px;border:1.5px solid var(--border);border-radius:var(--rs);width:100%;background:#fff;color:var(--text);outline:none;transition:all .25s ease}
+input:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(124,58,237,.1)}
+input::placeholder,textarea::placeholder{color:var(--text-muted)}
+input[type="file"]{padding:10px 12px}
+textarea{resize:vertical;min-height:90px}
+button{font-family:'Outfit',sans-serif;cursor:pointer;border:none;border-radius:var(--rs);padding:12px 24px;font-size:14px;font-weight:500;transition:all .25s ease;letter-spacing:.01em}
+.bp{background:var(--gradient-primary);color:#fff;box-shadow:var(--shadow-sm)}.bp:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.bs{background:#fff;border:1.5px solid var(--border);color:var(--text)}.bs:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-soft)}
+.bd{background:var(--danger-light);color:var(--danger);border:1.5px solid #FECACA}.bd:hover{background:#FEE2E2}
+.bsm{padding:8px 16px;font-size:13px}
+.card{background:var(--gradient-card);border:1px solid var(--border-light);border-radius:var(--r);padding:1.5rem;margin-bottom:12px;box-shadow:var(--shadow-sm);transition:all .25s ease}
+.card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;letter-spacing:.02em}
+.bg2{background:var(--success-light);color:var(--success)}.ba{background:var(--warning-light);color:var(--warning)}.br2{background:var(--danger-light);color:var(--danger)}.bb{background:var(--info-light);color:var(--info)}.bgr{background:#F3F4F6;color:var(--text-secondary)}.bpr{background:var(--primary-soft);color:var(--primary)}
 .screen{display:none}.screen.active{display:block}
-.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:flex-start;justify-content:center;padding-top:40px;overflow-y:auto}.mo.active{display:flex}
-.mbox{background:#fff;border-radius:var(--r);padding:1.75rem;width:94%;max-width:520px;margin-bottom:40px}
-.mbox h3{font-size:17px;font-weight:600;margin-bottom:1.1rem;padding-bottom:.85rem;border-bottom:1.5px solid var(--border)}
-.fg{margin-bottom:13px}.fg label{display:block;font-size:13px;font-weight:500;color:var(--muted);margin-bottom:5px}
-.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.tl{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
-.sb{background:#fff;border-right:1.5px solid var(--border);display:flex;flex-direction:column}
-.sb-brand{padding:1.1rem 1.35rem;border-bottom:1.5px solid var(--border)}
-.logo-wrap{display:flex;align-items:center;gap:10px}
-.logo{width:34px;height:34px;background:var(--g);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.logo span{color:#fff;font-weight:700;font-size:14px}
-.sb-brand strong{font-size:15px;font-weight:600;display:block;margin-top:4px}
-.sb-brand p{font-size:12px;color:var(--muted)}
-.ni{display:flex;align-items:center;gap:10px;padding:9px 1.35rem;font-size:14px;cursor:pointer;color:var(--muted);border-left:3px solid transparent;transition:all .15s}
-.ni:hover{background:#F9FAFB;color:var(--text)}.ni.active{color:var(--g);background:var(--gl);border-left-color:var(--g);font-weight:500}
-.sb-nav{flex:1;padding:.6rem 0}.sb-foot{border-top:1.5px solid var(--border);padding:.5rem 0}
-.mc{padding:1.75rem;background:var(--bg)}
-.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.35rem}
-.ph h2{font-size:20px;font-weight:600}
-.es{text-align:center;padding:3.5rem 1rem;color:var(--muted)}
-.lw{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem;background:var(--bg)}
-.lc{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:2.25rem;width:100%;max-width:390px;box-shadow:0 8px 32px rgba(0,0,0,.08)}
-.lc h2{text-align:center;font-size:20px;font-weight:600;margin-bottom:.25rem}
-.lc .sub{text-align:center;font-size:13px;color:var(--muted);margin-bottom:1.75rem}
-.lbtn{background:none;border:none;color:var(--g);cursor:pointer;font-size:13px;text-decoration:underline;padding:0;font-family:inherit}
-.emsg{background:var(--rl);color:var(--re);border-radius:var(--rs);padding:9px 13px;font-size:13px;margin-bottom:12px}
-.smsg{background:var(--gl);color:var(--gd);border-radius:var(--rs);padding:9px 13px;font-size:13px;margin-bottom:12px}
-.sh{background:#fff;border-bottom:1.5px solid var(--border);padding:.85rem 1.35rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.mo{display:none;position:fixed;inset:0;background:rgba(31,31,31,.6);backdrop-filter:blur(4px);z-index:200;align-items:flex-start;justify-content:center;padding-top:48px;overflow-y:auto}.mo.active{display:flex}
+.mbox{background:#fff;border-radius:var(--r);padding:2rem;width:94%;max-width:540px;margin-bottom:48px;box-shadow:var(--shadow-lg);animation:slideUp .3s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.mbox h3{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border-light);color:var(--primary-dark)}
+.fg{margin-bottom:16px}.fg label{display:block;font-size:13px;font-weight:500;color:var(--text-secondary);margin-bottom:6px;letter-spacing:.02em}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tl{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+.sb{background:linear-gradient(180deg,#7C3AED 0%,#5B21B6 100%);display:flex;flex-direction:column;position:relative;overflow:hidden}
+.sb::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none}
+.sb-brand{padding:1.75rem;border-bottom:1px solid rgba(255,255,255,.1);position:relative}
+.logo-wrap{display:flex;align-items:center;gap:14px}
+.logo{width:48px;height:48px;background:rgba(255,255,255,.15);backdrop-filter:blur(8px);border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid rgba(255,255,255,.2)}
+.logo span{color:#fff;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:18px}
+.sb-brand strong{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;display:block;color:#fff;margin-bottom:2px}
+.sb-brand p{font-size:12px;color:rgba(255,255,255,.7);font-weight:400}
+.ni{display:flex;align-items:center;gap:12px;padding:14px 1.75rem;font-size:14px;cursor:pointer;color:rgba(255,255,255,.75);border-left:3px solid transparent;transition:all .2s ease;position:relative;font-weight:400}
+.ni:hover{background:rgba(255,255,255,.08);color:#fff}
+.ni.active{color:#fff;background:rgba(255,255,255,.12);border-left-color:#fff;font-weight:500}
+.ni.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:24px;background:#fff;border-radius:0 2px 2px 0}
+.sb-nav{flex:1;padding:1rem 0}.sb-foot{border-top:1px solid rgba(255,255,255,.1);padding:.75rem 0}
+.mc{padding:2rem 2.5rem;background:var(--gradient-soft);min-height:100vh}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.75rem}
+.ph h2{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--text)}
+.es{text-align:center;padding:4rem 1.5rem;color:var(--text-secondary)}
+.es p{margin-top:8px}
+.lw{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;background:linear-gradient(135deg,#F5F3FF 0%,#EDE9FE 50%,#E0E7FF 100%);position:relative;overflow:hidden}
+.lw::before{content:'';position:absolute;width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,.08) 0%,transparent 70%);top:-200px;right:-200px}
+.lw::after{content:'';position:absolute;width:400px;height:400px;background:radial-gradient(circle,rgba(167,139,250,.1) 0%,transparent 70%);bottom:-100px;left:-100px}
+.lc{background:#fff;border-radius:var(--r);padding:2.75rem;width:100%;max-width:420px;box-shadow:var(--shadow-lg);position:relative;z-index:1}
+.lc h2{font-family:'Cormorant Garamond',serif;text-align:center;font-size:28px;font-weight:600;margin-bottom:4px;color:var(--text)}
+.lc .sub{text-align:center;font-size:14px;color:var(--text-secondary);margin-bottom:2rem}
+.lbtn{background:none;border:none;color:var(--primary);cursor:pointer;font-size:13px;font-weight:500;padding:0;font-family:'Outfit',sans-serif;transition:color .2s}
+.lbtn:hover{color:var(--primary-dark);text-decoration:underline}
+.emsg{background:var(--danger-light);color:var(--danger);border-radius:var(--rs);padding:12px 16px;font-size:13px;margin-bottom:16px;border:1px solid #FECACA}
+.smsg{background:var(--success-light);color:var(--success);border-radius:var(--rs);padding:12px 16px;font-size:13px;margin-bottom:16px;border:1px solid #86EFAC}
+.sh{background:#fff;border-bottom:1px solid var(--border-light);padding:1rem 1.75rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 2px 12px rgba(0,0,0,.03)}
 .sn{display:flex;gap:4px;flex-wrap:wrap}
-.sn button{background:transparent;border:none;padding:7px 12px;border-radius:var(--rs);font-size:13px;color:var(--muted);font-family:inherit}
-.sn button.active{background:var(--gl);color:var(--gd);font-weight:500}
-.sm3{padding:1.35rem;max-width:680px;margin:0 auto}
-.hc{background:linear-gradient(135deg,#1D9E75,#0F6E56);border-radius:var(--r);padding:1.5rem 1.75rem;color:#fff;margin-bottom:1.1rem}
-.hc h3{font-size:22px;font-weight:600;margin-bottom:3px}
-.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.1rem}
-.sc{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:1rem;text-align:center}
-.sc .num{font-size:26px;font-weight:600;color:var(--g)}.sc .lbl{font-size:12px;color:var(--muted);margin-top:2px}
-.ir{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:8px;display:flex;align-items:center;gap:12px}
-.irc{flex:1}.irc strong{font-size:14px;font-weight:500;display:block;margin-bottom:3px}.irc p{font-size:13px;color:var(--muted)}
-.div{height:1.5px;background:var(--border);margin:1.1rem 0}
-.qb{background:#F9FAFB;border:1.5px solid var(--border);border-radius:var(--r);padding:1.1rem;margin-bottom:.85rem}
-.qb p{font-size:14px;font-weight:500;margin-bottom:.75rem}
-.ol{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--rs);border:1.5px solid var(--border);margin-bottom:6px;cursor:pointer;font-size:14px;transition:all .15s;background:#fff}
-.ol:hover{border-color:var(--g)}.ol.sel{border-color:var(--g);background:var(--gl)}.ol input{width:auto;margin:0}
-.ri{display:flex;gap:12px;align-items:flex-start;padding:.9rem 1.1rem;border-radius:var(--r);margin-bottom:8px}
-.rc{background:#DCFCE7;border:1px solid #86EFAC}.rw{background:#FEE2E2;border:1px solid #FCA5A5}.rp{background:#FEF9C3;border:1px solid #FDE047}
-.pb{background:#E5E7EB;border-radius:20px;height:8px;overflow:hidden;margin-top:6px}
-.pbi{background:var(--g);height:100%;border-radius:20px}
-.fe{display:flex;justify-content:flex-end;gap:8px;margin-top:1.1rem;padding-top:1rem;border-top:1.5px solid var(--border)}
-.ac{display:flex;align-items:center;gap:9px;padding:7px 0;font-size:14px;cursor:pointer;border-bottom:1px solid #F3F4F6}
-.ac:last-child{border-bottom:none}.ac input{width:auto}
-.chat-box{display:flex;flex-direction:column;height:480px;border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;background:#fff}
-.chat-header{padding:.75rem 1rem;border-bottom:1.5px solid var(--border);background:var(--gl)}
-.chat-msgs{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:8px}
-.chat-input{padding:.75rem;border-top:1.5px solid var(--border);display:flex;gap:8px}
+.sn button{background:transparent;border:none;padding:10px 16px;border-radius:var(--rs);font-size:13px;color:var(--text-secondary);font-family:'Outfit',sans-serif;transition:all .2s;font-weight:400}
+.sn button:hover{color:var(--primary);background:var(--primary-soft)}
+.sn button.active{background:var(--gradient-primary);color:#fff;font-weight:500;box-shadow:var(--shadow-sm)}
+.sm3{padding:2rem;max-width:720px;margin:0 auto}
+.hc{background:var(--gradient-primary);border-radius:var(--r);padding:2rem 2.25rem;color:#fff;margin-bottom:1.5rem;position:relative;overflow:hidden;box-shadow:var(--shadow-md)}
+.hc::before{content:'';position:absolute;top:-50%;right:-20%;width:300px;height:300px;background:radial-gradient(circle,rgba(255,255,255,.1) 0%,transparent 70%);pointer-events:none}
+.hc h3{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;margin-bottom:4px;position:relative}
+.hc p{position:relative}
+.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:1.5rem}
+.sc{background:#fff;border:1px solid var(--border-light);border-radius:var(--r);padding:1.25rem;text-align:center;transition:all .25s ease;box-shadow:var(--shadow-sm)}
+.sc:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.sc .num{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:var(--primary)}.sc .lbl{font-size:12px;color:var(--text-secondary);margin-top:4px;text-transform:uppercase;letter-spacing:.05em}
+.ir{background:#fff;border:1px solid var(--border-light);border-radius:var(--r);padding:1.25rem 1.5rem;margin-bottom:10px;display:flex;align-items:center;gap:16px;transition:all .25s ease;box-shadow:var(--shadow-sm)}
+.ir:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.irc{flex:1}.irc strong{font-size:15px;font-weight:500;display:block;margin-bottom:4px;color:var(--text)}.irc p{font-size:13px;color:var(--text-secondary)}
+.div{height:1px;background:var(--border-light);margin:1.5rem 0}
+.qb{background:var(--bg-warm);border:1px solid var(--border-light);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem}
+.qb p{font-size:15px;font-weight:500;margin-bottom:1rem;color:var(--text)}
+.ol{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:var(--rs);border:1.5px solid var(--border);margin-bottom:8px;cursor:pointer;font-size:14px;transition:all .2s;background:#fff}
+.ol:hover{border-color:var(--primary-light);background:var(--primary-soft)}.ol.sel{border-color:var(--primary);background:var(--primary-soft)}.ol input{width:auto;margin:0;accent-color:var(--primary)}
+.ri{display:flex;gap:14px;align-items:flex-start;padding:1rem 1.25rem;border-radius:var(--r);margin-bottom:10px}
+.rc{background:var(--success-light);border:1px solid #86EFAC}.rw{background:var(--danger-light);border:1px solid #FECACA}.rp{background:var(--warning-light);border:1px solid #FDE047}
+.pb{background:#E5E7EB;border-radius:20px;height:8px;overflow:hidden;margin-top:8px}
+.pbi{background:var(--gradient-primary);height:100%;border-radius:20px;transition:width .5s ease}
+.fe{display:flex;justify-content:flex-end;gap:10px;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border-light)}
+.ac{display:flex;align-items:center;gap:10px;padding:10px 0;font-size:14px;cursor:pointer;border-bottom:1px solid var(--border-light);transition:color .2s}
+.ac:last-child{border-bottom:none}.ac input{width:auto;accent-color:var(--primary)}.ac:hover{color:var(--primary)}
+.chat-box{display:flex;flex-direction:column;height:500px;border:1px solid var(--border-light);border-radius:var(--r);overflow:hidden;background:#fff;box-shadow:var(--shadow-sm)}
+.chat-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border-light);background:var(--primary-soft)}
+.chat-header strong{color:var(--primary-dark)}
+.chat-msgs{flex:1;overflow-y:auto;padding:1.25rem;display:flex;flex-direction:column;gap:10px;background:var(--bg-warm)}
+.chat-input{padding:1rem;border-top:1px solid var(--border-light);display:flex;gap:10px;background:#fff}
 .chat-input input{flex:1}
 .msg-me{display:flex;flex-direction:column;align-items:flex-end}
 .msg-other{display:flex;flex-direction:column;align-items:flex-start}
-.msg-bubble-me{max-width:75%;padding:8px 12px;border-radius:12px 12px 2px 12px;background:var(--g);color:#fff}
-.msg-bubble-other{max-width:75%;padding:8px 12px;border-radius:12px 12px 12px 2px;background:#F3F4F6;color:var(--text)}
-.msg-time{font-size:11px;color:var(--muted);margin-top:2px}
-.lesson-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:12px}
-.lesson-body{background:#F9FAFB;border-radius:var(--rs);padding:.85rem;font-size:13px;white-space:pre-line;color:var(--text);margin-top:8px;line-height:1.6}
+.msg-bubble-me{max-width:75%;padding:12px 16px;border-radius:16px 16px 4px 16px;background:var(--gradient-primary);color:#fff;box-shadow:var(--shadow-sm)}
+.msg-bubble-other{max-width:75%;padding:12px 16px;border-radius:16px 16px 16px 4px;background:#fff;color:var(--text);border:1px solid var(--border-light);box-shadow:var(--shadow-sm)}
+.msg-time{font-size:11px;color:var(--text-muted);margin-top:4px}
+.lesson-card{background:#fff;border:1px solid var(--border-light);border-radius:var(--r);padding:1.5rem;margin-bottom:14px;box-shadow:var(--shadow-sm);transition:all .25s ease}
+.lesson-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.lesson-body{background:var(--bg-warm);border-radius:var(--rs);padding:1rem;font-size:14px;white-space:pre-line;color:var(--text);margin-top:12px;line-height:1.7;border-left:3px solid var(--primary)}
+
+/* Animations */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.card,.lesson-card,.ir,.sc{animation:fadeIn .4s ease}
+
+/* Scrollbar styling */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--primary-light);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--primary)}
+
+/* Logo animation */
+.logo{animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 </style>
 </head>
 <body>
@@ -304,16 +157,16 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
 <div id="screen-login" class="screen active">
   <div class="lw">
     <div class="lc">
-      <div style="width:42px;height:42px;background:var(--g);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem"><span style="color:#fff;font-weight:700;font-size:16px">EP</span></div>
-      <h2 id="lt">Welcome back!</h2>
-      <p class="sub" id="ls">Log in to continue learning</p>
+      <div style="width:56px;height:56px;background:var(--gradient-primary);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;box-shadow:var(--shadow-md)"><span style="color:#fff;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:22px">E</span></div>
+      <h2 id="lt">Welcome back</h2>
+      <p class="sub" id="ls">Log in to continue your journey</p>
       <div id="lerr" class="emsg" style="display:none"></div>
       <div class="fg"><label>Email</label><input type="email" id="le" placeholder="your@email.com"></div>
       <div class="fg"><label>Password</label><input type="password" id="lp" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
-      <button class="bp" style="width:100%;padding:11px" onclick="doLogin()" id="lbtn">Login</button>
-      <div style="text-align:center;margin-top:14px;display:flex;flex-direction:column;gap:9px">
-        <span id="slnk" style="font-size:13px;color:var(--muted)">Don't have an account? <button class="lbtn" onclick="show('screen-signup')">Sign up</button></span>
-        <button class="lbtn" id="tgl" onclick="toggleTL()">Professor? Clique aqui</button>
+      <button class="bp" style="width:100%;padding:14px;font-size:15px" onclick="doLogin()" id="lbtn">Sign In</button>
+      <div style="text-align:center;margin-top:1.25rem;display:flex;flex-direction:column;gap:12px">
+        <span id="slnk" style="font-size:13px;color:var(--text-secondary)">Don't have an account? <button class="lbtn" onclick="show('screen-signup')">Sign up</button></span>
+        <button class="lbtn" id="tgl" onclick="toggleTL()" style="font-size:12px;color:var(--text-muted)">Professor? Clique aqui</button>
       </div>
     </div>
   </div>
@@ -323,7 +176,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
 <div id="screen-signup" class="screen">
   <div class="lw">
     <div class="lc">
-      <div style="width:42px;height:42px;background:var(--g);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem"><span style="color:#fff;font-weight:700;font-size:16px">EP</span></div>
+      <div style="width:56px;height:56px;background:var(--gradient-primary);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;box-shadow:var(--shadow-md)"><span style="color:#fff;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:22px">E</span></div>
       <h2>Create your account</h2>
       <p class="sub">Start learning English today</p>
       <div id="serr" class="emsg" style="display:none"></div>
@@ -332,8 +185,8 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
       <div class="fg"><label>Email</label><input type="email" id="se" placeholder="your@email.com"></div>
       <div class="fg"><label>Password</label><input type="password" id="sp" placeholder="At least 6 characters"></div>
       <div class="fg"><label>Confirm Password</label><input type="password" id="sp2" placeholder="Repeat password"></div>
-      <button class="bp" style="width:100%;padding:11px" onclick="doSignup()">Sign up</button>
-      <div style="text-align:center;margin-top:14px;font-size:13px;color:var(--muted)">Already have an account? <button class="lbtn" onclick="show('screen-login')">Login</button></div>
+      <button class="bp" style="width:100%;padding:14px;font-size:15px" onclick="doSignup()">Create Account</button>
+      <div style="text-align:center;margin-top:1.25rem;font-size:13px;color:var(--text-secondary)">Already have an account? <button class="lbtn" onclick="show('screen-login')">Sign in</button></div>
     </div>
   </div>
 </div>
@@ -343,7 +196,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
   <div class="tl">
     <div class="sb">
       <div class="sb-brand">
-        <div class="logo-wrap"><div class="logo"><span>EP</span></div><div><strong>English Platform</strong><p>Painel do Professor</p></div></div>
+        <div class="logo-wrap"><div class="logo"><span>E</span></div><div><strong>English Platform</strong><p>Painel do Professor</p></div></div>
       </div>
       <div class="sb-nav">
         <div class="ni active" onclick="tTab(this,'tc')"><span>📘</span>Conteúdos</div>
@@ -369,11 +222,11 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
       <div id="tv" class="tt2" style="display:none">
         <div class="ph"><h2>Aula ao Vivo</h2></div>
         <div id="teacher-video-wrap">
-          <div class="card" style="text-align:center;padding:2.5rem 1.5rem">
-            <div style="font-size:48px;margin-bottom:1rem">🎥</div>
-            <h3 style="font-size:18px;font-weight:600;margin-bottom:.5rem">Iniciar uma aula ao vivo</h3>
-            <p style="font-size:14px;color:var(--muted);margin-bottom:1.5rem">Clique para criar uma sala de vídeo. Seus alunos verão o botão para entrar automaticamente.</p>
-            <button class="bp" style="padding:12px 28px;font-size:15px" onclick="startLiveSession()">▶ Iniciar Aula</button>
+          <div class="card" style="text-align:center;padding:3rem 2rem">
+            <div style="font-size:56px;margin-bottom:1.25rem">🎥</div>
+            <h3 style="font-size:22px;font-weight:600;margin-bottom:.5rem;color:var(--text)">Iniciar uma aula ao vivo</h3>
+            <p style="font-size:14px;color:var(--text-secondary);margin-bottom:1.75rem;max-width:360px;margin-left:auto;margin-right:auto">Clique para criar uma sala de vídeo. Seus alunos verão o botão para entrar automaticamente.</p>
+            <button class="bp" style="padding:14px 36px;font-size:15px" onclick="startLiveSession()">▶ Iniciar Aula</button>
           </div>
           <div id="teacher-video-frame" style="margin-top:1rem"></div>
         </div>
@@ -385,9 +238,9 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
 <!-- STUDENT -->
 <div id="screen-student" class="screen">
   <div class="sh">
-    <div style="display:flex;align-items:center;gap:10px">
-      <div style="width:30px;height:30px;background:var(--g);border-radius:7px;display:flex;align-items:center;justify-content:center"><span style="color:#fff;font-weight:700;font-size:12px">EP</span></div>
-      <span style="font-weight:600;font-size:15px">English Platform</span>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:36px;height:36px;background:var(--gradient-primary);border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-sm)"><span style="color:#fff;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:14px">E</span></div>
+      <span style="font-family:'Cormorant Garamond',serif;font-weight:600;font-size:18px;color:var(--text)">English Platform</span>
     </div>
     <div class="sn">
       <button class="active" onclick="sTab(this,'sd')">Home</button>
@@ -403,29 +256,29 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
   </div>
   <div class="sm3">
     <div id="sd" class="st2">
-      <div class="hc"><p style="opacity:.8;font-size:13px;margin-bottom:4px">Welcome back!</p><h3 id="wn">Student</h3><p style="margin-top:6px;opacity:.75;font-size:14px">Keep up the great work! 🎯</p></div>
+      <div class="hc"><p style="opacity:.85;font-size:14px;margin-bottom:6px">Welcome back!</p><h3 id="wn">Student</h3><p style="margin-top:8px;opacity:.8;font-size:14px">Keep up the great work! ✨</p></div>
       <div class="sg">
         <div class="sc"><div class="num" id="st1">0</div><div class="lbl">tasks</div></div>
-        <div class="sc"><div class="num" id="st2">0</div><div class="lbl">tests available</div></div>
+        <div class="sc"><div class="num" id="st2">0</div><div class="lbl">tests</div></div>
         <div class="sc"><div class="num" id="st3">—</div><div class="lbl">avg score</div></div>
       </div>
     </div>
     <div id="sls" class="st2" style="display:none">
-      <h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">📚 Lessons</h2>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;margin-bottom:1.25rem">📚 Lessons</h2>
       <div id="student-lessons-list"></div>
     </div>
-    <div id="stk" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">📚 Your Tasks</h2><div id="tkl"></div></div>
-    <div id="sts" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">🧪 Your Tests</h2><div id="tsl"></div></div>
-    <div id="sp2" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">📈 Your Progress</h2><div id="prl"></div></div>
+    <div id="stk" class="st2" style="display:none"><h2 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;margin-bottom:1.25rem">📚 Your Tasks</h2><div id="tkl"></div></div>
+    <div id="sts" class="st2" style="display:none"><h2 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;margin-bottom:1.25rem">🧪 Your Tests</h2><div id="tsl"></div></div>
+    <div id="sp2" class="st2" style="display:none"><h2 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;margin-bottom:1.25rem">📈 Your Progress</h2><div id="prl"></div></div>
     <div id="sspk" class="st2" style="display:none">
-      <h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">🎤 Speaking Practice</h2>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;margin-bottom:1.25rem">🎤 Speaking Practice</h2>
       <div id="speaking-list-student"></div>
     </div>
     <div id="svd" class="st2" style="display:none">
-      <h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">🎥 Live Class</h2>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;margin-bottom:1.25rem">🎥 Live Class</h2>
       <div id="student-video-wrap"></div>
     </div>
-    <div id="sms" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">💬 Messages</h2><div id="student-chat-wrap"></div></div>
+    <div id="sms" class="st2" style="display:none"><h2 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;margin-bottom:1.25rem">💬 Messages</h2><div id="student-chat-wrap"></div></div>
   </div>
 </div>
 
@@ -433,16 +286,16 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
 <div id="screen-test" class="screen">
   <div class="sh">
     <button class="bs bsm" onclick="show('screen-student');sTab(null,'sts')">← Back</button>
-    <span id="ttn" style="font-weight:600;font-size:15px"></span><div></div>
+    <span id="ttn" style="font-family:'Cormorant Garamond',serif;font-weight:600;font-size:18px"></span><div></div>
   </div>
-  <div class="sm3"><div id="tqw"></div><button class="bp" style="width:100%;padding:13px;margin-top:1.1rem" onclick="submitTest()">Submit test ✓</button></div>
+  <div class="sm3"><div id="tqw"></div><button class="bp" style="width:100%;padding:14px;margin-top:1.5rem;font-size:15px" onclick="submitTest()">Submit test ✓</button></div>
 </div>
 
 <!-- RESULTS -->
 <div id="screen-results" class="screen">
   <div class="sh">
     <button class="bs bsm" onclick="show('screen-student');sTab(null,'sts')">← Tests</button>
-    <span style="font-weight:600;font-size:15px">Results</span><div></div>
+    <span style="font-family:'Cormorant Garamond',serif;font-weight:600;font-size:18px">Results</span><div></div>
   </div>
   <div class="sm3" id="rc2"></div>
 </div>
@@ -458,7 +311,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
     <div class="fg">
       <label>Anexar PDF (opcional)</label>
       <input type="file" id="cpdf" accept=".pdf">
-      <div id="cpdf-status" style="font-size:12px;color:var(--muted);margin-top:4px"></div>
+      <div id="cpdf-status" style="font-size:12px;color:var(--text-muted);margin-top:4px"></div>
     </div>
     <div class="fe"><button class="bs" onclick="closeM('mc2')">Cancelar</button><button class="bp" id="save-content-btn" onclick="saveContent()">Salvar</button></div>
   </div>
@@ -470,13 +323,13 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
     <div class="fg"><label>Nome</label><input type="text" id="tkname" placeholder="Ex: Week 1 — Verb to be"></div>
     <div class="fg"><label>Instruções</label><textarea id="tkins" rows="4"></textarea></div>
     <div class="fg"><label>Data de entrega</label><input type="date" id="tkdate"></div>
-    <div class="fg"><label>Atribuir para alunos</label><div id="tkasc" style="margin-top:6px;max-height:140px;overflow-y:auto;border:1.5px solid var(--border);border-radius:var(--rs);padding:4px 12px"></div></div>
+    <div class="fg"><label>Atribuir para alunos</label><div id="tkasc" style="margin-top:6px;max-height:160px;overflow-y:auto;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 16px"></div></div>
     <div class="fe"><button class="bs" onclick="closeM('mt')">Cancelar</button><button class="bp" onclick="saveTask()">Salvar</button></div>
   </div>
 </div>
 
 <div class="mo" id="mp">
-  <div class="mbox" style="max-width:560px">
+  <div class="mbox" style="max-width:580px">
     <h3>Nova Prova</h3>
     <div class="fg"><label>Nome</label><input type="text" id="pname" placeholder="Ex: Test 1 — Review"></div>
     <div class="fg"><label>Descrição</label><textarea id="pdesc" rows="2"></textarea></div>
@@ -484,12 +337,12 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
       <div class="fg"><label>Data</label><input type="date" id="pdate"></div>
       <div class="fg"><label>Tempo (min)</label><input type="number" id="ptime" placeholder="opcional"></div>
     </div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin:.85rem 0 .5rem">
-      <strong style="font-size:14px">Questões</strong>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin:1rem 0 .75rem">
+      <strong style="font-size:14px;color:var(--text)">Questões</strong>
       <button class="bs bsm" onclick="addQ()">+ Adicionar</button>
     </div>
     <div id="qed"></div>
-    <div class="fg" style="margin-top:10px"><label>Atribuir para alunos</label><div id="pasc" style="margin-top:6px;max-height:140px;overflow-y:auto;border:1.5px solid var(--border);border-radius:var(--rs);padding:4px 12px"></div></div>
+    <div class="fg" style="margin-top:12px"><label>Atribuir para alunos</label><div id="pasc" style="margin-top:6px;max-height:160px;overflow-y:auto;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 16px"></div></div>
     <div class="fe"><button class="bs" onclick="closeM('mp')">Cancelar</button><button class="bp" onclick="saveTest()">Salvar Prova</button></div>
   </div>
 </div>
@@ -513,7 +366,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
 </div>
 
 <div class="mo" id="mg">
-  <div class="mbox" style="max-width:560px">
+  <div class="mbox" style="max-width:580px">
     <h3>Corrigir Respostas Abertas</h3>
     <div id="gc"></div>
     <div class="fe"><button class="bs" onclick="closeM('mg')">Fechar</button><button class="bp" onclick="saveGrades()">Salvar Correção</button></div>
@@ -534,8 +387,8 @@ function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2
 // AUTH
 function toggleTL(){
   isTL=!isTL;
-  document.getElementById('lt').textContent=isTL?'Área do Professor':'Welcome back!';
-  document.getElementById('ls').textContent=isTL?'Faça login para gerenciar suas aulas':'Log in to continue learning';
+  document.getElementById('lt').textContent=isTL?'Área do Professor':'Welcome back';
+  document.getElementById('ls').textContent=isTL?'Faça login para gerenciar suas aulas':'Log in to continue your journey';
   document.getElementById('slnk').style.display=isTL?'none':'block';
   document.getElementById('tgl').textContent=isTL?'← Student login':'Professor? Clique aqui';
   document.getElementById('lerr').style.display='none';
@@ -557,7 +410,7 @@ async function doLogin(){
   }
   document.getElementById('lbtn').textContent='...';
   const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
-  document.getElementById('lbtn').textContent='Login';
+  document.getElementById('lbtn').textContent='Sign In';
   if(error){err.textContent='Invalid credentials.';err.style.display='block';return}
   const {data:profile}=await sb.from('profiles').select('*').eq('id',data.user.id).single();
   CU={id:data.user.id,name:profile?.full_name||email,email,role:'student'};
@@ -593,9 +446,9 @@ function closeM(id){document.getElementById(id).classList.remove('active')}
 
 async function renderAsc(cid){
   const el=document.getElementById(cid);
-  el.innerHTML='<p style="font-size:13px;color:var(--muted);padding:8px 0">Carregando...</p>';
+  el.innerHTML='<p style="font-size:13px;color:var(--text-muted);padding:8px 0">Carregando...</p>';
   const {data}=await sb.from('profiles').select('*').eq('role','student');
-  if(!data?.length){el.innerHTML='<p style="font-size:13px;color:var(--muted);padding:8px 0">Nenhum aluno cadastrado ainda.</p>';return}
+  if(!data?.length){el.innerHTML='<p style="font-size:13px;color:var(--text-muted);padding:8px 0">Nenhum aluno cadastrado ainda.</p>';return}
   el.innerHTML=data.map(s=>`<label class="ac"><input type="checkbox" value="${s.id}" name="asc"> ${s.full_name}</label>`).join('');
 }
 function getAsc(cid){return[...document.querySelectorAll(`#${cid} input[name="asc"]:checked`)].map(i=>i.value)}
@@ -667,52 +520,52 @@ function renderTeacher(){renderContents()}
 
 async function renderContents(){
   const el=document.getElementById('cl');
-  el.innerHTML='<p style="color:var(--muted);padding:1rem">Carregando...</p>';
+  el.innerHTML='<p style="color:var(--text-muted);padding:1rem">Carregando...</p>';
   const {data}=await sb.from('contents').select('*').order('created_at');
-  if(!data?.length){el.innerHTML='<div class="es"><div style="font-size:32px">📘</div><p>Nenhum conteúdo criado ainda.</p></div>';return}
+  if(!data?.length){el.innerHTML='<div class="es"><div style="font-size:40px">📘</div><p>Nenhum conteúdo criado ainda.</p></div>';return}
   const tb={text:'Texto',exercise:'Exercício',conversation:'Conversação'};
-  const tc={text:'bb',exercise:'ba',conversation:'bg2'};
-  el.innerHTML=data.map(c=>`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><strong>${c.title}</strong><span class="badge ${tc[c.type]||'bgr'}">${tb[c.type]||c.type}</span></div><p style="font-size:13px;color:var(--muted)">${c.description||''}</p>${c.file_url?`<a href="${c.file_url}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;margin-top:6px;font-size:13px;color:var(--bl);text-decoration:none">📄 Ver PDF</a>`:''}</div><button class="bd bsm" onclick="delItem('contents','${c.id}',renderContents)">✕</button></div></div>`).join('');
+  const tc={text:'bb',exercise:'ba',conversation:'bpr'};
+  el.innerHTML=data.map(c=>`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px"><div style="flex:1"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><strong style="font-size:16px">${c.title}</strong><span class="badge ${tc[c.type]||'bgr'}">${tb[c.type]||c.type}</span></div><p style="font-size:13px;color:var(--text-secondary)">${c.description||''}</p>${c.file_url?`<a href="${c.file_url}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:13px;color:var(--primary);text-decoration:none;font-weight:500">📄 Ver PDF</a>`:''}</div><button class="bd bsm" onclick="delItem('contents','${c.id}',renderContents)">✕</button></div></div>`).join('');
 }
 
 async function renderTasks(){
   const el=document.getElementById('tl2');
-  el.innerHTML='<p style="color:var(--muted);padding:1rem">Carregando...</p>';
+  el.innerHTML='<p style="color:var(--text-muted);padding:1rem">Carregando...</p>';
   const {data:tasks}=await sb.from('tasks').select('*').order('created_at');
   const {data:assigns}=await sb.from('task_assignments').select('task_id,student_id,profiles(full_name)');
-  if(!tasks?.length){el.innerHTML='<div class="es"><div style="font-size:32px">📝</div><p>Nenhuma tarefa criada ainda.</p></div>';return}
+  if(!tasks?.length){el.innerHTML='<div class="es"><div style="font-size:40px">📝</div><p>Nenhuma tarefa criada ainda.</p></div>';return}
   el.innerHTML=tasks.map(t=>{
-    const chips=(assigns||[]).filter(a=>a.task_id===t.id).map(a=>`<span class="badge bg2" style="margin-right:4px">${a.profiles?.full_name||''}</span>`).join('');
-    return`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><strong>${t.name}</strong>${t.due_date?`<span style="font-size:12px;color:var(--muted);margin-left:8px">📅 ${t.due_date}</span>`:''}<p style="font-size:13px;color:var(--muted);margin-top:4px">${t.instructions||''}</p><div style="margin-top:8px">${chips||'<span class="badge bgr">Sem alunos</span>'}</div></div><button class="bd bsm" onclick="delItem('tasks','${t.id}',renderTasks)">✕</button></div></div>`;
+    const chips=(assigns||[]).filter(a=>a.task_id===t.id).map(a=>`<span class="badge bpr" style="margin-right:4px">${a.profiles?.full_name||''}</span>`).join('');
+    return`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px"><div style="flex:1"><strong style="font-size:16px">${t.name}</strong>${t.due_date?`<span style="font-size:12px;color:var(--text-muted);margin-left:10px">📅 ${t.due_date}</span>`:''}<p style="font-size:13px;color:var(--text-secondary);margin-top:6px">${t.instructions||''}</p><div style="margin-top:10px">${chips||'<span class="badge bgr">Sem alunos</span>'}</div></div><button class="bd bsm" onclick="delItem('tasks','${t.id}',renderTasks)">✕</button></div></div>`;
   }).join('');
 }
 
 async function renderTests(){
   const el=document.getElementById('pl');
-  el.innerHTML='<p style="color:var(--muted);padding:1rem">Carregando...</p>';
+  el.innerHTML='<p style="color:var(--text-muted);padding:1rem">Carregando...</p>';
   const {data:tests}=await sb.from('tests').select('*').order('created_at');
   const {data:assigns}=await sb.from('test_assignments').select('test_id,student_id,profiles(full_name)');
   const {data:questions}=await sb.from('test_questions').select('test_id');
   const {data:subs}=await sb.from('test_submissions').select('test_id,needs_grade');
-  if(!tests?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🧪</div><p>Nenhuma prova criada ainda.</p></div>';return}
+  if(!tests?.length){el.innerHTML='<div class="es"><div style="font-size:40px">🧪</div><p>Nenhuma prova criada ainda.</p></div>';return}
   el.innerHTML=tests.map(t=>{
-    const chips=(assigns||[]).filter(a=>a.test_id===t.id).map(a=>`<span class="badge bg2" style="margin-right:4px">${a.profiles?.full_name||''}</span>`).join('');
+    const chips=(assigns||[]).filter(a=>a.test_id===t.id).map(a=>`<span class="badge bpr" style="margin-right:4px">${a.profiles?.full_name||''}</span>`).join('');
     const qCount=(questions||[]).filter(q=>q.test_id===t.id).length;
     const pend=(subs||[]).filter(s=>s.test_id===t.id&&s.needs_grade).length;
-    return`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><strong>${t.name}</strong>${pend?`<span class="badge ba">⏳ ${pend} pendente(s)</span>`:''}</div><p style="font-size:13px;color:var(--muted);margin-top:3px">${t.description||''}</p><div style="display:flex;gap:6px;margin-top:6px"><span class="badge bgr">${qCount} questão(ões)</span>${t.test_date?`<span class="badge bgr">📅 ${t.test_date}</span>`:''}</div><div style="margin-top:8px">${chips||'<span class="badge bgr">Sem alunos</span>'}</div></div><div style="display:flex;flex-direction:column;gap:6px">${pend?`<button class="bs bsm" onclick="openGrade('${t.id}')">Corrigir</button>`:''}<button class="bd bsm" onclick="delItem('tests','${t.id}',renderTests)">✕</button></div></div></div>`;
+    return`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px"><div style="flex:1"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><strong style="font-size:16px">${t.name}</strong>${pend?`<span class="badge ba">⏳ ${pend} pendente(s)</span>`:''}</div><p style="font-size:13px;color:var(--text-secondary);margin-top:5px">${t.description||''}</p><div style="display:flex;gap:8px;margin-top:8px"><span class="badge bgr">${qCount} questão(ões)</span>${t.test_date?`<span class="badge bgr">📅 ${t.test_date}</span>`:''}</div><div style="margin-top:10px">${chips||'<span class="badge bgr">Sem alunos</span>'}</div></div><div style="display:flex;flex-direction:column;gap:8px">${pend?`<button class="bs bsm" onclick="openGrade('${t.id}')">Corrigir</button>`:''}<button class="bd bsm" onclick="delItem('tests','${t.id}',renderTests)">✕</button></div></div></div>`;
   }).join('');
 }
 
 async function renderStudents(){
   const el=document.getElementById('sl2');
-  el.innerHTML='<p style="color:var(--muted);padding:1rem">Carregando...</p>';
+  el.innerHTML='<p style="color:var(--text-muted);padding:1rem">Carregando...</p>';
   const {data:students}=await sb.from('profiles').select('*').eq('role','student');
   const {data:subs}=await sb.from('test_submissions').select('student_id,score,total');
-  if(!students?.length){el.innerHTML='<div class="es"><div style="font-size:32px">👩‍🎓</div><p>Nenhum aluno cadastrado ainda.</p></div>';return}
+  if(!students?.length){el.innerHTML='<div class="es"><div style="font-size:40px">👩‍🎓</div><p>Nenhum aluno cadastrado ainda.</p></div>';return}
   el.innerHTML=students.map(s=>{
     const mySubs=(subs||[]).filter(x=>x.student_id===s.id&&x.score!=null);
     const avg=mySubs.length?Math.round(mySubs.reduce((a,b)=>a+(b.score/b.total*10),0)/mySubs.length*10)/10:null;
-    return`<div class="card"><strong style="font-size:15px">${s.full_name}</strong><div style="margin-top:8px;display:flex;gap:6px">${avg!==null?`<span class="badge bg2">Média: ${avg}/10</span>`:''}<span class="badge bgr">${mySubs.length} prova(s)</span></div></div>`;
+    return`<div class="card"><strong style="font-size:16px">${s.full_name}</strong><div style="margin-top:10px;display:flex;gap:8px">${avg!==null?`<span class="badge bg2">Média: ${avg}/10</span>`:''}<span class="badge bgr">${mySubs.length} prova(s)</span></div></div>`;
   }).join('');
 }
 
@@ -723,11 +576,11 @@ function addQ(){NQs.push({id:uid(),type:'multiple_choice',text:'',options:['',''
 function renderQEditor(){
   const el=document.getElementById('qed');
   if(!NQs.length){el.innerHTML='';return}
-  el.innerHTML=NQs.map((q,i)=>`<div class="card" style="margin-bottom:8px;padding:.9rem">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><span style="font-size:13px;font-weight:600;color:var(--muted)">Q${i+1}</span><button class="bd bsm" onclick="remQ(${i})">✕</button></div>
+  el.innerHTML=NQs.map((q,i)=>`<div class="card" style="margin-bottom:10px;padding:1.25rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><span style="font-size:13px;font-weight:600;color:var(--primary)">Questão ${i+1}</span><button class="bd bsm" onclick="remQ(${i})">✕</button></div>
     <div class="fg"><label>Tipo</label><select onchange="updQ(${i},'type',this.value)"><option value="multiple_choice" ${q.type==='multiple_choice'?'selected':''}>Múltipla Escolha</option><option value="fill_blank" ${q.type==='fill_blank'?'selected':''}>Preencher Lacuna</option><option value="translation" ${q.type==='translation'?'selected':''}>Tradução</option><option value="open_answer" ${q.type==='open_answer'?'selected':''}>Resposta Aberta</option></select></div>
     <div class="fg"><label>Texto</label><input type="text" value="${q.text.replace(/"/g,'&quot;')}" onchange="updQ(${i},'text',this.value)"></div>
-    ${q.type==='multiple_choice'?`<div class="fg"><label>Opções</label>${(q.options||[]).map((o,j)=>`<input type="text" value="${o.replace(/"/g,'&quot;')}" onchange="updOpt(${i},${j},this.value)" placeholder="Opção ${String.fromCharCode(65+j)}" style="margin-bottom:5px">`).join('')}<button class="bs bsm" style="margin-top:4px" onclick="addOpt(${i})">+ Opção</button></div>`:''}
+    ${q.type==='multiple_choice'?`<div class="fg"><label>Opções</label>${(q.options||[]).map((o,j)=>`<input type="text" value="${o.replace(/"/g,'&quot;')}" onchange="updOpt(${i},${j},this.value)" placeholder="Opção ${String.fromCharCode(65+j)}" style="margin-bottom:6px">`).join('')}<button class="bs bsm" style="margin-top:6px" onclick="addOpt(${i})">+ Opção</button></div>`:''}
     ${q.type!=='open_answer'?`<div class="fg"><label>Resposta correta</label><input type="text" value="${(q.correct||'').replace(/"/g,'&quot;')}" onchange="updQ(${i},'correct',this.value)"></div>`:''}
   </div>`).join('');
 }
@@ -742,10 +595,10 @@ async function openGrade(tid){
   const {data:subs}=await sb.from('test_submissions').select('*,profiles(full_name)').eq('test_id',tid).eq('needs_grade',true);
   const {data:openQs}=await sb.from('test_questions').select('*').eq('test_id',tid).eq('question_type','open_answer');
   const el=document.getElementById('gc');
-  if(!subs?.length){el.innerHTML='<p style="color:var(--muted)">Nenhuma resposta pendente.</p>';document.getElementById('mg').classList.add('active');return}
-  el.innerHTML=subs.map(sub=>`<div class="card"><strong>${sub.profiles?.full_name||'Aluno'}</strong>${(openQs||[]).map(q=>{
+  if(!subs?.length){el.innerHTML='<p style="color:var(--text-muted)">Nenhuma resposta pendente.</p>';document.getElementById('mg').classList.add('active');return}
+  el.innerHTML=subs.map(sub=>`<div class="card"><strong style="font-size:15px">${sub.profiles?.full_name||'Aluno'}</strong>${(openQs||[]).map(q=>{
     const ans=(sub.answers||{})[q.id]||'(sem resposta)';
-    return`<div style="margin-top:.85rem"><p style="font-size:13px;font-weight:500">${q.question_text}</p><p style="font-size:13px;color:var(--muted);font-style:italic;margin-top:3px;padding:8px;background:#F9FAFB;border-radius:6px">"${ans}"</p><div style="display:flex;gap:8px;margin-top:8px;align-items:center"><label style="font-size:13px;white-space:nowrap">Pontos (0-1):</label><input type="number" min="0" max="1" step="0.5" value="0" id="gr-${sub.id}-${q.id}" style="width:80px"><input type="text" placeholder="Feedback..." id="fb-${sub.id}-${q.id}" style="flex:1"></div></div>`;
+    return`<div style="margin-top:1rem"><p style="font-size:13px;font-weight:500;color:var(--text)">${q.question_text}</p><p style="font-size:13px;color:var(--text-secondary);font-style:italic;margin-top:4px;padding:10px;background:var(--bg-warm);border-radius:var(--rs)">"${ans}"</p><div style="display:flex;gap:10px;margin-top:10px;align-items:center"><label style="font-size:13px;white-space:nowrap">Pontos (0-1):</label><input type="number" min="0" max="1" step="0.5" value="0" id="gr-${sub.id}-${q.id}" style="width:80px"><input type="text" placeholder="Feedback..." id="fb-${sub.id}-${q.id}" style="flex:1"></div></div>`;
   }).join('')}</div>`).join('');
   document.getElementById('mg').classList.add('active');
 }
@@ -769,8 +622,8 @@ async function saveGrades(){
 function buildChatUI(containerId,myId,otherId,otherName){
   const el=document.getElementById(containerId);
   el.innerHTML=`<div class="chat-box">
-    <div class="chat-header"><strong style="font-size:14px;color:var(--gd)">💬 ${otherName}</strong></div>
-    <div class="chat-msgs" id="msgs-${containerId}"><p style="text-align:center;color:var(--muted);font-size:13px">Carregando...</p></div>
+    <div class="chat-header"><strong style="font-size:14px">💬 ${otherName}</strong></div>
+    <div class="chat-msgs" id="msgs-${containerId}"><p style="text-align:center;color:var(--text-muted);font-size:13px">Carregando...</p></div>
     <div class="chat-input">
       <input type="text" id="msg-input-${containerId}" placeholder="Digite uma mensagem..." onkeydown="if(event.key==='Enter')sendMsg('${containerId}','${myId}','${otherId}')">
       <button class="bp bsm" onclick="sendMsg('${containerId}','${myId}','${otherId}')">Enviar</button>
@@ -785,7 +638,7 @@ async function loadMsgs(containerId,myId,otherId){
   const {data}=await sb.from('messages').select('*')
     .or(`and(sender_id.eq.${myId},receiver_id.eq.${otherId}),and(sender_id.eq.${otherId},receiver_id.eq.${myId})`)
     .order('created_at',{ascending:true});
-  if(!data?.length){el.innerHTML='<p style="text-align:center;color:var(--muted);font-size:13px">Nenhuma mensagem ainda. Diga olá! 👋</p>';return}
+  if(!data?.length){el.innerHTML='<p style="text-align:center;color:var(--text-muted);font-size:13px">Nenhuma mensagem ainda. Diga olá! 👋</p>';return}
   el.innerHTML=data.map(m=>{
     const isMe=m.sender_id===myId;
     return`<div class="${isMe?'msg-me':'msg-other'}">
@@ -808,12 +661,12 @@ async function sendMsg(containerId,myId,otherId){
 
 async function renderTeacherChat(){
   const el=document.getElementById('teacher-chat-wrap');
-  el.innerHTML='<p style="color:var(--muted);padding:1rem">Carregando...</p>';
+  el.innerHTML='<p style="color:var(--text-muted);padding:1rem">Carregando...</p>';
   const {data:students}=await sb.from('profiles').select('*').eq('role','student');
-  if(!students?.length){el.innerHTML='<div class="es"><div style="font-size:32px">💬</div><p>Nenhum aluno cadastrado ainda.</p></div>';return}
+  if(!students?.length){el.innerHTML='<div class="es"><div style="font-size:40px">💬</div><p>Nenhum aluno cadastrado ainda.</p></div>';return}
   if(students.length===1){buildChatUI('teacher-chat-wrap',TEACHER_ID,students[0].id,students[0].full_name);return}
   el.innerHTML=`<div class="fg"><label>Selecionar aluno</label>
-    <select onchange="selectStudentChat(this.value)" style="max-width:300px;margin-bottom:1rem">
+    <select onchange="selectStudentChat(this.value)" style="max-width:320px;margin-bottom:1.25rem">
       <option value="">Escolha um aluno...</option>
       ${students.map(s=>`<option value="${s.id}|${s.full_name}">${s.full_name}</option>`).join('')}
     </select></div>
@@ -862,49 +715,49 @@ async function renderSD(){
 
 async function renderSLessons(){
   const el=document.getElementById('student-lessons-list');
-  el.innerHTML='<p style="color:var(--muted);padding:1rem">Loading...</p>';
+  el.innerHTML='<p style="color:var(--text-muted);padding:1rem">Loading...</p>';
   const {data}=await sb.from('contents').select('*').order('created_at');
-  if(!data?.length){el.innerHTML='<div class="es"><div style="font-size:32px">📚</div><p>No lessons available yet.</p></div>';return}
+  if(!data?.length){el.innerHTML='<div class="es"><div style="font-size:40px">📚</div><p>No lessons available yet.</p></div>';return}
   const icons={text:'📖',exercise:'✏️',conversation:'💬'};
   const tb={text:'Text',exercise:'Exercise',conversation:'Conversation'};
-  const tc={text:'bb',exercise:'ba',conversation:'bg2'};
+  const tc={text:'bb',exercise:'ba',conversation:'bpr'};
   el.innerHTML=data.map(c=>`
     <div class="lesson-card">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-        <span style="font-size:24px">${icons[c.type]||'📖'}</span>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+        <span style="font-size:28px">${icons[c.type]||'📖'}</span>
         <div style="flex:1">
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <strong style="font-size:15px">${c.title}</strong>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <strong style="font-size:16px">${c.title}</strong>
             <span class="badge ${tc[c.type]||'bgr'}">${tb[c.type]||c.type}</span>
           </div>
-          <p style="font-size:13px;color:var(--muted);margin-top:2px">${c.description||''}</p>
+          <p style="font-size:13px;color:var(--text-secondary);margin-top:3px">${c.description||''}</p>
         </div>
       </div>
       ${c.body?`<div class="lesson-body">${c.body}</div>`:''}
-      ${c.file_url?`<a href="${c.file_url}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:7px 14px;background:var(--bll);color:var(--bl);border-radius:var(--rs);font-size:13px;font-weight:500;text-decoration:none">📄 Open PDF</a>`:''}
+      ${c.file_url?`<a href="${c.file_url}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:10px 18px;background:var(--primary-soft);color:var(--primary);border-radius:var(--rs);font-size:13px;font-weight:500;text-decoration:none;transition:all .2s">📄 Open PDF</a>`:''}
     </div>`).join('');
 }
 
 async function renderSTasks(){
   const el=document.getElementById('tkl');
-  el.innerHTML='<p style="color:var(--muted);padding:1rem">Loading...</p>';
+  el.innerHTML='<p style="color:var(--text-muted);padding:1rem">Loading...</p>';
   const {data:assigns}=await sb.from('task_assignments').select('task_id,tasks(*)').eq('student_id',CU.id);
-  if(!assigns?.length){el.innerHTML='<div class="es"><div style="font-size:32px">📚</div><p>No tasks assigned yet.</p></div>';return}
+  if(!assigns?.length){el.innerHTML='<div class="es"><div style="font-size:40px">📚</div><p>No tasks assigned yet.</p></div>';return}
   el.innerHTML=assigns.map((a,i)=>{
     const t=a.tasks;
-    return`<div class="ir"><div style="font-size:24px">📋</div><div class="irc"><strong>Week ${i+1} — ${t.name}</strong><p>${t.instructions||''}</p>${t.due_date?`<p style="font-size:12px;margin-top:3px">Due: ${t.due_date}</p>`:''}</div></div>`;
+    return`<div class="ir"><div style="font-size:28px">📋</div><div class="irc"><strong>Week ${i+1} — ${t.name}</strong><p>${t.instructions||''}</p>${t.due_date?`<p style="font-size:12px;margin-top:4px;color:var(--text-muted)">Due: ${t.due_date}</p>`:''}</div></div>`;
   }).join('');
 }
 
 async function renderSTests(){
   const el=document.getElementById('tsl');
-  el.innerHTML='<p style="color:var(--muted);padding:1rem">Loading...</p>';
+  el.innerHTML='<p style="color:var(--text-muted);padding:1rem">Loading...</p>';
   const {data:assigns}=await sb.from('test_assignments').select('test_id,tests(*)').eq('student_id',CU.id);
   const {data:subs}=await sb.from('test_submissions').select('*').eq('student_id',CU.id);
-  if(!assigns?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🧪</div><p>No tests available yet.</p></div>';return}
+  if(!assigns?.length){el.innerHTML='<div class="es"><div style="font-size:40px">🧪</div><p>No tests available yet.</p></div>';return}
   el.innerHTML=assigns.map(a=>{
     const t=a.tests;const sub=(subs||[]).find(s=>s.test_id===t.id);
-    return`<div class="ir"><div style="font-size:24px">${sub?'✅':'📄'}</div><div class="irc"><strong>${t.name}</strong><p>${t.description||''}</p>${sub&&sub.score!=null?`<p style="font-size:13px;color:var(--g);margin-top:4px;font-weight:500">Score: ${sub.score}/${sub.total} — ${Math.round(sub.score/sub.total*100)}%</p>`:''}</div>${sub?`<button class="bs bsm" onclick="viewRes('${t.id}')">Results</button>`:`<button class="bp bsm" onclick="startTest('${t.id}')">Start test →</button>`}</div>`;
+    return`<div class="ir"><div style="font-size:28px">${sub?'✅':'📄'}</div><div class="irc"><strong>${t.name}</strong><p>${t.description||''}</p>${sub&&sub.score!=null?`<p style="font-size:13px;color:var(--success);margin-top:5px;font-weight:500">Score: ${sub.score}/${sub.total} — ${Math.round(sub.score/sub.total*100)}%</p>`:''}</div>${sub?`<button class="bs bsm" onclick="viewRes('${t.id}')">Results</button>`:`<button class="bp bsm" onclick="startTest('${t.id}')">Start test →</button>`}</div>`;
   }).join('');
 }
 
@@ -916,8 +769,8 @@ async function startTest(tid){
   const tl={multiple_choice:'Multiple Choice',fill_blank:'Fill in the Blank',translation:'Translation',open_answer:'Open Answer'};
   const byType={};
   (questions||[]).forEach(q=>{if(!byType[q.question_type])byType[q.question_type]=[];byType[q.question_type].push(q)});
-  document.getElementById('tqw').innerHTML=`<div class="card" style="margin-bottom:1rem;background:var(--gl);border-color:#86EFAC"><p style="font-size:13px;color:var(--gd)">${test.description||'Answer all questions carefully.'}</p></div>`+
-  Object.entries(byType).map(([type,qs])=>`<h3 style="font-size:15px;font-weight:600;margin:.9rem 0 .75rem">${tl[type]||type}</h3>${qs.map(q=>`<div class="qb"><p>${q.question_text}</p>${
+  document.getElementById('tqw').innerHTML=`<div class="card" style="margin-bottom:1.25rem;background:var(--primary-soft);border-color:var(--primary-light)"><p style="font-size:13px;color:var(--primary-dark)">${test.description||'Answer all questions carefully.'}</p></div>`+
+  Object.entries(byType).map(([type,qs])=>`<h3 style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;margin:1.25rem 0 1rem;color:var(--text)">${tl[type]||type}</h3>${qs.map(q=>`<div class="qb"><p>${q.question_text}</p>${
     type==='multiple_choice'?(q.options||[]).map((o,i)=>`<label class="ol" id="o-${q.id}-${i}"><input type="radio" name="q-${q.id}" onchange="selOpt('${q.id}','${o.replace(/'/g,"\\'")}',${i})"> ${String.fromCharCode(97+i)}) ${o}</label>`).join(''):
     type==='open_answer'?`<textarea placeholder="Write your answer..." rows="3" onchange="CAs['${q.id}']=this.value" style="width:100%"></textarea>`:
     `<input type="text" placeholder="Type your answer..." onchange="CAs['${q.id}']=this.value">`
@@ -951,36 +804,36 @@ async function viewRes(tid){
   const pct=sub?Math.round(sub.score/sub.total*100):0;
   const emoji=pct>=80?'🎉':pct>=60?'👍':'💪';
   document.getElementById('rc2').innerHTML=`
-    <div style="text-align:center;padding:2rem 1rem 1.25rem">
-      <div style="font-size:48px;margin-bottom:.5rem">${emoji}</div>
-      <h2 style="font-size:18px;font-weight:600">${test.name}</h2>
-      <div style="font-size:48px;font-weight:700;color:var(--g);margin:.5rem 0">${sub?.score||0}/${sub?.total||0}</div>
-      <div class="pb" style="max-width:260px;margin:.75rem auto"><div class="pbi" style="width:${pct}%"></div></div>
-      <span class="badge ${pct>=70?'bg2':pct>=50?'ba':'br2'}" style="font-size:14px;padding:5px 14px">${pct}%</span>
-      ${sub?.needs_grade?'<p style="font-size:13px;color:var(--muted);margin-top:.85rem">⏳ Some answers pending teacher review.</p>':''}
+    <div style="text-align:center;padding:2.5rem 1.5rem 1.5rem">
+      <div style="font-size:56px;margin-bottom:.75rem">${emoji}</div>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600">${test.name}</h2>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:56px;font-weight:700;color:var(--primary);margin:.75rem 0">${sub?.score||0}/${sub?.total||0}</div>
+      <div class="pb" style="max-width:280px;margin:1rem auto"><div class="pbi" style="width:${pct}%"></div></div>
+      <span class="badge ${pct>=70?'bg2':pct>=50?'ba':'br2'}" style="font-size:14px;padding:6px 16px">${pct}%</span>
+      ${sub?.needs_grade?'<p style="font-size:13px;color:var(--text-muted);margin-top:1rem">⏳ Some answers pending teacher review.</p>':''}
     </div>
     <div class="div"></div>
-    <h3 style="font-size:15px;font-weight:600;margin-bottom:.85rem">Detailed Results</h3>
+    <h3 style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;margin-bottom:1rem">Detailed Results</h3>
     ${(questions||[]).map(q=>{
       const ans=(sub?.answers||{})[q.id]||'';
       const isOpen=q.question_type==='open_answer';
       const ok=!isOpen&&ans.trim().toLowerCase()===(q.correct_answer||'').trim().toLowerCase();
       const fb=(sub?.feedback||{})[q.id];
-      return`<div class="ri ${isOpen?'rp':ok?'rc':'rw'}"><span style="font-size:18px">${isOpen?'⏳':ok?'✅':'❌'}</span><div style="flex:1"><p style="font-size:13px;font-weight:500;margin-bottom:3px">${q.question_text}</p><p style="font-size:13px">Your answer: <strong>${ans||'(no answer)'}</strong></p>${!isOpen&&!ok&&q.correct_answer?`<p style="font-size:13px;color:var(--gd);margin-top:2px">Correct: ${q.correct_answer}</p>`:''}${isOpen?'<p style="font-size:12px;color:var(--am);margin-top:3px">Pending review</p>':''}${fb?`<p style="font-size:12px;margin-top:4px;padding:5px 8px;background:rgba(255,255,255,.6);border-radius:5px">💬 ${fb}</p>`:''}</div></div>`;
+      return`<div class="ri ${isOpen?'rp':ok?'rc':'rw'}"><span style="font-size:20px">${isOpen?'⏳':ok?'✅':'❌'}</span><div style="flex:1"><p style="font-size:13px;font-weight:500;margin-bottom:4px">${q.question_text}</p><p style="font-size:13px">Your answer: <strong>${ans||'(no answer)'}</strong></p>${!isOpen&&!ok&&q.correct_answer?`<p style="font-size:13px;color:var(--success);margin-top:3px">Correct: ${q.correct_answer}</p>`:''}${isOpen?'<p style="font-size:12px;color:var(--warning);margin-top:4px">Pending review</p>':''}${fb?`<p style="font-size:12px;margin-top:5px;padding:6px 10px;background:rgba(255,255,255,.6);border-radius:6px">💬 ${fb}</p>`:''}</div></div>`;
     }).join('')}`;
   show('screen-results');
 }
 
 async function renderSProgress(){
   const el=document.getElementById('prl');
-  el.innerHTML='<p style="color:var(--muted);padding:1rem">Loading...</p>';
+  el.innerHTML='<p style="color:var(--text-muted);padding:1rem">Loading...</p>';
   const {data:assigns}=await sb.from('test_assignments').select('test_id,tests(name)').eq('student_id',CU.id);
   const {data:subs}=await sb.from('test_submissions').select('*').eq('student_id',CU.id).not('score','is',null);
   const gs=(assigns||[]).map(a=>({t:a.tests,s:(subs||[]).find(s=>s.test_id===a.test_id)})).filter(x=>x.s);
-  if(!gs.length){el.innerHTML='<div class="es"><div style="font-size:32px">📈</div><p>No completed tests yet.</p></div>';return}
+  if(!gs.length){el.innerHTML='<div class="es"><div style="font-size:40px">📈</div><p>No completed tests yet.</p></div>';return}
   const avg=Math.round(gs.reduce((a,x)=>a+(x.s.score/x.s.total*10),0)/gs.length*10)/10;
-  el.innerHTML=`<div class="hc" style="text-align:center;padding:1.75rem"><p style="opacity:.8;font-size:13px">Your average score</p><div style="font-size:48px;font-weight:700;margin:.25rem 0">${avg}</div><p style="opacity:.75;font-size:14px">out of 10</p></div>
-  ${gs.map(x=>{const p=Math.round(x.s.score/x.s.total*100);return`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-size:14px;font-weight:500">${x.t?.name||'Test'}</span><span style="font-size:14px;font-weight:600;color:var(--g)">${x.s.score}/${x.s.total} (${p}%)</span></div><div class="pb"><div class="pbi" style="width:${p}%"></div></div></div>`}).join('')}`;
+  el.innerHTML=`<div class="hc" style="text-align:center;padding:2rem"><p style="opacity:.85;font-size:14px">Your average score</p><div style="font-family:'Cormorant Garamond',serif;font-size:56px;font-weight:700;margin:.5rem 0">${avg}</div><p style="opacity:.8;font-size:14px">out of 10</p></div>
+  ${gs.map(x=>{const p=Math.round(x.s.score/x.s.total*100);return`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span style="font-size:15px;font-weight:500">${x.t?.name||'Test'}</span><span style="font-size:15px;font-weight:600;color:var(--primary)">${x.s.score}/${x.s.total} (${p}%)</span></div><div class="pb"><div class="pbi" style="width:${p}%"></div></div></div>`}).join('')}`;
 }
 
 // VIDEO
@@ -993,7 +846,6 @@ function renderTeacherVideo(){
 }
 
 async function startLiveSession(){
-  // End any existing session first
   await sb.from('live_sessions').update({is_active:false}).eq('is_active',true);
   const roomName=generateRoomName();
   await sb.from('live_sessions').insert({room_name:roomName,is_active:true});
@@ -1003,14 +855,13 @@ async function startLiveSession(){
 function showTeacherRoom(roomName){
   const wrap=document.getElementById('teacher-video-frame');
   wrap.innerHTML=`
-    <div class="card" style="padding:1rem">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
-        <div><span class="badge br2" style="margin-right:8px">● AO VIVO</span><strong>Sala ativa</strong></div>
+    <div class="card" style="padding:1.25rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+        <div><span class="badge br2" style="margin-right:10px">● AO VIVO</span><strong>Sala ativa</strong></div>
         <button class="bd bsm" onclick="endLiveSession()">Encerrar aula</button>
       </div>
-      <iframe src="https://meet.jit.si/${roomName}" allow="camera; microphone; fullscreen; display-capture" style="width:100%;height:500px;border:none;border-radius:var(--rs)"></iframe>
+      <iframe src="https://meet.jit.si/${roomName}" allow="camera; microphone; fullscreen; display-capture" style="width:100%;height:520px;border:none;border-radius:var(--rs)"></iframe>
     </div>`;
-  // hide start button
   document.querySelector('#teacher-video-wrap .card:first-child').style.display='none';
 }
 
@@ -1023,26 +874,26 @@ async function endLiveSession(){
 
 async function renderStudentVideo(){
   const el=document.getElementById('student-video-wrap');
-  el.innerHTML='<p style="color:var(--muted);padding:1rem">Verificando aula ao vivo...</p>';
+  el.innerHTML='<p style="color:var(--text-muted);padding:1rem">Verificando aula ao vivo...</p>';
   const {data}=await sb.from('live_sessions').select('*').eq('is_active',true).order('started_at',{ascending:false}).limit(1);
   if(!data?.length){
-    el.innerHTML=`<div class="card" style="text-align:center;padding:2.5rem 1.5rem">
-      <div style="font-size:48px;margin-bottom:1rem">📡</div>
-      <h3 style="font-size:17px;font-weight:600;margin-bottom:.5rem">No live class right now</h3>
-      <p style="font-size:14px;color:var(--muted)">Your teacher will start a class soon. Come back here to join!</p>
-      <button class="bs bsm" style="margin-top:1rem" onclick="renderStudentVideo()">🔄 Refresh</button>
+    el.innerHTML=`<div class="card" style="text-align:center;padding:3rem 2rem">
+      <div style="font-size:56px;margin-bottom:1.25rem">📡</div>
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin-bottom:.5rem">No live class right now</h3>
+      <p style="font-size:14px;color:var(--text-secondary);max-width:300px;margin:0 auto">Your teacher will start a class soon. Come back here to join!</p>
+      <button class="bs bsm" style="margin-top:1.25rem" onclick="renderStudentVideo()">🔄 Refresh</button>
     </div>`;
     return;
   }
   const session=data[0];
   el.innerHTML=`
-    <div class="card" style="padding:1rem">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem">
+    <div class="card" style="padding:1.25rem">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.25rem">
         <span class="badge br2">● LIVE</span>
         <strong>Your teacher is live! Join now</strong>
         <button class="bs bsm" style="margin-left:auto" onclick="renderStudentVideo()">🔄</button>
       </div>
-      <iframe src="https://meet.jit.si/${session.room_name}" allow="camera; microphone; fullscreen; display-capture" style="width:100%;height:500px;border:none;border-radius:var(--rs)"></iframe>
+      <iframe src="https://meet.jit.si/${session.room_name}" allow="camera; microphone; fullscreen; display-capture" style="width:100%;height:520px;border:none;border-radius:var(--rs)"></iframe>
     </div>`;
 }
 
@@ -1065,35 +916,35 @@ async function saveSpeakingActivity(){
 
 async function renderTeacherSpeaking(){
   const el=document.getElementById('speaking-list-teacher');
-  el.innerHTML='<p style="color:var(--muted);padding:1rem">Carregando...</p>';
+  el.innerHTML='<p style="color:var(--text-muted);padding:1rem">Carregando...</p>';
   const {data:activities}=await sb.from('speaking_activities').select('*').order('created_at');
   const {data:subs}=await sb.from('speaking_submissions').select('*,profiles(full_name)');
-  if(!activities?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🎤</div><p>Nenhuma atividade criada ainda.</p></div>';return}
+  if(!activities?.length){el.innerHTML='<div class="es"><div style="font-size:40px">🎤</div><p>Nenhuma atividade criada ainda.</p></div>';return}
   const types={read_aloud:'Leitura',answer_question:'Pergunta',describe:'Livre',repeat:'Shadowing'};
-  const tc={read_aloud:'bg2',answer_question:'bb',describe:'ba',repeat:'bgr'};
+  const tc={read_aloud:'bpr',answer_question:'bb',describe:'ba',repeat:'bgr'};
   el.innerHTML=activities.map(a=>{
     const mySubs=(subs||[]).filter(s=>s.activity_id===a.id);
     return`<div class="card">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px">
         <div style="flex:1">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-            <strong>${a.title}</strong>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+            <strong style="font-size:16px">${a.title}</strong>
             <span class="badge ${tc[a.type]||'bgr'}">${types[a.type]||a.type}</span>
           </div>
-          <p style="font-size:13px;color:var(--muted);margin-bottom:8px">${a.instructions||''}</p>
-          ${a.content?`<div style="background:#F9FAFB;border-radius:var(--rs);padding:.75rem;font-size:13px;white-space:pre-line;margin-bottom:8px">${a.content}</div>`:''}
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:10px">${a.instructions||''}</p>
+          ${a.content?`<div style="background:var(--bg-warm);border-radius:var(--rs);padding:1rem;font-size:13px;white-space:pre-line;margin-bottom:10px">${a.content}</div>`:''}
           ${mySubs.length?mySubs.map(sub=>`
-            <div style="background:var(--gl);border-radius:var(--rs);padding:.75rem;margin-top:6px">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-                <strong style="font-size:13px;color:var(--gd)">${sub.profiles?.full_name||'Aluno'}</strong>
+            <div style="background:var(--primary-soft);border-radius:var(--rs);padding:1rem;margin-top:8px">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+                <strong style="font-size:13px;color:var(--primary-dark)">${sub.profiles?.full_name||'Aluno'}</strong>
                 ${sub.feedback?`<span class="badge bg2">Corrigido</span>`:`<span class="badge ba">Pendente</span>`}
               </div>
-              ${sub.audio_url?`<audio controls src="${sub.audio_url}" style="width:100%;margin-bottom:8px"></audio>`:''}
-              ${!sub.feedback?`<div style="display:flex;gap:8px;margin-top:6px">
+              ${sub.audio_url?`<audio controls src="${sub.audio_url}" style="width:100%;margin-bottom:10px"></audio>`:''}
+              ${!sub.feedback?`<div style="display:flex;gap:10px;margin-top:8px">
                 <input type="text" id="fb-${sub.id}" placeholder="Deixe um feedback..." style="flex:1;font-size:13px">
                 <button class="bp bsm" onclick="saveSpeakingFeedback('${sub.id}')">Enviar</button>
-              </div>`:`<p style="font-size:13px;color:var(--gd)">💬 ${sub.feedback}</p>`}
-            </div>`).join(''):'<p style="font-size:13px;color:var(--muted)">Nenhuma resposta ainda.</p>'}
+              </div>`:`<p style="font-size:13px;color:var(--primary-dark)">💬 ${sub.feedback}</p>`}
+            </div>`).join(''):'<p style="font-size:13px;color:var(--text-muted)">Nenhuma resposta ainda.</p>'}
         </div>
         <button class="bd bsm" onclick="delItem('speaking_activities','${a.id}',renderTeacherSpeaking)">✕</button>
       </div>
@@ -1110,32 +961,32 @@ async function saveSpeakingFeedback(subId){
 
 async function renderStudentSpeaking(){
   const el=document.getElementById('speaking-list-student');
-  el.innerHTML='<p style="color:var(--muted);padding:1rem">Loading...</p>';
+  el.innerHTML='<p style="color:var(--text-muted);padding:1rem">Loading...</p>';
   const {data:activities}=await sb.from('speaking_activities').select('*').order('created_at');
   const {data:mySubs}=await sb.from('speaking_submissions').select('*').eq('student_id',CU.id);
-  if(!activities?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🎤</div><p>No speaking activities yet.</p></div>';return}
+  if(!activities?.length){el.innerHTML='<div class="es"><div style="font-size:40px">🎤</div><p>No speaking activities yet.</p></div>';return}
   const types={read_aloud:'Read Aloud',answer_question:'Answer the Question',describe:'Speak Freely',repeat:'Shadowing'};
-  const tc={read_aloud:'bg2',answer_question:'bb',describe:'ba',repeat:'bgr'};
+  const tc={read_aloud:'bpr',answer_question:'bb',describe:'ba',repeat:'bgr'};
   el.innerHTML=activities.map(a=>{
     const sub=(mySubs||[]).find(s=>s.activity_id===a.id);
-    return`<div class="card" style="margin-bottom:12px">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-        <span style="font-size:22px">🎤</span>
+    return`<div class="card" style="margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <span style="font-size:26px">🎤</span>
         <div style="flex:1">
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <strong style="font-size:15px">${a.title}</strong>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <strong style="font-size:16px">${a.title}</strong>
             <span class="badge ${tc[a.type]||'bgr'}">${types[a.type]||a.type}</span>
           </div>
         </div>
         ${sub?'<span class="badge bg2">✅ Done</span>':''}
       </div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:8px">${a.instructions||''}</p>
-      ${a.content?`<div style="background:#F9FAFB;border-radius:var(--rs);padding:.85rem;font-size:14px;white-space:pre-line;margin-bottom:12px;line-height:1.7;border-left:3px solid var(--g)">${a.content}</div>`:''}
-      ${sub?.audio_url?`<div style="margin-bottom:8px"><p style="font-size:12px;color:var(--muted);margin-bottom:4px">Your recording:</p><audio controls src="${sub.audio_url}" style="width:100%"></audio></div>`:''}
-      ${sub?.feedback?`<div style="background:var(--gl);border-radius:var(--rs);padding:.75rem;margin-bottom:8px"><p style="font-size:13px;color:var(--gd)">💬 Teacher feedback: ${sub.feedback}</p></div>`:''}
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:10px">${a.instructions||''}</p>
+      ${a.content?`<div style="background:var(--bg-warm);border-radius:var(--rs);padding:1rem;font-size:14px;white-space:pre-line;margin-bottom:14px;line-height:1.7;border-left:3px solid var(--primary)">${a.content}</div>`:''}
+      ${sub?.audio_url?`<div style="margin-bottom:10px"><p style="font-size:12px;color:var(--text-muted);margin-bottom:5px">Your recording:</p><audio controls src="${sub.audio_url}" style="width:100%"></audio></div>`:''}
+      ${sub?.feedback?`<div style="background:var(--primary-soft);border-radius:var(--rs);padding:1rem;margin-bottom:10px"><p style="font-size:13px;color:var(--primary-dark)">💬 Teacher feedback: ${sub.feedback}</p></div>`:''}
       <div id="recorder-${a.id}">
-        ${!sub?`<button class="bp" onclick="startRecording('${a.id}')" id="rec-btn-${a.id}" style="width:100%;padding:11px">🎤 Start Recording</button>`:`<button class="bs" onclick="startRecording('${a.id}')" id="rec-btn-${a.id}" style="width:100%;padding:11px">🔄 Record Again</button>`}
-        <div id="rec-status-${a.id}" style="text-align:center;font-size:13px;color:var(--muted);margin-top:6px"></div>
+        ${!sub?`<button class="bp" onclick="startRecording('${a.id}')" id="rec-btn-${a.id}" style="width:100%;padding:12px">🎤 Start Recording</button>`:`<button class="bs" onclick="startRecording('${a.id}')" id="rec-btn-${a.id}" style="width:100%;padding:12px">🔄 Record Again</button>`}
+        <div id="rec-status-${a.id}" style="text-align:center;font-size:13px;color:var(--text-muted);margin-top:8px"></div>
       </div>
     </div>`;
   }).join('');
@@ -1155,7 +1006,7 @@ async function startRecording(activityId){
     mediaRecorder.start();
     btn.textContent='⏹ Stop Recording';
     btn.onclick=()=>stopRecording(activityId);
-    btn.style.background='var(--re)';
+    btn.style.background='var(--danger)';
     status.textContent='🔴 Recording... click Stop when done';
   } catch(e){
     status.textContent='❌ Microphone access denied. Please allow microphone in your browser.';
@@ -1182,7 +1033,6 @@ async function uploadAudio(activityId){
   if(error){status.textContent='❌ Error saving: '+error.message;return}
   const {data:urlData}=sb.storage.from('audio').getPublicUrl(fileName);
   const audioUrl=urlData.publicUrl;
-  // Check if already submitted
   const {data:existing}=await sb.from('speaking_submissions').select('id').eq('activity_id',activityId).eq('student_id',CU.id);
   if(existing?.length){
     await sb.from('speaking_submissions').update({audio_url:audioUrl,feedback:null}).eq('id',existing[0].id);
