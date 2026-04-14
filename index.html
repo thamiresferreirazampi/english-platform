@@ -5,7 +5,71 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>English Platform — Thamires</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+// VIDEO
+function generateRoomName(){
+  return 'englishplatform-'+Math.random().toString(36).slice(2,10);
+}
+
+function renderTeacherVideo(){
+  // just show the static UI, already in HTML
+}
+
+async function startLiveSession(){
+  // End any existing session first
+  await sb.from('live_sessions').update({is_active:false}).eq('is_active',true);
+  const roomName=generateRoomName();
+  await sb.from('live_sessions').insert({room_name:roomName,is_active:true});
+  showTeacherRoom(roomName);
+}
+
+function showTeacherRoom(roomName){
+  const wrap=document.getElementById('teacher-video-frame');
+  wrap.innerHTML=`
+    <div class="card" style="padding:1rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+        <div><span class="badge br2" style="margin-right:8px">● AO VIVO</span><strong>Sala ativa</strong></div>
+        <button class="bd bsm" onclick="endLiveSession()">Encerrar aula</button>
+      </div>
+      <iframe src="https://meet.jit.si/${roomName}" allow="camera; microphone; fullscreen; display-capture" style="width:100%;height:500px;border:none;border-radius:var(--rs)"></iframe>
+    </div>`;
+  // hide start button
+  document.querySelector('#teacher-video-wrap .card:first-child').style.display='none';
+}
+
+async function endLiveSession(){
+  if(!confirm('Encerrar a aula ao vivo?'))return;
+  await sb.from('live_sessions').update({is_active:false}).eq('is_active',true);
+  document.getElementById('teacher-video-frame').innerHTML='';
+  document.querySelector('#teacher-video-wrap .card:first-child').style.display='block';
+}
+
+async function renderStudentVideo(){
+  const el=document.getElementById('student-video-wrap');
+  el.innerHTML='<p style="color:var(--muted);padding:1rem">Verificando aula ao vivo...</p>';
+  const {data}=await sb.from('live_sessions').select('*').eq('is_active',true).order('started_at',{ascending:false}).limit(1);
+  if(!data?.length){
+    el.innerHTML=`<div class="card" style="text-align:center;padding:2.5rem 1.5rem">
+      <div style="font-size:48px;margin-bottom:1rem">📡</div>
+      <h3 style="font-size:17px;font-weight:600;margin-bottom:.5rem">No live class right now</h3>
+      <p style="font-size:14px;color:var(--muted)">Your teacher will start a class soon. Come back here to join!</p>
+      <button class="bs bsm" style="margin-top:1rem" onclick="renderStudentVideo()">🔄 Refresh</button>
+    </div>`;
+    return;
+  }
+  const session=data[0];
+  el.innerHTML=`
+    <div class="card" style="padding:1rem">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem">
+        <span class="badge br2">● LIVE</span>
+        <strong>Your teacher is live! Join now</strong>
+        <button class="bs bsm" style="margin-left:auto" onclick="renderStudentVideo()">🔄</button>
+      </div>
+      <iframe src="https://meet.jit.si/${session.room_name}" allow="camera; microphone; fullscreen; display-capture" style="width:100%;height:500px;border:none;border-radius:var(--rs)"></iframe>
+    </div>`;
+}
+
+</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--g:#1D9E75;--gl:#E1F5EE;--gd:#0F6E56;--am:#BA7517;--al:#FAEEDA;--re:#A32D2D;--rl:#FCEBEB;--bl:#185FA5;--bll:#E6F1FB;--bg:#F7F8FA;--card:#fff;--border:#E5E7EB;--text:#111827;--muted:#6B7280;--r:12px;--rs:8px}
@@ -141,6 +205,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
         <div class="ni" onclick="tTab(this,'tp')"><span>🧪</span>Provas</div>
         <div class="ni" onclick="tTab(this,'ts')"><span>👩‍🎓</span>Alunos</div>
         <div class="ni" onclick="tTab(this,'tm')"><span>💬</span>Mensagens</div>
+        <div class="ni" onclick="tTab(this,'tv')"><span>🎥</span>Aula ao Vivo</div>
       </div>
       <div class="sb-foot"><div class="ni" onclick="doLogout()"><span>🚪</span>Sair</div></div>
     </div>
@@ -150,6 +215,18 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
       <div id="tp" class="tt2" style="display:none"><div class="ph"><h2>Provas</h2><button class="bp" onclick="openM('mp')">+ Nova Prova</button></div><div id="pl"></div></div>
       <div id="ts" class="tt2" style="display:none"><div class="ph"><h2>Alunos</h2></div><div id="sl2"></div></div>
       <div id="tm" class="tt2" style="display:none"><div class="ph"><h2>Mensagens</h2></div><div id="teacher-chat-wrap"></div></div>
+      <div id="tv" class="tt2" style="display:none">
+        <div class="ph"><h2>Aula ao Vivo</h2></div>
+        <div id="teacher-video-wrap">
+          <div class="card" style="text-align:center;padding:2.5rem 1.5rem">
+            <div style="font-size:48px;margin-bottom:1rem">🎥</div>
+            <h3 style="font-size:18px;font-weight:600;margin-bottom:.5rem">Iniciar uma aula ao vivo</h3>
+            <p style="font-size:14px;color:var(--muted);margin-bottom:1.5rem">Clique para criar uma sala de vídeo. Seus alunos verão o botão para entrar automaticamente.</p>
+            <button class="bp" style="padding:12px 28px;font-size:15px" onclick="startLiveSession()">▶ Iniciar Aula</button>
+          </div>
+          <div id="teacher-video-frame" style="margin-top:1rem"></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -167,6 +244,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
       <button onclick="sTab(this,'stk')">Tasks</button>
       <button onclick="sTab(this,'sts')">Tests</button>
       <button onclick="sTab(this,'sp2')">Progress</button>
+      <button onclick="sTab(this,'svd')">Live Class</button>
       <button onclick="sTab(this,'sms')">Messages</button>
     </div>
     <button class="bs bsm" onclick="doLogout()">Log out</button>
@@ -187,6 +265,10 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
     <div id="stk" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">📚 Your Tasks</h2><div id="tkl"></div></div>
     <div id="sts" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">🧪 Your Tests</h2><div id="tsl"></div></div>
     <div id="sp2" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">📈 Your Progress</h2><div id="prl"></div></div>
+    <div id="svd" class="st2" style="display:none">
+      <h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">🎥 Live Class</h2>
+      <div id="student-video-wrap"></div>
+    </div>
     <div id="sms" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">💬 Messages</h2><div id="student-chat-wrap"></div></div>
   </div>
 </div>
@@ -404,6 +486,7 @@ function tTab(el,tab){
   if(tab==='tp')renderTests();
   if(tab==='ts')renderStudents();
   if(tab==='tm')renderTeacherChat();
+  if(tab==='tv')renderTeacherVideo();
 }
 function renderTeacher(){renderContents()}
 
@@ -583,6 +666,7 @@ function sTab(el,tab){
   if(tab==='stk')renderSTasks();
   if(tab==='sts')renderSTests();
   if(tab==='sp2')renderSProgress();
+  if(tab==='svd')renderStudentVideo();
   if(tab==='sms')renderStudentChat();
 }
 
@@ -722,6 +806,70 @@ async function renderSProgress(){
   el.innerHTML=`<div class="hc" style="text-align:center;padding:1.75rem"><p style="opacity:.8;font-size:13px">Your average score</p><div style="font-size:48px;font-weight:700;margin:.25rem 0">${avg}</div><p style="opacity:.75;font-size:14px">out of 10</p></div>
   ${gs.map(x=>{const p=Math.round(x.s.score/x.s.total*100);return`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-size:14px;font-weight:500">${x.t?.name||'Test'}</span><span style="font-size:14px;font-weight:600;color:var(--g)">${x.s.score}/${x.s.total} (${p}%)</span></div><div class="pb"><div class="pbi" style="width:${p}%"></div></div></div>`}).join('')}`;
 }
+
+// VIDEO
+function generateRoomName(){
+  return 'englishplatform-'+Math.random().toString(36).slice(2,10);
+}
+
+function renderTeacherVideo(){
+  // just show the static UI, already in HTML
+}
+
+async function startLiveSession(){
+  // End any existing session first
+  await sb.from('live_sessions').update({is_active:false}).eq('is_active',true);
+  const roomName=generateRoomName();
+  await sb.from('live_sessions').insert({room_name:roomName,is_active:true});
+  showTeacherRoom(roomName);
+}
+
+function showTeacherRoom(roomName){
+  const wrap=document.getElementById('teacher-video-frame');
+  wrap.innerHTML=`
+    <div class="card" style="padding:1rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+        <div><span class="badge br2" style="margin-right:8px">● AO VIVO</span><strong>Sala ativa</strong></div>
+        <button class="bd bsm" onclick="endLiveSession()">Encerrar aula</button>
+      </div>
+      <iframe src="https://meet.jit.si/${roomName}" allow="camera; microphone; fullscreen; display-capture" style="width:100%;height:500px;border:none;border-radius:var(--rs)"></iframe>
+    </div>`;
+  // hide start button
+  document.querySelector('#teacher-video-wrap .card:first-child').style.display='none';
+}
+
+async function endLiveSession(){
+  if(!confirm('Encerrar a aula ao vivo?'))return;
+  await sb.from('live_sessions').update({is_active:false}).eq('is_active',true);
+  document.getElementById('teacher-video-frame').innerHTML='';
+  document.querySelector('#teacher-video-wrap .card:first-child').style.display='block';
+}
+
+async function renderStudentVideo(){
+  const el=document.getElementById('student-video-wrap');
+  el.innerHTML='<p style="color:var(--muted);padding:1rem">Verificando aula ao vivo...</p>';
+  const {data}=await sb.from('live_sessions').select('*').eq('is_active',true).order('started_at',{ascending:false}).limit(1);
+  if(!data?.length){
+    el.innerHTML=`<div class="card" style="text-align:center;padding:2.5rem 1.5rem">
+      <div style="font-size:48px;margin-bottom:1rem">📡</div>
+      <h3 style="font-size:17px;font-weight:600;margin-bottom:.5rem">No live class right now</h3>
+      <p style="font-size:14px;color:var(--muted)">Your teacher will start a class soon. Come back here to join!</p>
+      <button class="bs bsm" style="margin-top:1rem" onclick="renderStudentVideo()">🔄 Refresh</button>
+    </div>`;
+    return;
+  }
+  const session=data[0];
+  el.innerHTML=`
+    <div class="card" style="padding:1rem">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem">
+        <span class="badge br2">● LIVE</span>
+        <strong>Your teacher is live! Join now</strong>
+        <button class="bs bsm" style="margin-left:auto" onclick="renderStudentVideo()">🔄</button>
+      </div>
+      <iframe src="https://meet.jit.si/${session.room_name}" allow="camera; microphone; fullscreen; display-capture" style="width:100%;height:500px;border:none;border-radius:var(--rs)"></iframe>
+    </div>`;
+}
+
 </script>
 </body>
 </html>
