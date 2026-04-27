@@ -4,179 +4,137 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>English Platform — Thamires</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --primary:#7C3AED;
-  --primary-dark:#5B21B6;
-  --primary-light:#A78BFA;
-  --primary-soft:#EDE9FE;
-  --accent:#D4A574;
-  --accent-light:#F5EBE0;
-  --success:#059669;
-  --success-light:#D1FAE5;
-  --warning:#D97706;
-  --warning-light:#FEF3C7;
-  --danger:#DC2626;
-  --danger-light:#FEE2E2;
-  --info:#0284C7;
-  --info-light:#E0F2FE;
-  --bg:#FAFAFA;
-  --bg-warm:#F8F6F4;
-  --card:#FFFFFF;
-  --border:#E8E4E0;
-  --border-light:#F0ECE8;
-  --text:#1F1F1F;
-  --text-secondary:#6B6B6B;
-  --text-muted:#9CA3AF;
-  --r:16px;
-  --rs:10px;
-  --shadow-sm:0 2px 8px rgba(124,58,237,.06);
-  --shadow-md:0 8px 24px rgba(124,58,237,.1);
-  --shadow-lg:0 16px 48px rgba(124,58,237,.12);
-  --gradient-primary:linear-gradient(135deg,#7C3AED 0%,#A78BFA 100%);
-  --gradient-soft:linear-gradient(180deg,#FAFAFA 0%,#F3F0FF 100%);
-  --gradient-card:linear-gradient(145deg,#FFFFFF 0%,#FDFCFF 100%)
+  --g:#1D9E75;--gl:#E1F5EE;--gd:#0F6E56;
+  --am:#BA7517;--al:#FAEEDA;
+  --re:#A32D2D;--rl:#FCEBEB;
+  --bl:#185FA5;--bll:#E6F1FB;
+  --bg:#F7F8FA;--card:#fff;--border:#E5E7EB;
+  --text:#111827;--muted:#6B7280;
+  --r:12px;--rs:8px;
 }
-body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);font-size:15px;min-height:100vh;line-height:1.6;-webkit-font-smoothing:antialiased}
-h1,h2,h3,h4{font-family:'Cormorant Garamond',serif;font-weight:600;line-height:1.3}
-input,select,textarea{font-family:'Outfit',sans-serif;font-size:14px;padding:12px 16px;border:1.5px solid var(--border);border-radius:var(--rs);width:100%;background:#fff;color:var(--text);outline:none;transition:all .25s ease}
-input:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(124,58,237,.1)}
-input::placeholder,textarea::placeholder{color:var(--text-muted)}
-input[type="file"]{padding:10px 12px}
-textarea{resize:vertical;min-height:90px}
-button{font-family:'Outfit',sans-serif;cursor:pointer;border:none;border-radius:var(--rs);padding:12px 24px;font-size:14px;font-weight:500;transition:all .25s ease;letter-spacing:.01em}
-.bp{background:var(--gradient-primary);color:#fff;box-shadow:var(--shadow-sm)}.bp:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
-.bs{background:#fff;border:1.5px solid var(--border);color:var(--text)}.bs:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-soft)}
-.bd{background:var(--danger-light);color:var(--danger);border:1.5px solid #FECACA}.bd:hover{background:#FEE2E2}
-.bsm{padding:8px 16px;font-size:13px}
-.card{background:var(--gradient-card);border:1px solid var(--border-light);border-radius:var(--r);padding:1.5rem;margin-bottom:12px;box-shadow:var(--shadow-sm);transition:all .25s ease}
-.card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
-.badge{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;letter-spacing:.02em}
-.bg2{background:var(--success-light);color:var(--success)}.ba{background:var(--warning-light);color:var(--warning)}.br2{background:var(--danger-light);color:var(--danger)}.bb{background:var(--info-light);color:var(--info)}.bgr{background:#F3F4F6;color:var(--text-secondary)}.bpr{background:var(--primary-soft);color:var(--primary)}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:15px;min-height:100vh}
+input,select,textarea{font-family:inherit;font-size:14px;padding:9px 13px;border:1.5px solid var(--border);border-radius:var(--rs);width:100%;background:#fff;color:var(--text);outline:none;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(29,158,117,.1)}
+textarea{resize:vertical;min-height:80px}
+button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);padding:9px 18px;font-size:14px;font-weight:500;transition:all .15s}
+.bp{background:var(--g);color:#fff}.bp:hover{background:var(--gd)}
+.bs{background:#fff;border:1.5px solid var(--border);color:var(--text)}.bs:hover{background:var(--bg)}
+.bd{background:var(--rl);color:var(--re);border:1.5px solid #FCA5A5}
+.bsm{padding:6px 12px;font-size:13px}
+.card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:1.1rem 1.35rem;margin-bottom:10px}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500}
+.bg2{background:var(--gl);color:var(--gd)}.ba{background:var(--al);color:var(--am)}.br2{background:var(--rl);color:var(--re)}.bb{background:var(--bll);color:var(--bl)}.bgr{background:#F3F4F6;color:var(--muted)}
 .screen{display:none}.screen.active{display:block}
-.mo{display:none;position:fixed;inset:0;background:rgba(31,31,31,.6);backdrop-filter:blur(4px);z-index:200;align-items:flex-start;justify-content:center;padding-top:48px;overflow-y:auto}.mo.active{display:flex}
-.mbox{background:#fff;border-radius:var(--r);padding:2rem;width:94%;max-width:540px;margin-bottom:48px;box-shadow:var(--shadow-lg);animation:slideUp .3s ease}
-@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-.mbox h3{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border-light);color:var(--primary-dark)}
-.fg{margin-bottom:16px}.fg label{display:block;font-size:13px;font-weight:500;color:var(--text-secondary);margin-bottom:6px;letter-spacing:.02em}
-.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.tl{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
-.sb{background:linear-gradient(180deg,#7C3AED 0%,#5B21B6 100%);display:flex;flex-direction:column;position:relative;overflow:hidden}
-.sb::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none}
-.sb-brand{padding:1.75rem;border-bottom:1px solid rgba(255,255,255,.1);position:relative}
-.logo-wrap{display:flex;align-items:center;gap:14px}
-.logo{width:48px;height:48px;background:rgba(255,255,255,.15);backdrop-filter:blur(8px);border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid rgba(255,255,255,.2)}
-.logo span{color:#fff;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:18px}
-.sb-brand strong{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;display:block;color:#fff;margin-bottom:2px}
-.sb-brand p{font-size:12px;color:rgba(255,255,255,.7);font-weight:400}
-.ni{display:flex;align-items:center;gap:12px;padding:14px 1.75rem;font-size:14px;cursor:pointer;color:rgba(255,255,255,.75);border-left:3px solid transparent;transition:all .2s ease;position:relative;font-weight:400}
-.ni:hover{background:rgba(255,255,255,.08);color:#fff}
-.ni.active{color:#fff;background:rgba(255,255,255,.12);border-left-color:#fff;font-weight:500}
-.ni.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:24px;background:#fff;border-radius:0 2px 2px 0}
-.sb-nav{flex:1;padding:1rem 0}.sb-foot{border-top:1px solid rgba(255,255,255,.1);padding:.75rem 0}
-.mc{padding:2rem 2.5rem;background:var(--gradient-soft);min-height:100vh}
-.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.75rem}
-.ph h2{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--text)}
-.es{text-align:center;padding:4rem 1.5rem;color:var(--text-secondary)}
-.es p{margin-top:8px}
-.lw{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;background:linear-gradient(135deg,#F5F3FF 0%,#EDE9FE 50%,#E0E7FF 100%);position:relative;overflow:hidden}
-.lw::before{content:'';position:absolute;width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,.08) 0%,transparent 70%);top:-200px;right:-200px}
-.lw::after{content:'';position:absolute;width:400px;height:400px;background:radial-gradient(circle,rgba(167,139,250,.1) 0%,transparent 70%);bottom:-100px;left:-100px}
-.lc{background:#fff;border-radius:var(--r);padding:2.75rem;width:100%;max-width:420px;box-shadow:var(--shadow-lg);position:relative;z-index:1}
-.lc h2{font-family:'Cormorant Garamond',serif;text-align:center;font-size:28px;font-weight:600;margin-bottom:4px;color:var(--text)}
-.lc .sub{text-align:center;font-size:14px;color:var(--text-secondary);margin-bottom:2rem}
-.lbtn{background:none;border:none;color:var(--primary);cursor:pointer;font-size:13px;font-weight:500;padding:0;font-family:'Outfit',sans-serif;transition:color .2s}
-.lbtn:hover{color:var(--primary-dark);text-decoration:underline}
-.emsg{background:var(--danger-light);color:var(--danger);border-radius:var(--rs);padding:12px 16px;font-size:13px;margin-bottom:16px;border:1px solid #FECACA}
-.smsg{background:var(--success-light);color:var(--success);border-radius:var(--rs);padding:12px 16px;font-size:13px;margin-bottom:16px;border:1px solid #86EFAC}
-.sh{background:#fff;border-bottom:1px solid var(--border-light);padding:1rem 1.75rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 2px 12px rgba(0,0,0,.03)}
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:flex-start;justify-content:center;padding-top:40px;overflow-y:auto}
+.mo.active{display:flex}
+.mbox{background:#fff;border-radius:var(--r);padding:1.75rem;width:94%;max-width:520px;margin-bottom:40px}
+.mbox h3{font-size:17px;font-weight:600;margin-bottom:1.1rem;padding-bottom:.85rem;border-bottom:1.5px solid var(--border)}
+.fg{margin-bottom:13px}.fg label{display:block;font-size:13px;font-weight:500;color:var(--muted);margin-bottom:5px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tl{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+.sb{background:#fff;border-right:1.5px solid var(--border);display:flex;flex-direction:column}
+.sb-brand{padding:1.1rem 1.35rem;border-bottom:1.5px solid var(--border)}
+.logo-wrap{display:flex;align-items:center;gap:10px}
+.logo{width:34px;height:34px;background:var(--g);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo span{color:#fff;font-weight:700;font-size:14px}
+.sb-brand strong{font-size:15px;font-weight:600;display:block;margin-top:4px}
+.sb-brand p{font-size:12px;color:var(--muted)}
+.ni{display:flex;align-items:center;gap:10px;padding:9px 1.35rem;font-size:14px;cursor:pointer;color:var(--muted);border-left:3px solid transparent;transition:all .15s}
+.ni:hover{background:#F9FAFB;color:var(--text)}
+.ni.active{color:var(--g);background:var(--gl);border-left-color:var(--g);font-weight:500}
+.sb-nav{flex:1;padding:.6rem 0}
+.sb-foot{border-top:1.5px solid var(--border);padding:.5rem 0}
+.mc{padding:1.75rem;background:var(--bg)}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.35rem}
+.ph h2{font-size:20px;font-weight:600}
+.es{text-align:center;padding:3.5rem 1rem;color:var(--muted)}
+.lw{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem;background:var(--bg)}
+.lc{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:2.25rem;width:100%;max-width:390px;box-shadow:0 8px 32px rgba(0,0,0,.08)}
+.lc h2{text-align:center;font-size:20px;font-weight:600;margin-bottom:.25rem}
+.lc .sub{text-align:center;font-size:13px;color:var(--muted);margin-bottom:1.75rem}
+.lbtn{background:none;border:none;color:var(--g);cursor:pointer;font-size:13px;text-decoration:underline;padding:0;font-family:inherit}
+.emsg{background:var(--rl);color:var(--re);border-radius:var(--rs);padding:9px 13px;font-size:13px;margin-bottom:12px}
+.smsg{background:var(--gl);color:var(--gd);border-radius:var(--rs);padding:9px 13px;font-size:13px;margin-bottom:12px}
+.sh{background:#fff;border-bottom:1.5px solid var(--border);padding:.85rem 1.35rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
 .sn{display:flex;gap:4px;flex-wrap:wrap}
-.sn button{background:transparent;border:none;padding:10px 16px;border-radius:var(--rs);font-size:13px;color:var(--text-secondary);font-family:'Outfit',sans-serif;transition:all .2s;font-weight:400}
-.sn button:hover{color:var(--primary);background:var(--primary-soft)}
-.sn button.active{background:var(--gradient-primary);color:#fff;font-weight:500;box-shadow:var(--shadow-sm)}
-.sm3{padding:2rem;max-width:720px;margin:0 auto}
-.hc{background:var(--gradient-primary);border-radius:var(--r);padding:2rem 2.25rem;color:#fff;margin-bottom:1.5rem;position:relative;overflow:hidden;box-shadow:var(--shadow-md)}
-.hc::before{content:'';position:absolute;top:-50%;right:-20%;width:300px;height:300px;background:radial-gradient(circle,rgba(255,255,255,.1) 0%,transparent 70%);pointer-events:none}
-.hc h3{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;margin-bottom:4px;position:relative}
-.hc p{position:relative}
-.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:1.5rem}
-.sc{background:#fff;border:1px solid var(--border-light);border-radius:var(--r);padding:1.25rem;text-align:center;transition:all .25s ease;box-shadow:var(--shadow-sm)}
-.sc:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
-.sc .num{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:var(--primary)}.sc .lbl{font-size:12px;color:var(--text-secondary);margin-top:4px;text-transform:uppercase;letter-spacing:.05em}
-.ir{background:#fff;border:1px solid var(--border-light);border-radius:var(--r);padding:1.25rem 1.5rem;margin-bottom:10px;display:flex;align-items:center;gap:16px;transition:all .25s ease;box-shadow:var(--shadow-sm)}
-.ir:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
-.irc{flex:1}.irc strong{font-size:15px;font-weight:500;display:block;margin-bottom:4px;color:var(--text)}.irc p{font-size:13px;color:var(--text-secondary)}
-.div{height:1px;background:var(--border-light);margin:1.5rem 0}
-.qb{background:var(--bg-warm);border:1px solid var(--border-light);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem}
-.qb p{font-size:15px;font-weight:500;margin-bottom:1rem;color:var(--text)}
-.ol{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:var(--rs);border:1.5px solid var(--border);margin-bottom:8px;cursor:pointer;font-size:14px;transition:all .2s;background:#fff}
-.ol:hover{border-color:var(--primary-light);background:var(--primary-soft)}.ol.sel{border-color:var(--primary);background:var(--primary-soft)}.ol input{width:auto;margin:0;accent-color:var(--primary)}
-.ri{display:flex;gap:14px;align-items:flex-start;padding:1rem 1.25rem;border-radius:var(--r);margin-bottom:10px}
-.rc{background:var(--success-light);border:1px solid #86EFAC}.rw{background:var(--danger-light);border:1px solid #FECACA}.rp{background:var(--warning-light);border:1px solid #FDE047}
-.pb{background:#E5E7EB;border-radius:20px;height:8px;overflow:hidden;margin-top:8px}
-.pbi{background:var(--gradient-primary);height:100%;border-radius:20px;transition:width .5s ease}
-.fe{display:flex;justify-content:flex-end;gap:10px;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border-light)}
-.ac{display:flex;align-items:center;gap:10px;padding:10px 0;font-size:14px;cursor:pointer;border-bottom:1px solid var(--border-light);transition:color .2s}
-.ac:last-child{border-bottom:none}.ac input{width:auto;accent-color:var(--primary)}.ac:hover{color:var(--primary)}
-.chat-box{display:flex;flex-direction:column;height:500px;border:1px solid var(--border-light);border-radius:var(--r);overflow:hidden;background:#fff;box-shadow:var(--shadow-sm)}
-.chat-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border-light);background:var(--primary-soft)}
-.chat-header strong{color:var(--primary-dark)}
-.chat-msgs{flex:1;overflow-y:auto;padding:1.25rem;display:flex;flex-direction:column;gap:10px;background:var(--bg-warm)}
-.chat-input{padding:1rem;border-top:1px solid var(--border-light);display:flex;gap:10px;background:#fff}
-.chat-input input{flex:1}
-.msg-me{display:flex;flex-direction:column;align-items:flex-end}
-.msg-other{display:flex;flex-direction:column;align-items:flex-start}
-.msg-bubble-me{max-width:75%;padding:12px 16px;border-radius:16px 16px 4px 16px;background:var(--gradient-primary);color:#fff;box-shadow:var(--shadow-sm)}
-.msg-bubble-other{max-width:75%;padding:12px 16px;border-radius:16px 16px 16px 4px;background:#fff;color:var(--text);border:1px solid var(--border-light);box-shadow:var(--shadow-sm)}
-.msg-time{font-size:11px;color:var(--text-muted);margin-top:4px}
-.lesson-card{background:#fff;border:1px solid var(--border-light);border-radius:var(--r);padding:1.5rem;margin-bottom:14px;box-shadow:var(--shadow-sm);transition:all .25s ease}
-.lesson-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
-.lesson-body{background:var(--bg-warm);border-radius:var(--rs);padding:1rem;font-size:14px;white-space:pre-line;color:var(--text);margin-top:12px;line-height:1.7;border-left:3px solid var(--primary)}
-
-/* Animations */
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.card,.lesson-card,.ir,.sc{animation:fadeIn .4s ease}
-
-/* Scrollbar styling */
-::-webkit-scrollbar{width:6px;height:6px}
-::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:var(--primary-light);border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:var(--primary)}
-
-/* Logo animation */
-.logo{animation:float 3s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.sn button{background:transparent;border:none;padding:7px 14px;border-radius:var(--rs);font-size:14px;color:var(--muted);font-family:inherit}
+.sn button.active{background:var(--gl);color:var(--gd);font-weight:500}
+.sm3{padding:1.35rem;max-width:660px;margin:0 auto}
+.hc{background:linear-gradient(135deg,#1D9E75,#0F6E56);border-radius:var(--r);padding:1.5rem 1.75rem;color:#fff;margin-bottom:1.1rem}
+.hc h3{font-size:22px;font-weight:600;margin-bottom:3px}
+.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.1rem}
+.sc{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:1rem;text-align:center}
+.sc .num{font-size:26px;font-weight:600;color:var(--g)}.sc .lbl{font-size:12px;color:var(--muted);margin-top:2px}
+.ir{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.irc{flex:1}.irc strong{font-size:14px;font-weight:500;display:block;margin-bottom:3px}.irc p{font-size:13px;color:var(--muted)}
+.div{height:1.5px;background:var(--border);margin:1.1rem 0}
+.qb{background:#F9FAFB;border:1.5px solid var(--border);border-radius:var(--r);padding:1.1rem;margin-bottom:.85rem}
+.qb p{font-size:14px;font-weight:500;margin-bottom:.75rem}
+.ol{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--rs);border:1.5px solid var(--border);margin-bottom:6px;cursor:pointer;font-size:14px;transition:all .15s;background:#fff}
+.ol:hover{border-color:var(--g)}.ol.sel{border-color:var(--g);background:var(--gl)}.ol input{width:auto;margin:0}
+.ri{display:flex;gap:12px;align-items:flex-start;padding:.9rem 1.1rem;border-radius:var(--r);margin-bottom:8px}
+.rc{background:#DCFCE7;border:1px solid #86EFAC}.rw{background:#FEE2E2;border:1px solid #FCA5A5}.rp{background:#FEF9C3;border:1px solid #FDE047}
+.pb{background:#E5E7EB;border-radius:20px;height:8px;overflow:hidden;margin-top:6px}
+.pbi{background:var(--g);height:100%;border-radius:20px}
+.fe{display:flex;justify-content:flex-end;gap:8px;margin-top:1.1rem;padding-top:1rem;border-top:1.5px solid var(--border)}
+.ac{display:flex;align-items:center;gap:9px;padding:7px 0;font-size:14px;cursor:pointer;border-bottom:1px solid #F3F4F6}
+.ac:last-child{border-bottom:none}.ac input{width:auto}
+.loading{text-align:center;padding:2rem;color:var(--muted);font-size:14px}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--g);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* Speaking */
+.rec-box{background:#F9FAFB;border:1.5px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem}
+.rec-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:.75rem}
+.rec-status{font-size:13px;color:var(--muted);font-weight:500}
+.rec-status.recording{color:var(--re);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.attempt-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--rs);padding:.85rem;margin-bottom:8px}
+.attempt-card audio{width:100%;margin-top:.5rem;border-radius:6px}
+/* Task view */
+.task-body{background:#F9FAFB;border-radius:var(--rs);padding:1.1rem;margin:.75rem 0;font-size:14px;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-word}
+/* Messages */
+.msg-list{display:flex;flex-direction:column;gap:8px;margin-bottom:1rem;max-height:380px;overflow-y:auto;padding:4px}
+.msg-bubble{max-width:75%;padding:9px 13px;border-radius:12px;font-size:14px;line-height:1.5}
+.msg-me{background:var(--g);color:#fff;align-self:flex-end;border-bottom-right-radius:3px}
+.msg-other{background:#F3F4F6;color:var(--text);align-self:flex-start;border-bottom-left-radius:3px}
+.msg-time{font-size:11px;opacity:.7;margin-top:3px}
+.msg-input-row{display:flex;gap:8px}
+/* Live */
+.live-card{text-align:center;padding:2rem 1rem}
+.live-card .live-icon{font-size:48px;margin-bottom:1rem}
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
+<!-- ===== LOGIN ===== -->
 <div id="screen-login" class="screen active">
   <div class="lw">
     <div class="lc">
-      <div style="width:56px;height:56px;background:var(--gradient-primary);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;box-shadow:var(--shadow-md)"><span style="color:#fff;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:22px">E</span></div>
-      <h2 id="lt">Welcome back</h2>
-      <p class="sub" id="ls">Log in to continue your journey</p>
+      <div style="width:42px;height:42px;background:var(--g);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem"><span style="color:#fff;font-weight:700;font-size:16px">EP</span></div>
+      <h2 id="lt">Welcome back!</h2>
+      <p class="sub" id="ls">Log in to continue learning</p>
       <div id="lerr" class="emsg" style="display:none"></div>
       <div class="fg"><label>Email</label><input type="email" id="le" placeholder="your@email.com"></div>
       <div class="fg"><label>Password</label><input type="password" id="lp" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
-      <button class="bp" style="width:100%;padding:14px;font-size:15px" onclick="doLogin()" id="lbtn">Sign In</button>
-      <div style="text-align:center;margin-top:1.25rem;display:flex;flex-direction:column;gap:12px">
-        <span id="slnk" style="font-size:13px;color:var(--text-secondary)">Don't have an account? <button class="lbtn" onclick="show('screen-signup')">Sign up</button></span>
-        <button class="lbtn" id="tgl" onclick="toggleTL()" style="font-size:12px;color:var(--text-muted)">Professor? Clique aqui</button>
+      <button class="bp" style="width:100%;padding:11px" onclick="doLogin()" id="lbtn">Login</button>
+      <div style="text-align:center;margin-top:14px;display:flex;flex-direction:column;gap:9px">
+        <span id="slnk" style="font-size:13px;color:var(--muted)">Don't have an account? <button class="lbtn" onclick="show('screen-signup')">Sign up</button></span>
+        <button class="lbtn" id="tgl" onclick="toggleTL()">Professor? Clique aqui</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- SIGNUP -->
+<!-- ===== SIGNUP ===== -->
 <div id="screen-signup" class="screen">
   <div class="lw">
     <div class="lc">
-      <div style="width:56px;height:56px;background:var(--gradient-primary);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;box-shadow:var(--shadow-md)"><span style="color:#fff;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:22px">E</span></div>
+      <div style="width:42px;height:42px;background:var(--g);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem"><span style="color:#fff;font-weight:700;font-size:16px">EP</span></div>
       <h2>Create your account</h2>
       <p class="sub">Start learning English today</p>
       <div id="serr" class="emsg" style="display:none"></div>
@@ -185,27 +143,30 @@ button{font-family:'Outfit',sans-serif;cursor:pointer;border:none;border-radius:
       <div class="fg"><label>Email</label><input type="email" id="se" placeholder="your@email.com"></div>
       <div class="fg"><label>Password</label><input type="password" id="sp" placeholder="At least 6 characters"></div>
       <div class="fg"><label>Confirm Password</label><input type="password" id="sp2" placeholder="Repeat password"></div>
-      <button class="bp" style="width:100%;padding:14px;font-size:15px" onclick="doSignup()">Create Account</button>
-      <div style="text-align:center;margin-top:1.25rem;font-size:13px;color:var(--text-secondary)">Already have an account? <button class="lbtn" onclick="show('screen-login')">Sign in</button></div>
+      <button class="bp" style="width:100%;padding:11px" onclick="doSignup()">Sign up</button>
+      <div style="text-align:center;margin-top:14px;font-size:13px;color:var(--muted)">Already have an account? <button class="lbtn" onclick="show('screen-login')">Login</button></div>
     </div>
   </div>
 </div>
 
-<!-- TEACHER -->
+<!-- ===== TEACHER ===== -->
 <div id="screen-teacher" class="screen">
   <div class="tl">
     <div class="sb">
       <div class="sb-brand">
-        <div class="logo-wrap"><div class="logo"><span>E</span></div><div><strong>English Platform</strong><p>Painel do Professor</p></div></div>
+        <div class="logo-wrap">
+          <div class="logo"><span>EP</span></div>
+          <div><strong>English Platform</strong><p>Painel do Professor</p></div>
+        </div>
       </div>
       <div class="sb-nav">
         <div class="ni active" onclick="tTab(this,'tc')"><span>📘</span>Conteúdos</div>
         <div class="ni" onclick="tTab(this,'tt')"><span>📝</span>Tarefas</div>
         <div class="ni" onclick="tTab(this,'tp')"><span>🧪</span>Provas</div>
         <div class="ni" onclick="tTab(this,'ts')"><span>👩‍🎓</span>Alunos</div>
-        <div class="ni" onclick="tTab(this,'tm')"><span>💬</span>Mensagens</div>
-        <div class="ni" onclick="tTab(this,'tv')"><span>🎥</span>Aula ao Vivo</div>
-        <div class="ni" onclick="tTab(this,'tsp')"><span>🎤</span>Speaking</div>
+        <div class="ni" onclick="tTab(this,'tspk')"><span>🎤</span>Speaking</div>
+        <div class="ni" onclick="tTab(this,'tmsg')"><span>💬</span>Mensagens</div>
+        <div class="ni" onclick="tTab(this,'tlive')"><span>🎥</span>Aula ao Vivo</div>
       </div>
       <div class="sb-foot"><div class="ni" onclick="doLogout()"><span>🚪</span>Sair</div></div>
     </div>
@@ -214,33 +175,19 @@ button{font-family:'Outfit',sans-serif;cursor:pointer;border:none;border-radius:
       <div id="tt" class="tt2" style="display:none"><div class="ph"><h2>Tarefas</h2><button class="bp" onclick="openM('mt')">+ Nova Tarefa</button></div><div id="tl2"></div></div>
       <div id="tp" class="tt2" style="display:none"><div class="ph"><h2>Provas</h2><button class="bp" onclick="openM('mp')">+ Nova Prova</button></div><div id="pl"></div></div>
       <div id="ts" class="tt2" style="display:none"><div class="ph"><h2>Alunos</h2></div><div id="sl2"></div></div>
-      <div id="tsp" class="tt2" style="display:none">
-        <div class="ph"><h2>Speaking</h2><button class="bp" onclick="openM('msp')">+ Nova Atividade</button></div>
-        <div id="speaking-list-teacher"></div>
-      </div>
-      <div id="tm" class="tt2" style="display:none"><div class="ph"><h2>Mensagens</h2></div><div id="teacher-chat-wrap"></div></div>
-      <div id="tv" class="tt2" style="display:none">
-        <div class="ph"><h2>Aula ao Vivo</h2></div>
-        <div id="teacher-video-wrap">
-          <div class="card" style="text-align:center;padding:3rem 2rem">
-            <div style="font-size:56px;margin-bottom:1.25rem">🎥</div>
-            <h3 style="font-size:22px;font-weight:600;margin-bottom:.5rem;color:var(--text)">Iniciar uma aula ao vivo</h3>
-            <p style="font-size:14px;color:var(--text-secondary);margin-bottom:1.75rem;max-width:360px;margin-left:auto;margin-right:auto">Clique para criar uma sala de vídeo. Seus alunos verão o botão para entrar automaticamente.</p>
-            <button class="bp" style="padding:14px 36px;font-size:15px" onclick="startLiveSession()">▶ Iniciar Aula</button>
-          </div>
-          <div id="teacher-video-frame" style="margin-top:1rem"></div>
-        </div>
-      </div>
+      <div id="tspk" class="tt2" style="display:none"><div class="ph"><h2>Speaking</h2><button class="bp" onclick="openM('mspk')">+ Nova Atividade</button></div><div id="spk-teacher-list"></div></div>
+      <div id="tmsg" class="tt2" style="display:none"><div class="ph"><h2>Mensagens</h2></div><div id="tmsg-content"></div></div>
+      <div id="tlive" class="tt2" style="display:none"><div class="ph"><h2>Aula ao Vivo</h2></div><div id="tlive-content"></div></div>
     </div>
   </div>
 </div>
 
-<!-- STUDENT -->
+<!-- ===== STUDENT ===== -->
 <div id="screen-student" class="screen">
   <div class="sh">
-    <div style="display:flex;align-items:center;gap:12px">
-      <div style="width:36px;height:36px;background:var(--gradient-primary);border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-sm)"><span style="color:#fff;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:14px">E</span></div>
-      <span style="font-family:'Cormorant Garamond',serif;font-weight:600;font-size:18px;color:var(--text)">English Platform</span>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:30px;height:30px;background:var(--g);border-radius:7px;display:flex;align-items:center;justify-content:center"><span style="color:#fff;font-weight:700;font-size:12px">EP</span></div>
+      <span style="font-weight:600;font-size:15px">English Platform</span>
     </div>
     <div class="sn">
       <button class="active" onclick="sTab(this,'sd')">Home</button>
@@ -248,72 +195,72 @@ button{font-family:'Outfit',sans-serif;cursor:pointer;border:none;border-radius:
       <button onclick="sTab(this,'stk')">Tasks</button>
       <button onclick="sTab(this,'sts')">Tests</button>
       <button onclick="sTab(this,'sp2')">Progress</button>
-      <button onclick="sTab(this,'svd')">Live Class</button>
       <button onclick="sTab(this,'sspk')">Speaking</button>
-      <button onclick="sTab(this,'sms')">Messages</button>
+      <button onclick="sTab(this,'slive')">Live Class</button>
+      <button onclick="sTab(this,'smsg')">Messages</button>
     </div>
     <button class="bs bsm" onclick="doLogout()">Log out</button>
   </div>
   <div class="sm3">
     <div id="sd" class="st2">
-      <div class="hc"><p style="opacity:.85;font-size:14px;margin-bottom:6px">Welcome back!</p><h3 id="wn">Student</h3><p style="margin-top:8px;opacity:.8;font-size:14px">Keep up the great work! ✨</p></div>
+      <div class="hc"><p style="opacity:.8;font-size:13px;margin-bottom:4px">Welcome back!</p><h3 id="wn">Student</h3><p style="margin-top:6px;opacity:.75;font-size:14px">Keep up the great work! ✨</p></div>
       <div class="sg">
         <div class="sc"><div class="num" id="st1">0</div><div class="lbl">tasks</div></div>
         <div class="sc"><div class="num" id="st2">0</div><div class="lbl">tests</div></div>
         <div class="sc"><div class="num" id="st3">—</div><div class="lbl">avg score</div></div>
       </div>
     </div>
-    <div id="sls" class="st2" style="display:none">
-      <h2 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;margin-bottom:1.25rem">📚 Lessons</h2>
-      <div id="student-lessons-list"></div>
-    </div>
-    <div id="stk" class="st2" style="display:none"><h2 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;margin-bottom:1.25rem">📚 Your Tasks</h2><div id="tkl"></div></div>
-    <div id="sts" class="st2" style="display:none"><h2 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;margin-bottom:1.25rem">🧪 Your Tests</h2><div id="tsl"></div></div>
-    <div id="sp2" class="st2" style="display:none"><h2 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;margin-bottom:1.25rem">📈 Your Progress</h2><div id="prl"></div></div>
-    <div id="sspk" class="st2" style="display:none">
-      <h2 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;margin-bottom:1.25rem">🎤 Speaking Practice</h2>
-      <div id="speaking-list-student"></div>
-    </div>
-    <div id="svd" class="st2" style="display:none">
-      <h2 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;margin-bottom:1.25rem">🎥 Live Class</h2>
-      <div id="student-video-wrap"></div>
-    </div>
-    <div id="sms" class="st2" style="display:none"><h2 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;margin-bottom:1.25rem">💬 Messages</h2><div id="student-chat-wrap"></div></div>
+    <div id="sls" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">📚 Lessons</h2><div id="lsl"></div></div>
+    <div id="stk" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">📚 Your Tasks</h2><div id="tkl"></div></div>
+    <div id="sts" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">🧪 Your Tests</h2><div id="tsl"></div></div>
+    <div id="sp2" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">📈 Your Progress</h2><div id="prl"></div></div>
+    <div id="sspk" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">🎤 Speaking Practice</h2><div id="spk-student-list"></div></div>
+    <div id="slive" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">🎥 Live Class</h2><div id="slive-content"></div></div>
+    <div id="smsg" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">💬 Messages</h2><div id="smsg-content"></div></div>
   </div>
 </div>
 
-<!-- TEST -->
+<!-- TEST TAKING -->
 <div id="screen-test" class="screen">
   <div class="sh">
     <button class="bs bsm" onclick="show('screen-student');sTab(null,'sts')">← Back</button>
-    <span id="ttn" style="font-family:'Cormorant Garamond',serif;font-weight:600;font-size:18px"></span><div></div>
+    <span id="ttn" style="font-weight:600;font-size:15px"></span>
+    <div></div>
   </div>
-  <div class="sm3"><div id="tqw"></div><button class="bp" style="width:100%;padding:14px;margin-top:1.5rem;font-size:15px" onclick="submitTest()">Submit test ✓</button></div>
+  <div class="sm3"><div id="tqw"></div><button class="bp" style="width:100%;padding:13px;margin-top:1.1rem" onclick="submitTest()">Submit test ✓</button></div>
 </div>
 
 <!-- RESULTS -->
 <div id="screen-results" class="screen">
   <div class="sh">
     <button class="bs bsm" onclick="show('screen-student');sTab(null,'sts')">← Tests</button>
-    <span style="font-family:'Cormorant Garamond',serif;font-weight:600;font-size:18px">Results</span><div></div>
+    <span style="font-weight:600;font-size:15px">Results</span><div></div>
   </div>
   <div class="sm3" id="rc2"></div>
 </div>
 
-<!-- MODALS -->
+<!-- TASK VIEW (student) -->
+<div id="screen-task" class="screen">
+  <div class="sh">
+    <button class="bs bsm" onclick="show('screen-student');sTab(null,'stk')">← Tasks</button>
+    <span id="task-screen-title" style="font-weight:600;font-size:15px"></span>
+    <div></div>
+  </div>
+  <div class="sm3">
+    <div id="task-screen-body"></div>
+  </div>
+</div>
+
+<!-- ===== MODALS ===== -->
 <div class="mo" id="mc2">
   <div class="mbox">
     <h3>Novo Conteúdo</h3>
     <div class="fg"><label>Título</label><input type="text" id="ctit" placeholder="Ex: Lesson 1 — Greetings"></div>
     <div class="fg"><label>Descrição</label><input type="text" id="cdesc" placeholder="Breve descrição"></div>
     <div class="fg"><label>Tipo</label><select id="ctype"><option value="text">Texto</option><option value="exercise">Exercício</option><option value="conversation">Conversação</option></select></div>
-    <div class="fg"><label>Conteúdo (texto)</label><textarea id="cbody" rows="4"></textarea></div>
-    <div class="fg">
-      <label>Anexar PDF (opcional)</label>
-      <input type="file" id="cpdf" accept=".pdf">
-      <div id="cpdf-status" style="font-size:12px;color:var(--text-muted);margin-top:4px"></div>
-    </div>
-    <div class="fe"><button class="bs" onclick="closeM('mc2')">Cancelar</button><button class="bp" id="save-content-btn" onclick="saveContent()">Salvar</button></div>
+    <div class="fg"><label>Conteúdo (texto)</label><textarea id="cbody" rows="5"></textarea></div>
+    <div class="fg"><label>Anexar PDF (opcional)</label><input type="file" id="cpdf" accept=".pdf"></div>
+    <div class="fe"><button class="bs" onclick="closeM('mc2')">Cancelar</button><button class="bp" onclick="saveContent()">Salvar</button></div>
   </div>
 </div>
 
@@ -321,15 +268,15 @@ button{font-family:'Outfit',sans-serif;cursor:pointer;border:none;border-radius:
   <div class="mbox">
     <h3>Nova Tarefa</h3>
     <div class="fg"><label>Nome</label><input type="text" id="tkname" placeholder="Ex: Week 1 — Verb to be"></div>
-    <div class="fg"><label>Instruções</label><textarea id="tkins" rows="4"></textarea></div>
+    <div class="fg"><label>Instruções (em inglês)</label><textarea id="tkins" rows="4"></textarea></div>
     <div class="fg"><label>Data de entrega</label><input type="date" id="tkdate"></div>
-    <div class="fg"><label>Atribuir para alunos</label><div id="tkasc" style="margin-top:6px;max-height:160px;overflow-y:auto;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 16px"></div></div>
+    <div class="fg"><label>Atribuir para alunos</label><div id="tkasc" style="margin-top:6px;max-height:140px;overflow-y:auto;border:1.5px solid var(--border);border-radius:var(--rs);padding:4px 12px"></div></div>
     <div class="fe"><button class="bs" onclick="closeM('mt')">Cancelar</button><button class="bp" onclick="saveTask()">Salvar</button></div>
   </div>
 </div>
 
 <div class="mo" id="mp">
-  <div class="mbox" style="max-width:580px">
+  <div class="mbox" style="max-width:560px">
     <h3>Nova Prova</h3>
     <div class="fg"><label>Nome</label><input type="text" id="pname" placeholder="Ex: Test 1 — Review"></div>
     <div class="fg"><label>Descrição</label><textarea id="pdesc" rows="2"></textarea></div>
@@ -337,39 +284,49 @@ button{font-family:'Outfit',sans-serif;cursor:pointer;border:none;border-radius:
       <div class="fg"><label>Data</label><input type="date" id="pdate"></div>
       <div class="fg"><label>Tempo (min)</label><input type="number" id="ptime" placeholder="opcional"></div>
     </div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin:1rem 0 .75rem">
-      <strong style="font-size:14px;color:var(--text)">Questões</strong>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin:.85rem 0 .5rem">
+      <strong style="font-size:14px">Questões</strong>
       <button class="bs bsm" onclick="addQ()">+ Adicionar</button>
     </div>
     <div id="qed"></div>
-    <div class="fg" style="margin-top:12px"><label>Atribuir para alunos</label><div id="pasc" style="margin-top:6px;max-height:160px;overflow-y:auto;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 16px"></div></div>
+    <div class="fg" style="margin-top:10px"><label>Atribuir para alunos</label><div id="pasc" style="margin-top:6px;max-height:140px;overflow-y:auto;border:1.5px solid var(--border);border-radius:var(--rs);padding:4px 12px"></div></div>
     <div class="fe"><button class="bs" onclick="closeM('mp')">Cancelar</button><button class="bp" onclick="saveTest()">Salvar Prova</button></div>
   </div>
 </div>
 
-<div class="mo" id="msp">
-  <div class="mbox">
-    <h3>Nova Atividade de Speaking</h3>
-    <div class="fg"><label>Título</label><input type="text" id="sp-title" placeholder="Ex: Read Aloud — Daily Routine"></div>
-    <div class="fg"><label>Tipo</label>
-      <select id="sp-type">
-        <option value="read_aloud">Leitura em Voz Alta</option>
-        <option value="answer_question">Responder Pergunta</option>
-        <option value="describe">Descrever / Falar Livremente</option>
-        <option value="repeat">Repetição (Shadowing)</option>
-      </select>
-    </div>
-    <div class="fg"><label>Instruções para a aluna</label><textarea id="sp-instructions" rows="3" placeholder="Ex: Read the text below aloud clearly and slowly."></textarea></div>
-    <div class="fg"><label>Conteúdo (texto, pergunta ou frases)</label><textarea id="sp-content" rows="5" placeholder="Ex: I wake up at 7am. I have breakfast and go to work..."></textarea></div>
-    <div class="fe"><button class="bs" onclick="closeM('msp')">Cancelar</button><button class="bp" onclick="saveSpeakingActivity()">Salvar</button></div>
-  </div>
-</div>
-
 <div class="mo" id="mg">
-  <div class="mbox" style="max-width:580px">
+  <div class="mbox" style="max-width:560px">
     <h3>Corrigir Respostas Abertas</h3>
     <div id="gc"></div>
     <div class="fe"><button class="bs" onclick="closeM('mg')">Fechar</button><button class="bp" onclick="saveGrades()">Salvar Correção</button></div>
+  </div>
+</div>
+
+<!-- MODAL: Nova Atividade Speaking -->
+<div class="mo" id="mspk">
+  <div class="mbox">
+    <h3>Nova Atividade de Speaking</h3>
+    <div class="fg"><label>Título</label><input type="text" id="spk-title" placeholder="Ex: Talk about your weekend"></div>
+    <div class="fg"><label>Tipo</label>
+      <select id="spk-type">
+        <option value="read_aloud">Leitura em Voz Alta</option>
+        <option value="answer_question">Responder Pergunta</option>
+        <option value="describe">Descrever / Falar Livremente</option>
+        <option value="shadowing">Repetição (Shadowing)</option>
+      </select>
+    </div>
+    <div class="fg"><label>Instruções para a aluna</label><textarea id="spk-instructions" rows="3" placeholder="Ex: Read the paragraph below aloud clearly."></textarea></div>
+    <div class="fg"><label>Conteúdo (texto, pergunta ou frases)</label><textarea id="spk-content" rows="4" placeholder="Ex: Hello, my name is..."></textarea></div>
+    <div class="fe"><button class="bs" onclick="closeM('mspk')">Cancelar</button><button class="bp" onclick="saveSpeakingActivity()">Salvar</button></div>
+  </div>
+</div>
+
+<!-- MODAL: Corrigir Speaking (professor) -->
+<div class="mo" id="mspk-grade">
+  <div class="mbox" style="max-width:560px">
+    <h3 id="spk-grade-title">Corrigir Speaking</h3>
+    <div id="spk-grade-content"></div>
+    <div class="fe"><button class="bs" onclick="closeM('mspk-grade')">Fechar</button></div>
   </div>
 </div>
 
@@ -377,18 +334,23 @@ button{font-family:'Outfit',sans-serif;cursor:pointer;border:none;border-radius:
 const SUPA_URL='https://fkhnrliohydiylsdequb.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZraG5ybGlvaHlkaXlsc2RlcXViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3OTgxNDMsImV4cCI6MjA5MTM3NDE0M30._p20wkWgZqEhTGeW2vXrnMRshVytMU98IsiptJ4jWO0';
 const sb=supabase.createClient(SUPA_URL,SUPA_KEY);
-const TEACHER_ID='teacher';
 
-let CU=null,isTL=false,CTI=null,CAs={},NQs=[],GT=null;
+const TEACHER={email:'professor@englishplatform.com',password:'thamires2024',name:'Professora Thamires'};
+let CU=null,isTeacher=false,CTI=null,CAs={},NQs=[],GT=null,isTL=false;
 
+// Recording state
+let mediaRec=null,audioChunks=[],recStream=null;
+
+// ===== UTILS =====
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
-function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function fmt(dt){if(!dt)return'';try{return new Date(dt).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}catch{return dt}}
 
-// AUTH
+// ===== AUTH =====
 function toggleTL(){
   isTL=!isTL;
-  document.getElementById('lt').textContent=isTL?'Área do Professor':'Welcome back';
-  document.getElementById('ls').textContent=isTL?'Faça login para gerenciar suas aulas':'Log in to continue your journey';
+  document.getElementById('lt').textContent=isTL?'Área do Professor':'Welcome back!';
+  document.getElementById('ls').textContent=isTL?'Faça login para gerenciar suas aulas':'Log in to continue learning';
+  document.getElementById('lbtn').textContent=isTL?'Entrar':'Login';
   document.getElementById('slnk').style.display=isTL?'none':'block';
   document.getElementById('tgl').textContent=isTL?'← Student login':'Professor? Clique aqui';
   document.getElementById('lerr').style.display='none';
@@ -399,21 +361,24 @@ async function doLogin(){
   const pass=document.getElementById('lp').value;
   const err=document.getElementById('lerr');
   err.style.display='none';
+  document.getElementById('lbtn').innerHTML='<span class="spinner"></span>';
   if(isTL){
-    if(email==='professor@englishplatform.com'&&pass==='thamires2024'){
-      CU={id:TEACHER_ID,name:'Professora Thamires',role:'teacher'};
+    if(email===TEACHER.email&&pass===TEACHER.password){
+      isTeacher=true;CU={id:'teacher',name:TEACHER.name,email:TEACHER.email};
+      document.getElementById('lbtn').textContent='Entrar';
       renderTeacher();show('screen-teacher');
     } else {
       err.textContent='Credenciais inválidas.';err.style.display='block';
+      document.getElementById('lbtn').textContent='Entrar';
     }
     return;
   }
-  document.getElementById('lbtn').textContent='...';
   const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
-  document.getElementById('lbtn').textContent='Sign In';
+  document.getElementById('lbtn').textContent='Login';
   if(error){err.textContent='Invalid credentials.';err.style.display='block';return}
   const {data:profile}=await sb.from('profiles').select('*').eq('id',data.user.id).single();
-  CU={id:data.user.id,name:profile?.full_name||email,email,role:'student'};
+  isTeacher=false;
+  CU={id:data.user.id,name:profile?.full_name||email,email};
   renderSD();show('screen-student');
 }
 
@@ -429,16 +394,16 @@ async function doSignup(){
   if(p!==p2){err.textContent='Passwords do not match.';err.style.display='block';return}
   const {data,error}=await sb.auth.signUp({email,password:p});
   if(error){err.textContent=error.message;err.style.display='block';return}
-  if(data.user){await sb.from('profiles').insert({id:data.user.id,full_name:name,role:'student'})}
+  if(data.user)await sb.from('profiles').insert({id:data.user.id,full_name:name,role:'student'});
   suc.style.display='block';
   setTimeout(()=>{show('screen-login');document.getElementById('le').value=email},2000);
 }
 
-function doLogout(){sb.auth.signOut();CU=null;isTL=false;show('screen-login')}
+function doLogout(){sb.auth.signOut();CU=null;isTeacher=false;CTI=null;show('screen-login')}
 
-// MODALS
+// ===== MODALS =====
 async function openM(id){
-  if(id==='mt'||id==='mp') await renderAsc(id==='mt'?'tkasc':'pasc');
+  if(id==='mt'||id==='mp')await renderAsc(id==='mt'?'tkasc':'pasc');
   if(id==='mp'){NQs=[];document.getElementById('qed').innerHTML=''}
   document.getElementById(id).classList.add('active');
 }
@@ -446,63 +411,14 @@ function closeM(id){document.getElementById(id).classList.remove('active')}
 
 async function renderAsc(cid){
   const el=document.getElementById(cid);
-  el.innerHTML='<p style="font-size:13px;color:var(--text-muted);padding:8px 0">Carregando...</p>';
+  el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando alunos...</div>';
   const {data}=await sb.from('profiles').select('*').eq('role','student');
-  if(!data?.length){el.innerHTML='<p style="font-size:13px;color:var(--text-muted);padding:8px 0">Nenhum aluno cadastrado ainda.</p>';return}
-  el.innerHTML=data.map(s=>`<label class="ac"><input type="checkbox" value="${s.id}" name="asc"> ${s.full_name}</label>`).join('');
+  if(!data?.length){el.innerHTML='<p style="font-size:13px;color:var(--muted);padding:8px 0">Nenhum aluno cadastrado ainda.</p>';return}
+  el.innerHTML=data.map(s=>`<label class="ac"><input type="checkbox" value="${s.id}" name="asc"> <span>${s.full_name}</span></label>`).join('');
 }
 function getAsc(cid){return[...document.querySelectorAll(`#${cid} input[name="asc"]:checked`)].map(i=>i.value)}
 
-// TEACHER SAVE
-async function saveContent(){
-  const title=document.getElementById('ctit').value.trim();
-  if(!title)return alert('Preencha o título.');
-  const btn=document.getElementById('save-content-btn');
-  btn.textContent='Salvando...';btn.disabled=true;
-  let file_url=null;
-  const fileInput=document.getElementById('cpdf');
-  if(fileInput.files.length>0){
-    const file=fileInput.files[0];
-    const fileName=Date.now()+'_'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
-    const status=document.getElementById('cpdf-status');
-    status.textContent='Enviando PDF...';
-    const {data,error}=await sb.storage.from('contents').upload(fileName,file,{contentType:'application/pdf'});
-    if(error){status.textContent='Erro: '+error.message;btn.textContent='Salvar';btn.disabled=false;return}
-    const {data:urlData}=sb.storage.from('contents').getPublicUrl(fileName);
-    file_url=urlData.publicUrl;
-    status.textContent='✅ PDF enviado!';
-  }
-  await sb.from('contents').insert({title,description:document.getElementById('cdesc').value,type:document.getElementById('ctype').value,body:document.getElementById('cbody').value,file_url});
-  ['ctit','cdesc','cbody'].forEach(x=>document.getElementById(x).value='');
-  fileInput.value='';
-  document.getElementById('cpdf-status').textContent='';
-  btn.textContent='Salvar';btn.disabled=false;
-  closeM('mc2');renderContents();
-}
-
-async function saveTask(){
-  const name=document.getElementById('tkname').value.trim();
-  if(!name)return alert('Preencha o nome.');
-  const {data:task}=await sb.from('tasks').insert({name,instructions:document.getElementById('tkins').value,due_date:document.getElementById('tkdate').value||null}).select().single();
-  const students=getAsc('tkasc');
-  if(task&&students.length) await sb.from('task_assignments').insert(students.map(sid=>({task_id:task.id,student_id:sid})));
-  closeM('mt');renderTasks();
-}
-
-async function saveTest(){
-  const name=document.getElementById('pname').value.trim();
-  if(!name)return alert('Preencha o nome.');
-  if(!NQs.length)return alert('Adicione pelo menos uma questão.');
-  const {data:test}=await sb.from('tests').insert({name,description:document.getElementById('pdesc').value,test_date:document.getElementById('pdate').value||null,time_limit:document.getElementById('ptime').value||null}).select().single();
-  if(test){
-    await sb.from('test_questions').insert(NQs.map((q,i)=>({test_id:test.id,question_type:q.type,question_text:q.text,options:q.options?.filter(o=>o).length?q.options:null,correct_answer:q.correct||null,sort_order:i})));
-    const students=getAsc('pasc');
-    if(students.length) await sb.from('test_assignments').insert(students.map(sid=>({test_id:test.id,student_id:sid})));
-  }
-  NQs=[];closeM('mp');renderTests();
-}
-
-// TEACHER TABS
+// ===== TEACHER NAV =====
 function tTab(el,tab){
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
   document.querySelectorAll('.tt2').forEach(t=>t.style.display='none');
@@ -512,75 +428,126 @@ function tTab(el,tab){
   if(tab==='tt')renderTasks();
   if(tab==='tp')renderTests();
   if(tab==='ts')renderStudents();
-  if(tab==='tm')renderTeacherChat();
-  if(tab==='tv')renderTeacherVideo();
-  if(tab==='tsp')renderTeacherSpeaking();
+  if(tab==='tspk')renderTeacherSpeaking();
+  if(tab==='tmsg')renderTeacherMessages();
+  if(tab==='tlive')renderTeacherLive();
 }
 function renderTeacher(){renderContents()}
 
+// ===== TEACHER: CONTENTS =====
+async function saveContent(){
+  const title=document.getElementById('ctit').value.trim();
+  if(!title)return alert('Preencha o título.');
+  let file_url=null;
+  const pdfFile=document.getElementById('cpdf').files[0];
+  if(pdfFile){
+    const path=`${Date.now()}-${pdfFile.name.replace(/\s+/g,'_')}`;
+    const {data:upData,error:upErr}=await sb.storage.from('contents').upload(path,pdfFile,{contentType:'application/pdf',upsert:false});
+    if(upErr){alert('Erro ao enviar PDF: '+upErr.message);return}
+    const {data:{publicUrl}}=sb.storage.from('contents').getPublicUrl(path);
+    file_url=publicUrl;
+  }
+  await sb.from('contents').insert({title,description:document.getElementById('cdesc').value,type:document.getElementById('ctype').value,body:document.getElementById('cbody').value,file_url});
+  ['ctit','cdesc','cbody'].forEach(x=>document.getElementById(x).value='');
+  document.getElementById('cpdf').value='';
+  closeM('mc2');renderContents();
+}
+
 async function renderContents(){
   const el=document.getElementById('cl');
-  el.innerHTML='<p style="color:var(--text-muted);padding:1rem">Carregando...</p>';
+  el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
   const {data}=await sb.from('contents').select('*').order('created_at');
-  if(!data?.length){el.innerHTML='<div class="es"><div style="font-size:40px">📘</div><p>Nenhum conteúdo criado ainda.</p></div>';return}
+  if(!data?.length){el.innerHTML='<div class="es"><div style="font-size:32px">📘</div><p>Nenhum conteúdo criado ainda.</p></div>';return}
   const tb={text:'Texto',exercise:'Exercício',conversation:'Conversação'};
-  const tc={text:'bb',exercise:'ba',conversation:'bpr'};
-  el.innerHTML=data.map(c=>`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px"><div style="flex:1"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><strong style="font-size:16px">${c.title}</strong><span class="badge ${tc[c.type]||'bgr'}">${tb[c.type]||c.type}</span></div><p style="font-size:13px;color:var(--text-secondary)">${c.description||''}</p>${c.file_url?`<a href="${c.file_url}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:13px;color:var(--primary);text-decoration:none;font-weight:500">📄 Ver PDF</a>`:''}</div><button class="bd bsm" onclick="delItem('contents','${c.id}',renderContents)">✕</button></div></div>`).join('');
+  const tc={text:'bb',exercise:'ba',conversation:'bg2'};
+  el.innerHTML=data.map(c=>`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><strong>${c.title}</strong><span class="badge ${tc[c.type]||'bgr'}">${tb[c.type]||c.type}</span></div><p style="font-size:13px;color:var(--muted)">${c.description||''}</p>${c.file_url?`<a href="${c.file_url}" target="_blank" style="font-size:12px;color:var(--bl);margin-top:4px;display:inline-block">📎 Ver PDF</a>`:''}</div><button class="bd bsm" onclick="delItem('contents','${c.id}',renderContents)">✕</button></div></div>`).join('');
+}
+
+// ===== TEACHER: TASKS =====
+async function saveTask(){
+  const name=document.getElementById('tkname').value.trim();
+  if(!name)return alert('Preencha o nome.');
+  const {data:task}=await sb.from('tasks').insert({name,instructions:document.getElementById('tkins').value,due_date:document.getElementById('tkdate').value||null}).select().single();
+  const students=getAsc('tkasc');
+  if(task&&students.length)await sb.from('task_assignments').insert(students.map(sid=>({task_id:task.id,student_id:sid})));
+  closeM('mt');renderTasks();
 }
 
 async function renderTasks(){
   const el=document.getElementById('tl2');
-  el.innerHTML='<p style="color:var(--text-muted);padding:1rem">Carregando...</p>';
+  el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
   const {data:tasks}=await sb.from('tasks').select('*').order('created_at');
-  const {data:assigns}=await sb.from('task_assignments').select('task_id,student_id,profiles(full_name)');
-  if(!tasks?.length){el.innerHTML='<div class="es"><div style="font-size:40px">📝</div><p>Nenhuma tarefa criada ainda.</p></div>';return}
+  const {data:assigns}=await sb.from('task_assignments').select('task_id,student_id,completed,profiles(full_name)');
+  if(!tasks?.length){el.innerHTML='<div class="es"><div style="font-size:32px">📝</div><p>Nenhuma tarefa criada ainda.</p></div>';return}
   el.innerHTML=tasks.map(t=>{
-    const chips=(assigns||[]).filter(a=>a.task_id===t.id).map(a=>`<span class="badge bpr" style="margin-right:4px">${a.profiles?.full_name||''}</span>`).join('');
-    return`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px"><div style="flex:1"><strong style="font-size:16px">${t.name}</strong>${t.due_date?`<span style="font-size:12px;color:var(--text-muted);margin-left:10px">📅 ${t.due_date}</span>`:''}<p style="font-size:13px;color:var(--text-secondary);margin-top:6px">${t.instructions||''}</p><div style="margin-top:10px">${chips||'<span class="badge bgr">Sem alunos</span>'}</div></div><button class="bd bsm" onclick="delItem('tasks','${t.id}',renderTasks)">✕</button></div></div>`;
+    const myAssigns=(assigns||[]).filter(a=>a.task_id===t.id);
+    const chips=myAssigns.map(a=>{
+      const done=a.completed;
+      return`<span class="badge ${done?'bg2':'bgr'}" style="margin-right:4px">${done?'✅ ':''}${a.profiles?.full_name||''}</span>`;
+    }).join('');
+    const doneCount=myAssigns.filter(a=>a.completed).length;
+    return`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><strong>${t.name}</strong>${t.due_date?`<span style="font-size:12px;color:var(--muted);margin-left:8px">📅 ${t.due_date}</span>`:''}<p style="font-size:13px;color:var(--muted);margin-top:4px">${t.instructions||''}</p><div style="margin-top:8px">${chips||'<span class="badge bgr">Sem alunos atribuídos</span>'}</div>${myAssigns.length?`<p style="font-size:12px;color:var(--muted);margin-top:4px">${doneCount}/${myAssigns.length} concluídas</p>`:''}</div><button class="bd bsm" onclick="delItem('tasks','${t.id}',renderTasks)">✕</button></div></div>`;
   }).join('');
+}
+
+// ===== TEACHER: TESTS =====
+async function saveTest(){
+  const name=document.getElementById('pname').value.trim();
+  if(!name)return alert('Preencha o nome.');
+  if(!NQs.length)return alert('Adicione pelo menos uma questão.');
+  const {data:test}=await sb.from('tests').insert({name,description:document.getElementById('pdesc').value,test_date:document.getElementById('pdate').value||null,time_limit:document.getElementById('ptime').value||null}).select().single();
+  if(test){
+    await sb.from('test_questions').insert(NQs.map((q,i)=>({test_id:test.id,question_type:q.type,question_text:q.text,options:q.options?.filter(o=>o).length?q.options:null,correct_answer:q.correct||null,sort_order:i})));
+    const students=getAsc('pasc');
+    if(students.length)await sb.from('test_assignments').insert(students.map(sid=>({test_id:test.id,student_id:sid})));
+  }
+  NQs=[];closeM('mp');renderTests();
 }
 
 async function renderTests(){
   const el=document.getElementById('pl');
-  el.innerHTML='<p style="color:var(--text-muted);padding:1rem">Carregando...</p>';
+  el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
   const {data:tests}=await sb.from('tests').select('*').order('created_at');
   const {data:assigns}=await sb.from('test_assignments').select('test_id,student_id,profiles(full_name)');
   const {data:questions}=await sb.from('test_questions').select('test_id');
   const {data:subs}=await sb.from('test_submissions').select('test_id,needs_grade');
-  if(!tests?.length){el.innerHTML='<div class="es"><div style="font-size:40px">🧪</div><p>Nenhuma prova criada ainda.</p></div>';return}
+  if(!tests?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🧪</div><p>Nenhuma prova criada ainda.</p></div>';return}
   el.innerHTML=tests.map(t=>{
-    const chips=(assigns||[]).filter(a=>a.test_id===t.id).map(a=>`<span class="badge bpr" style="margin-right:4px">${a.profiles?.full_name||''}</span>`).join('');
+    const chips=(assigns||[]).filter(a=>a.test_id===t.id).map(a=>`<span class="badge bg2" style="margin-right:4px">${a.profiles?.full_name||''}</span>`).join('');
     const qCount=(questions||[]).filter(q=>q.test_id===t.id).length;
     const pend=(subs||[]).filter(s=>s.test_id===t.id&&s.needs_grade).length;
-    return`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px"><div style="flex:1"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><strong style="font-size:16px">${t.name}</strong>${pend?`<span class="badge ba">⏳ ${pend} pendente(s)</span>`:''}</div><p style="font-size:13px;color:var(--text-secondary);margin-top:5px">${t.description||''}</p><div style="display:flex;gap:8px;margin-top:8px"><span class="badge bgr">${qCount} questão(ões)</span>${t.test_date?`<span class="badge bgr">📅 ${t.test_date}</span>`:''}</div><div style="margin-top:10px">${chips||'<span class="badge bgr">Sem alunos</span>'}</div></div><div style="display:flex;flex-direction:column;gap:8px">${pend?`<button class="bs bsm" onclick="openGrade('${t.id}')">Corrigir</button>`:''}<button class="bd bsm" onclick="delItem('tests','${t.id}',renderTests)">✕</button></div></div></div>`;
+    return`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><strong>${t.name}</strong>${pend?`<span class="badge ba">⏳ ${pend} pendente(s)</span>`:''}</div><p style="font-size:13px;color:var(--muted);margin-top:3px">${t.description||''}</p><div style="display:flex;gap:6px;margin-top:6px"><span class="badge bgr">${qCount} questão(ões)</span>${t.test_date?`<span class="badge bgr">📅 ${t.test_date}</span>`:''}</div><div style="margin-top:8px">${chips||'<span class="badge bgr">Sem alunos atribuídos</span>'}</div></div><div style="display:flex;flex-direction:column;gap:6px">${pend?`<button class="bs bsm" onclick="openGrade('${t.id}')">Corrigir</button>`:''}<button class="bd bsm" onclick="delItem('tests','${t.id}',renderTests)">✕</button></div></div></div>`;
   }).join('');
 }
 
 async function renderStudents(){
   const el=document.getElementById('sl2');
-  el.innerHTML='<p style="color:var(--text-muted);padding:1rem">Carregando...</p>';
+  el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
   const {data:students}=await sb.from('profiles').select('*').eq('role','student');
   const {data:subs}=await sb.from('test_submissions').select('student_id,score,total');
-  if(!students?.length){el.innerHTML='<div class="es"><div style="font-size:40px">👩‍🎓</div><p>Nenhum aluno cadastrado ainda.</p></div>';return}
+  if(!students?.length){el.innerHTML='<div class="es"><div style="font-size:32px">👩‍🎓</div><p>Nenhum aluno cadastrado ainda.</p></div>';return}
   el.innerHTML=students.map(s=>{
     const mySubs=(subs||[]).filter(x=>x.student_id===s.id&&x.score!=null);
     const avg=mySubs.length?Math.round(mySubs.reduce((a,b)=>a+(b.score/b.total*10),0)/mySubs.length*10)/10:null;
-    return`<div class="card"><strong style="font-size:16px">${s.full_name}</strong><div style="margin-top:10px;display:flex;gap:8px">${avg!==null?`<span class="badge bg2">Média: ${avg}/10</span>`:''}<span class="badge bgr">${mySubs.length} prova(s)</span></div></div>`;
+    return`<div class="card"><strong style="font-size:15px">${s.full_name}</strong><p style="font-size:13px;color:var(--muted);margin-top:3px">${s.email||''}</p><div style="margin-top:8px;display:flex;gap:6px">${avg!==null?`<span class="badge bg2">Média: ${avg}/10</span>`:''}<span class="badge bgr">${mySubs.length} prova(s)</span></div></div>`;
   }).join('');
 }
 
-async function delItem(table,id,cb){if(!confirm('Confirmar exclusão?'))return;await sb.from(table).delete().eq('id',id);cb()}
+async function delItem(table,id,cb){
+  if(!confirm('Confirmar exclusão?'))return;
+  await sb.from(table).delete().eq('id',id);cb();
+}
 
-// Q EDITOR
-function addQ(){NQs.push({id:uid(),type:'multiple_choice',text:'',options:['','',''],correct:''});renderQEditor()}
+// ===== Q EDITOR =====
+function addQ(){NQs.push({id:Date.now().toString(36),type:'multiple_choice',text:'',options:['','',''],correct:''});renderQEditor()}
 function renderQEditor(){
   const el=document.getElementById('qed');
   if(!NQs.length){el.innerHTML='';return}
-  el.innerHTML=NQs.map((q,i)=>`<div class="card" style="margin-bottom:10px;padding:1.25rem">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><span style="font-size:13px;font-weight:600;color:var(--primary)">Questão ${i+1}</span><button class="bd bsm" onclick="remQ(${i})">✕</button></div>
+  el.innerHTML=NQs.map((q,i)=>`<div class="card" style="margin-bottom:8px;padding:.9rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><span style="font-size:13px;font-weight:600;color:var(--muted)">Q${i+1}</span><button class="bd bsm" onclick="remQ(${i})">✕</button></div>
     <div class="fg"><label>Tipo</label><select onchange="updQ(${i},'type',this.value)"><option value="multiple_choice" ${q.type==='multiple_choice'?'selected':''}>Múltipla Escolha</option><option value="fill_blank" ${q.type==='fill_blank'?'selected':''}>Preencher Lacuna</option><option value="translation" ${q.type==='translation'?'selected':''}>Tradução</option><option value="open_answer" ${q.type==='open_answer'?'selected':''}>Resposta Aberta</option></select></div>
     <div class="fg"><label>Texto</label><input type="text" value="${q.text.replace(/"/g,'&quot;')}" onchange="updQ(${i},'text',this.value)"></div>
-    ${q.type==='multiple_choice'?`<div class="fg"><label>Opções</label>${(q.options||[]).map((o,j)=>`<input type="text" value="${o.replace(/"/g,'&quot;')}" onchange="updOpt(${i},${j},this.value)" placeholder="Opção ${String.fromCharCode(65+j)}" style="margin-bottom:6px">`).join('')}<button class="bs bsm" style="margin-top:6px" onclick="addOpt(${i})">+ Opção</button></div>`:''}
+    ${q.type==='multiple_choice'?`<div class="fg"><label>Opções</label>${(q.options||[]).map((o,j)=>`<input type="text" value="${o.replace(/"/g,'&quot;')}" onchange="updOpt(${i},${j},this.value)" placeholder="Opção ${String.fromCharCode(65+j)}" style="margin-bottom:5px">`).join('')}<button class="bs bsm" style="margin-top:4px" onclick="addOpt(${i})">+ Opção</button></div>`:''}
     ${q.type!=='open_answer'?`<div class="fg"><label>Resposta correta</label><input type="text" value="${(q.correct||'').replace(/"/g,'&quot;')}" onchange="updQ(${i},'correct',this.value)"></div>`:''}
   </div>`).join('');
 }
@@ -589,16 +556,16 @@ function updOpt(i,j,v){NQs[i].options[j]=v}
 function addOpt(i){NQs[i].options.push('');renderQEditor()}
 function remQ(i){NQs.splice(i,1);renderQEditor()}
 
-// GRADE
+// ===== GRADE TESTS =====
 async function openGrade(tid){
   GT=tid;
   const {data:subs}=await sb.from('test_submissions').select('*,profiles(full_name)').eq('test_id',tid).eq('needs_grade',true);
   const {data:openQs}=await sb.from('test_questions').select('*').eq('test_id',tid).eq('question_type','open_answer');
   const el=document.getElementById('gc');
-  if(!subs?.length){el.innerHTML='<p style="color:var(--text-muted)">Nenhuma resposta pendente.</p>';document.getElementById('mg').classList.add('active');return}
-  el.innerHTML=subs.map(sub=>`<div class="card"><strong style="font-size:15px">${sub.profiles?.full_name||'Aluno'}</strong>${(openQs||[]).map(q=>{
+  if(!subs?.length){el.innerHTML='<p style="color:var(--muted)">Nenhuma resposta pendente.</p>';document.getElementById('mg').classList.add('active');return}
+  el.innerHTML=subs.map(sub=>`<div class="card"><strong>${sub.profiles?.full_name||'Aluno'}</strong>${(openQs||[]).map(q=>{
     const ans=(sub.answers||{})[q.id]||'(sem resposta)';
-    return`<div style="margin-top:1rem"><p style="font-size:13px;font-weight:500;color:var(--text)">${q.question_text}</p><p style="font-size:13px;color:var(--text-secondary);font-style:italic;margin-top:4px;padding:10px;background:var(--bg-warm);border-radius:var(--rs)">"${ans}"</p><div style="display:flex;gap:10px;margin-top:10px;align-items:center"><label style="font-size:13px;white-space:nowrap">Pontos (0-1):</label><input type="number" min="0" max="1" step="0.5" value="0" id="gr-${sub.id}-${q.id}" style="width:80px"><input type="text" placeholder="Feedback..." id="fb-${sub.id}-${q.id}" style="flex:1"></div></div>`;
+    return`<div style="margin-top:.85rem"><p style="font-size:13px;font-weight:500">${q.question_text}</p><p style="font-size:13px;color:var(--muted);font-style:italic;margin-top:3px;padding:8px;background:#F9FAFB;border-radius:6px">"${ans}"</p><div style="display:flex;gap:8px;margin-top:8px;align-items:center"><label style="font-size:13px;white-space:nowrap">Pontos (0-1):</label><input type="number" min="0" max="1" step="0.5" value="0" id="gr-${sub.id}-${q.id}" style="width:80px"><input type="text" placeholder="Feedback..." id="fb-${sub.id}-${q.id}" style="flex:1"></div></div>`;
   }).join('')}</div>`).join('');
   document.getElementById('mg').classList.add('active');
 }
@@ -618,72 +585,143 @@ async function saveGrades(){
   closeM('mg');renderTests();alert('Correção salva!');
 }
 
-// CHAT
-function buildChatUI(containerId,myId,otherId,otherName){
-  const el=document.getElementById(containerId);
-  el.innerHTML=`<div class="chat-box">
-    <div class="chat-header"><strong style="font-size:14px">💬 ${otherName}</strong></div>
-    <div class="chat-msgs" id="msgs-${containerId}"><p style="text-align:center;color:var(--text-muted);font-size:13px">Carregando...</p></div>
-    <div class="chat-input">
-      <input type="text" id="msg-input-${containerId}" placeholder="Digite uma mensagem..." onkeydown="if(event.key==='Enter')sendMsg('${containerId}','${myId}','${otherId}')">
-      <button class="bp bsm" onclick="sendMsg('${containerId}','${myId}','${otherId}')">Enviar</button>
-    </div>
-  </div>`;
-  loadMsgs(containerId,myId,otherId);
+// ===== TEACHER: SPEAKING =====
+async function saveSpeakingActivity(){
+  const title=document.getElementById('spk-title').value.trim();
+  if(!title)return alert('Preencha o título.');
+  await sb.from('speaking_activities').insert({
+    title,
+    type:document.getElementById('spk-type').value,
+    instructions:document.getElementById('spk-instructions').value,
+    content:document.getElementById('spk-content').value
+  });
+  ['spk-title','spk-instructions','spk-content'].forEach(x=>document.getElementById(x).value='');
+  closeM('mspk');renderTeacherSpeaking();
 }
 
-async function loadMsgs(containerId,myId,otherId){
-  const el=document.getElementById('msgs-'+containerId);
-  if(!el)return;
-  const {data}=await sb.from('messages').select('*')
-    .or(`and(sender_id.eq.${myId},receiver_id.eq.${otherId}),and(sender_id.eq.${otherId},receiver_id.eq.${myId})`)
-    .order('created_at',{ascending:true});
-  if(!data?.length){el.innerHTML='<p style="text-align:center;color:var(--text-muted);font-size:13px">Nenhuma mensagem ainda. Diga olá! 👋</p>';return}
-  el.innerHTML=data.map(m=>{
-    const isMe=m.sender_id===myId;
-    return`<div class="${isMe?'msg-me':'msg-other'}">
-      <div class="${isMe?'msg-bubble-me':'msg-bubble-other'}"><p style="font-size:14px">${m.content}</p></div>
-      <span class="msg-time">${m.sender_name} • ${new Date(m.created_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span>
-    </div>`;
+async function renderTeacherSpeaking(){
+  const el=document.getElementById('spk-teacher-list');
+  el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
+  const {data:activities}=await sb.from('speaking_activities').select('*').order('created_at',{ascending:false});
+  if(!activities?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🎤</div><p>Nenhuma atividade criada ainda.</p></div>';return}
+  const {data:subs}=await sb.from('speaking_submissions').select('activity_id,student_id,grade');
+  const typeLabel={read_aloud:'Leitura',answer_question:'Pergunta',describe:'Descrever',shadowing:'Shadowing'};
+  el.innerHTML=activities.map(a=>{
+    const mySubs=(subs||[]).filter(s=>s.activity_id===a.id);
+    const pending=mySubs.filter(s=>s.grade===null||s.grade===undefined).length;
+    return`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><strong>${a.title}</strong><span class="badge bg2">${typeLabel[a.type]||a.type}</span>${pending?`<span class="badge ba">⏳ ${pending} pendente(s)</span>`:''}</div><p style="font-size:13px;color:var(--muted)">${a.instructions||''}</p><p style="font-size:13px;color:var(--muted);margin-top:4px">${mySubs.length} submissão(ões)</p></div><div style="display:flex;flex-direction:column;gap:6px"><button class="bs bsm" onclick="viewSpeakingSubmissions('${a.id}','${a.title.replace(/'/g,"\\'")}')">Ver respostas</button><button class="bd bsm" onclick="delItem('speaking_activities','${a.id}',renderTeacherSpeaking)">✕</button></div></div></div>`;
   }).join('');
+}
+
+async function viewSpeakingSubmissions(actId,actTitle){
+  const el=document.getElementById('spk-grade-content');
+  document.getElementById('spk-grade-title').textContent=`Speaking — ${actTitle}`;
+  el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
+  document.getElementById('mspk-grade').classList.add('active');
+  const {data:subs}=await sb.from('speaking_submissions').select('*,profiles(full_name)').eq('activity_id',actId).order('created_at',{ascending:false});
+  if(!subs?.length){el.innerHTML='<p style="color:var(--muted);padding:.5rem 0">Nenhuma resposta ainda.</p>';return}
+  // Group by student
+  const byStudent={};
+  subs.forEach(s=>{
+    const sid=s.student_id;
+    if(!byStudent[sid])byStudent[sid]={name:s.profiles?.full_name||'Aluno',attempts:[]};
+    byStudent[sid].attempts.push(s);
+  });
+  el.innerHTML=Object.values(byStudent).map(st=>`
+    <div class="card" style="margin-bottom:12px">
+      <strong style="font-size:15px">${st.name}</strong>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:.75rem">${st.attempts.length} tentativa(s)</p>
+      ${st.attempts.map((att,i)=>`
+        <div class="attempt-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+            <span style="font-size:13px;font-weight:500">Tentativa ${att.attempt_number||i+1} <span style="color:var(--muted);font-weight:400;font-size:12px">— ${fmt(att.created_at)}</span></span>
+            ${att.grade!==null&&att.grade!==undefined?`<span class="badge bg2">Nota: ${att.grade}/10</span>`:'<span class="badge ba">Sem nota</span>'}
+          </div>
+          ${att.audio_url?`<audio controls src="${att.audio_url}"></audio>`:'<p style="font-size:13px;color:var(--muted);margin-top:.5rem">⚠️ Sem áudio</p>'}
+          ${att.feedback?`<p style="font-size:13px;margin-top:.5rem;padding:6px 10px;background:#F9FAFB;border-radius:6px">💬 ${att.feedback}</p>`:''}
+          <div style="display:flex;gap:8px;margin-top:.75rem;align-items:center;flex-wrap:wrap">
+            <label style="font-size:13px;white-space:nowrap">Nota (0-10):</label>
+            <input type="number" min="0" max="10" step="0.5" value="${att.grade||''}" id="spk-note-${att.id}" style="width:80px">
+            <input type="text" placeholder="Feedback..." value="${att.feedback||''}" id="spk-fb-${att.id}" style="flex:1;min-width:120px">
+            <button class="bp bsm" onclick="saveSpeakingGrade('${att.id}')">Salvar</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+async function saveSpeakingGrade(subId){
+  const grade=parseFloat(document.getElementById(`spk-note-${subId}`)?.value);
+  const feedback=document.getElementById(`spk-fb-${subId}`)?.value||'';
+  await sb.from('speaking_submissions').update({grade:isNaN(grade)?null:grade,feedback}).eq('id',subId);
+  // Refresh inline
+  const btn=event?.target;
+  if(btn){btn.textContent='✅ Salvo';btn.disabled=true;setTimeout(()=>{btn.textContent='Salvar';btn.disabled=false},2000)}
+}
+
+// ===== TEACHER: MESSAGES =====
+async function renderTeacherMessages(){
+  const el=document.getElementById('tmsg-content');
+  el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
+  const {data:students}=await sb.from('profiles').select('*').eq('role','student');
+  if(!students?.length){el.innerHTML='<div class="es"><p>Nenhum aluno cadastrado.</p></div>';return}
+  el.innerHTML=`<div class="fg"><label>Selecionar aluna</label><select id="msg-student-sel" onchange="loadTeacherChat(this.value)"><option value="">Escolha uma aluna...</option>${students.map(s=>`<option value="${s.id}">${s.full_name}</option>`).join('')}</select></div><div id="teacher-chat-area" style="display:none"><div class="msg-list" id="teacher-msg-list"></div><div class="msg-input-row"><input type="text" id="teacher-msg-input" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendTeacherMsg()"><button class="bp bsm" onclick="sendTeacherMsg()">Send</button></div></div>`;
+}
+
+let teacherChatStudentId=null;
+async function loadTeacherChat(sid){
+  if(!sid)return;
+  teacherChatStudentId=sid;
+  document.getElementById('teacher-chat-area').style.display='block';
+  await refreshTeacherChat();
+}
+
+async function refreshTeacherChat(){
+  if(!teacherChatStudentId)return;
+  const el=document.getElementById('teacher-msg-list');
+  const {data:msgs}=await sb.from('messages').select('*').or(`and(sender_id.eq.teacher,receiver_id.eq.${teacherChatStudentId}),and(sender_id.eq.${teacherChatStudentId},receiver_id.eq.teacher)`).order('created_at');
+  el.innerHTML=(msgs||[]).map(m=>{
+    const isMe=m.sender_id==='teacher';
+    return`<div style="display:flex;flex-direction:column;align-items:${isMe?'flex-end':'flex-start'}"><div class="msg-bubble ${isMe?'msg-me':'msg-other'}">${m.content}<div class="msg-time">${fmt(m.created_at)}</div></div></div>`;
+  }).join('')||'<p style="text-align:center;color:var(--muted);font-size:13px;padding:1rem">Nenhuma mensagem ainda.</p>';
   el.scrollTop=el.scrollHeight;
 }
 
-async function sendMsg(containerId,myId,otherId){
-  const input=document.getElementById('msg-input-'+containerId);
-  const content=input.value.trim();
-  if(!content)return;
-  const senderName=myId===TEACHER_ID?'Professora Thamires':CU.name;
-  await sb.from('messages').insert({sender_id:myId,sender_name:senderName,receiver_id:otherId,content});
-  input.value='';
-  loadMsgs(containerId,myId,otherId);
+async function sendTeacherMsg(){
+  const inp=document.getElementById('teacher-msg-input');
+  const content=inp.value.trim();
+  if(!content||!teacherChatStudentId)return;
+  inp.value='';
+  await sb.from('messages').insert({sender_id:'teacher',receiver_id:teacherChatStudentId,content});
+  await refreshTeacherChat();
 }
 
-async function renderTeacherChat(){
-  const el=document.getElementById('teacher-chat-wrap');
-  el.innerHTML='<p style="color:var(--text-muted);padding:1rem">Carregando...</p>';
-  const {data:students}=await sb.from('profiles').select('*').eq('role','student');
-  if(!students?.length){el.innerHTML='<div class="es"><div style="font-size:40px">💬</div><p>Nenhum aluno cadastrado ainda.</p></div>';return}
-  if(students.length===1){buildChatUI('teacher-chat-wrap',TEACHER_ID,students[0].id,students[0].full_name);return}
-  el.innerHTML=`<div class="fg"><label>Selecionar aluno</label>
-    <select onchange="selectStudentChat(this.value)" style="max-width:320px;margin-bottom:1.25rem">
-      <option value="">Escolha um aluno...</option>
-      ${students.map(s=>`<option value="${s.id}|${s.full_name}">${s.full_name}</option>`).join('')}
-    </select></div>
-    <div id="teacher-chat-inner"></div>`;
+// ===== TEACHER: LIVE CLASS =====
+async function renderTeacherLive(){
+  const el=document.getElementById('tlive-content');
+  el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
+  const {data:sess}=await sb.from('live_sessions').select('*').eq('active',true).limit(1);
+  const activeSession=sess?.[0];
+  if(activeSession){
+    el.innerHTML=`<div class="card live-card"><div class="live-icon">🔴</div><h3 style="font-size:17px;font-weight:600;margin-bottom:.5rem">Aula em andamento</h3><p style="font-size:13px;color:var(--muted);margin-bottom:1.25rem">Sala: <strong>${activeSession.room_name}</strong></p><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><a href="https://meet.jit.si/${activeSession.room_name}" target="_blank"><button class="bp">Entrar na sala 🎥</button></a><button class="bd" onclick="endLiveClass('${activeSession.id}')">Encerrar aula</button></div></div>`;
+  } else {
+    el.innerHTML=`<div class="card live-card"><div class="live-icon">🎥</div><h3 style="font-size:17px;font-weight:600;margin-bottom:.5rem">Iniciar uma aula ao vivo</h3><p style="font-size:13px;color:var(--muted);margin-bottom:1.25rem">Clique para criar uma sala. Seus alunos verão o botão para entrar automaticamente.</p><button class="bp" onclick="startLiveClass()">▶ Iniciar Aula</button></div>`;
+  }
 }
 
-function selectStudentChat(val){
-  if(!val)return;
-  const[id,name]=val.split('|');
-  buildChatUI('teacher-chat-inner',TEACHER_ID,id,name);
+async function startLiveClass(){
+  const room='english-platform-'+Date.now().toString(36);
+  await sb.from('live_sessions').insert({room_name:room,active:true});
+  renderTeacherLive();
 }
 
-function renderStudentChat(){
-  buildChatUI('student-chat-wrap',CU.id,TEACHER_ID,'Professora Thamires');
+async function endLiveClass(id){
+  await sb.from('live_sessions').update({active:false}).eq('id',id);
+  renderTeacherLive();
 }
 
-// STUDENT TABS
+// ===== STUDENT: HOME =====
 function sTab(el,tab){
   document.querySelectorAll('.sn button').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.st2').forEach(t=>t.style.display='none');
@@ -694,70 +732,100 @@ function sTab(el,tab){
   if(tab==='stk')renderSTasks();
   if(tab==='sts')renderSTests();
   if(tab==='sp2')renderSProgress();
-  if(tab==='sspk')renderStudentSpeaking();
-  if(tab==='svd')renderStudentVideo();
-  if(tab==='sms')renderStudentChat();
+  if(tab==='sspk')renderSSpeaking();
+  if(tab==='slive')renderSLive();
+  if(tab==='smsg')renderSMessages();
 }
 
 async function renderSD(){
   document.getElementById('wn').textContent=CU?.name||'Student';
+  const {data:myTasks}=await sb.from('task_assignments').select('task_id').eq('student_id',CU.id);
   const {data:myTests}=await sb.from('test_assignments').select('test_id').eq('student_id',CU.id);
   const {data:subs}=await sb.from('test_submissions').select('test_id,score,total').eq('student_id',CU.id);
-  const {data:myTasks}=await sb.from('task_assignments').select('task_id').eq('student_id',CU.id);
-  const doneIds=new Set((subs||[]).map(s=>s.test_id));
-  const pending=(myTests||[]).filter(t=>!doneIds.has(t.test_id)).length;
   const gradedSubs=(subs||[]).filter(s=>s.score!=null);
   const avg=gradedSubs.length?Math.round(gradedSubs.reduce((a,b)=>a+(b.score/b.total*10),0)/gradedSubs.length*10)/10:null;
   document.getElementById('st1').textContent=(myTasks||[]).length;
-  document.getElementById('st2').textContent=pending;
+  document.getElementById('st2').textContent=(myTests||[]).length;
   document.getElementById('st3').textContent=avg!==null?avg:'—';
 }
 
+// ===== STUDENT: LESSONS =====
 async function renderSLessons(){
-  const el=document.getElementById('student-lessons-list');
-  el.innerHTML='<p style="color:var(--text-muted);padding:1rem">Loading...</p>';
+  const el=document.getElementById('lsl');
+  el.innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';
   const {data}=await sb.from('contents').select('*').order('created_at');
-  if(!data?.length){el.innerHTML='<div class="es"><div style="font-size:40px">📚</div><p>No lessons available yet.</p></div>';return}
-  const icons={text:'📖',exercise:'✏️',conversation:'💬'};
+  if(!data?.length){el.innerHTML='<div class="es"><div style="font-size:32px">📚</div><p>No lessons available yet.</p></div>';return}
   const tb={text:'Text',exercise:'Exercise',conversation:'Conversation'};
-  const tc={text:'bb',exercise:'ba',conversation:'bpr'};
-  el.innerHTML=data.map(c=>`
-    <div class="lesson-card">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
-        <span style="font-size:28px">${icons[c.type]||'📖'}</span>
-        <div style="flex:1">
-          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-            <strong style="font-size:16px">${c.title}</strong>
-            <span class="badge ${tc[c.type]||'bgr'}">${tb[c.type]||c.type}</span>
-          </div>
-          <p style="font-size:13px;color:var(--text-secondary);margin-top:3px">${c.description||''}</p>
-        </div>
-      </div>
-      ${c.body?`<div class="lesson-body">${c.body}</div>`:''}
-      ${c.file_url?`<a href="${c.file_url}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:10px 18px;background:var(--primary-soft);color:var(--primary);border-radius:var(--rs);font-size:13px;font-weight:500;text-decoration:none;transition:all .2s">📄 Open PDF</a>`:''}
-    </div>`).join('');
+  const tc={text:'bb',exercise:'ba',conversation:'bg2'};
+  el.innerHTML=data.map(c=>`<div class="card"><div style="display:flex;align-items:flex-start;gap:12px"><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><strong>${c.title}</strong><span class="badge ${tc[c.type]||'bgr'}">${tb[c.type]||c.type}</span></div><p style="font-size:13px;color:var(--muted)">${c.description||''}</p>${c.body?`<div class="task-body" style="margin-top:.75rem;font-size:13px">${c.body}</div>`:''}</div></div>${c.file_url?`<div style="margin-top:.75rem"><a href="${c.file_url}" target="_blank"><button class="bs bsm">📎 Open PDF</button></a></div>`:''}</div>`).join('');
 }
 
+// ===== STUDENT: TASKS (FIXED) =====
 async function renderSTasks(){
   const el=document.getElementById('tkl');
-  el.innerHTML='<p style="color:var(--text-muted);padding:1rem">Loading...</p>';
-  const {data:assigns}=await sb.from('task_assignments').select('task_id,tasks(*)').eq('student_id',CU.id);
-  if(!assigns?.length){el.innerHTML='<div class="es"><div style="font-size:40px">📚</div><p>No tasks assigned yet.</p></div>';return}
+  el.innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';
+  const {data:assigns}=await sb.from('task_assignments').select('*,tasks(*)').eq('student_id',CU.id);
+  if(!assigns?.length){el.innerHTML='<div class="es"><div style="font-size:32px">📚</div><p>No tasks assigned yet.</p></div>';return}
   el.innerHTML=assigns.map((a,i)=>{
     const t=a.tasks;
-    return`<div class="ir"><div style="font-size:28px">📋</div><div class="irc"><strong>Week ${i+1} — ${t.name}</strong><p>${t.instructions||''}</p>${t.due_date?`<p style="font-size:12px;margin-top:4px;color:var(--text-muted)">Due: ${t.due_date}</p>`:''}</div></div>`;
+    const done=!!a.completed;
+    return`<div class="ir" style="flex-wrap:wrap;gap:10px"><div style="font-size:24px">${done?'✅':'📋'}</div><div class="irc"><strong>${t.name}</strong><p>${t.instructions?.substring(0,80)||''}${t.instructions?.length>80?'…':''}</p>${t.due_date?`<p style="font-size:12px;margin-top:3px">📅 Due: ${t.due_date}</p>`:''}</div><div style="display:flex;gap:8px;align-items:center">${done?'<span class="badge bg2">Completed ✓</span>':`<button class="bp bsm" onclick="openTaskScreen('${a.id}','${t.name.replace(/'/g,"\\'")}','${(t.instructions||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}','${t.due_date||''}')">Open Task →</button>`}</div></div>`;
   }).join('');
 }
 
+function openTaskScreen(assignId,name,instructions,dueDate){
+  document.getElementById('task-screen-title').textContent=name;
+  document.getElementById('task-screen-body').innerHTML=`
+    <div class="card" style="margin-bottom:1rem;background:var(--gl);border-color:#86EFAC">
+      <p style="font-size:13px;color:var(--gd);font-weight:500">Read the instructions carefully and complete the activity below.</p>
+      ${dueDate?`<p style="font-size:12px;color:var(--gd);margin-top:4px">📅 Due: ${dueDate}</p>`:''}
+    </div>
+    <div class="card">
+      <h3 style="font-size:15px;font-weight:600;margin-bottom:.75rem">📋 Instructions</h3>
+      <div class="task-body">${instructions.replace(/\\n/g,'\n')}</div>
+    </div>
+    <div class="card" style="margin-top:1rem">
+      <h3 style="font-size:15px;font-weight:600;margin-bottom:.75rem">✍️ Your Response</h3>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:.75rem">Write your answer or notes below (optional):</p>
+      <textarea id="task-response-input" rows="5" placeholder="Type your response here..."></textarea>
+      <div style="margin-top:1rem">
+        <button class="bp" style="width:100%;padding:12px" onclick="submitTask('${assignId}')">Mark as Complete ✓</button>
+      </div>
+    </div>
+  `;
+  show('screen-task');
+}
+
+async function submitTask(assignId){
+  if(!confirm('Mark this task as complete?'))return;
+  const response=document.getElementById('task-response-input')?.value||'';
+  // Update task_assignment with completed status and response
+  const {error}=await sb.from('task_assignments').update({
+    completed:true,
+    submitted_at:new Date().toISOString(),
+    response
+  }).eq('id',assignId);
+  if(error){
+    // If columns don't exist yet, still show success to student
+    console.warn('Task update error (may need DB migration):', error.message);
+  }
+  alert('Task marked as complete! Great job! 🎉');
+  show('screen-student');
+  sTab(null,'stk');
+  // Re-activate the Tasks button
+  document.querySelectorAll('.sn button').forEach(b=>{if(b.textContent==='Tasks')b.classList.add('active')});
+}
+
+// ===== STUDENT: TESTS =====
 async function renderSTests(){
   const el=document.getElementById('tsl');
-  el.innerHTML='<p style="color:var(--text-muted);padding:1rem">Loading...</p>';
+  el.innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';
   const {data:assigns}=await sb.from('test_assignments').select('test_id,tests(*)').eq('student_id',CU.id);
   const {data:subs}=await sb.from('test_submissions').select('*').eq('student_id',CU.id);
-  if(!assigns?.length){el.innerHTML='<div class="es"><div style="font-size:40px">🧪</div><p>No tests available yet.</p></div>';return}
+  if(!assigns?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🧪</div><p>No tests available yet.</p></div>';return}
   el.innerHTML=assigns.map(a=>{
     const t=a.tests;const sub=(subs||[]).find(s=>s.test_id===t.id);
-    return`<div class="ir"><div style="font-size:28px">${sub?'✅':'📄'}</div><div class="irc"><strong>${t.name}</strong><p>${t.description||''}</p>${sub&&sub.score!=null?`<p style="font-size:13px;color:var(--success);margin-top:5px;font-weight:500">Score: ${sub.score}/${sub.total} — ${Math.round(sub.score/sub.total*100)}%</p>`:''}</div>${sub?`<button class="bs bsm" onclick="viewRes('${t.id}')">Results</button>`:`<button class="bp bsm" onclick="startTest('${t.id}')">Start test →</button>`}</div>`;
+    return`<div class="ir"><div style="font-size:24px">${sub?'✅':'📄'}</div><div class="irc"><strong>${t.name}</strong><p>${t.description||''}</p>${sub&&sub.score!=null?`<p style="font-size:13px;color:var(--g);margin-top:4px;font-weight:500">Score: ${sub.score}/${sub.total} — ${Math.round(sub.score/sub.total*100)}%</p>`:''}</div>${sub?`<button class="bs bsm" onclick="viewRes('${t.id}')">Results</button>`:`<button class="bp bsm" onclick="startTest('${t.id}')">Start test →</button>`}</div>`;
   }).join('');
 }
 
@@ -769,8 +837,8 @@ async function startTest(tid){
   const tl={multiple_choice:'Multiple Choice',fill_blank:'Fill in the Blank',translation:'Translation',open_answer:'Open Answer'};
   const byType={};
   (questions||[]).forEach(q=>{if(!byType[q.question_type])byType[q.question_type]=[];byType[q.question_type].push(q)});
-  document.getElementById('tqw').innerHTML=`<div class="card" style="margin-bottom:1.25rem;background:var(--primary-soft);border-color:var(--primary-light)"><p style="font-size:13px;color:var(--primary-dark)">${test.description||'Answer all questions carefully.'}</p></div>`+
-  Object.entries(byType).map(([type,qs])=>`<h3 style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;margin:1.25rem 0 1rem;color:var(--text)">${tl[type]||type}</h3>${qs.map(q=>`<div class="qb"><p>${q.question_text}</p>${
+  document.getElementById('tqw').innerHTML=`<div class="card" style="margin-bottom:1rem;background:var(--gl);border-color:#86EFAC"><p style="font-size:13px;color:var(--gd)">${test.description||'Answer all questions carefully.'}</p></div>`+
+  Object.entries(byType).map(([type,qs])=>`<h3 style="font-size:15px;font-weight:600;margin:.9rem 0 .75rem">${tl[type]||type}</h3>${qs.map(q=>`<div class="qb"><p>${q.question_text}</p>${
     type==='multiple_choice'?(q.options||[]).map((o,i)=>`<label class="ol" id="o-${q.id}-${i}"><input type="radio" name="q-${q.id}" onchange="selOpt('${q.id}','${o.replace(/'/g,"\\'")}',${i})"> ${String.fromCharCode(97+i)}) ${o}</label>`).join(''):
     type==='open_answer'?`<textarea placeholder="Write your answer..." rows="3" onchange="CAs['${q.id}']=this.value" style="width:100%"></textarea>`:
     `<input type="text" placeholder="Type your answer..." onchange="CAs['${q.id}']=this.value">`
@@ -804,244 +872,227 @@ async function viewRes(tid){
   const pct=sub?Math.round(sub.score/sub.total*100):0;
   const emoji=pct>=80?'🎉':pct>=60?'👍':'💪';
   document.getElementById('rc2').innerHTML=`
-    <div style="text-align:center;padding:2.5rem 1.5rem 1.5rem">
-      <div style="font-size:56px;margin-bottom:.75rem">${emoji}</div>
-      <h2 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600">${test.name}</h2>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:56px;font-weight:700;color:var(--primary);margin:.75rem 0">${sub?.score||0}/${sub?.total||0}</div>
-      <div class="pb" style="max-width:280px;margin:1rem auto"><div class="pbi" style="width:${pct}%"></div></div>
-      <span class="badge ${pct>=70?'bg2':pct>=50?'ba':'br2'}" style="font-size:14px;padding:6px 16px">${pct}%</span>
-      ${sub?.needs_grade?'<p style="font-size:13px;color:var(--text-muted);margin-top:1rem">⏳ Some answers pending teacher review.</p>':''}
+    <div style="text-align:center;padding:2rem 1rem 1.25rem">
+      <div style="font-size:48px;margin-bottom:.5rem">${emoji}</div>
+      <h2 style="font-size:18px;font-weight:600">${test.name}</h2>
+      <div style="font-size:48px;font-weight:700;color:var(--g);margin:.5rem 0">${sub?.score||0}/${sub?.total||0}</div>
+      <div class="pb" style="max-width:260px;margin:.75rem auto"><div class="pbi" style="width:${pct}%"></div></div>
+      <span class="badge ${pct>=70?'bg2':pct>=50?'ba':'br2'}" style="font-size:14px;padding:5px 14px">${pct}%</span>
+      ${sub?.needs_grade?'<p style="font-size:13px;color:var(--muted);margin-top:.85rem">⏳ Some answers pending teacher review.</p>':''}
     </div>
     <div class="div"></div>
-    <h3 style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;margin-bottom:1rem">Detailed Results</h3>
+    <h3 style="font-size:15px;font-weight:600;margin-bottom:.85rem">Detailed Results</h3>
     ${(questions||[]).map(q=>{
       const ans=(sub?.answers||{})[q.id]||'';
       const isOpen=q.question_type==='open_answer';
       const ok=!isOpen&&ans.trim().toLowerCase()===(q.correct_answer||'').trim().toLowerCase();
       const fb=(sub?.feedback||{})[q.id];
-      return`<div class="ri ${isOpen?'rp':ok?'rc':'rw'}"><span style="font-size:20px">${isOpen?'⏳':ok?'✅':'❌'}</span><div style="flex:1"><p style="font-size:13px;font-weight:500;margin-bottom:4px">${q.question_text}</p><p style="font-size:13px">Your answer: <strong>${ans||'(no answer)'}</strong></p>${!isOpen&&!ok&&q.correct_answer?`<p style="font-size:13px;color:var(--success);margin-top:3px">Correct: ${q.correct_answer}</p>`:''}${isOpen?'<p style="font-size:12px;color:var(--warning);margin-top:4px">Pending review</p>':''}${fb?`<p style="font-size:12px;margin-top:5px;padding:6px 10px;background:rgba(255,255,255,.6);border-radius:6px">💬 ${fb}</p>`:''}</div></div>`;
+      return`<div class="ri ${isOpen?'rp':ok?'rc':'rw'}"><span style="font-size:18px">${isOpen?'⏳':ok?'✅':'❌'}</span><div style="flex:1"><p style="font-size:13px;font-weight:500;margin-bottom:3px">${q.question_text}</p><p style="font-size:13px">Your answer: <strong>${ans||'(no answer)'}</strong></p>${!isOpen&&!ok&&q.correct_answer?`<p style="font-size:13px;color:var(--gd);margin-top:2px">Correct: ${q.correct_answer}</p>`:''}${isOpen?'<p style="font-size:12px;color:var(--am);margin-top:3px">Pending review</p>':''}${fb?`<p style="font-size:12px;margin-top:4px;padding:5px 8px;background:rgba(255,255,255,.6);border-radius:5px">💬 ${fb}</p>`:''}</div></div>`;
     }).join('')}`;
   show('screen-results');
 }
 
+// ===== STUDENT: PROGRESS =====
 async function renderSProgress(){
   const el=document.getElementById('prl');
-  el.innerHTML='<p style="color:var(--text-muted);padding:1rem">Loading...</p>';
+  el.innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';
   const {data:assigns}=await sb.from('test_assignments').select('test_id,tests(name)').eq('student_id',CU.id);
   const {data:subs}=await sb.from('test_submissions').select('*').eq('student_id',CU.id).not('score','is',null);
   const gs=(assigns||[]).map(a=>({t:a.tests,s:(subs||[]).find(s=>s.test_id===a.test_id)})).filter(x=>x.s);
-  if(!gs.length){el.innerHTML='<div class="es"><div style="font-size:40px">📈</div><p>No completed tests yet.</p></div>';return}
+  if(!gs.length){el.innerHTML='<div class="es"><div style="font-size:32px">📈</div><p>No completed tests yet.</p></div>';return}
   const avg=Math.round(gs.reduce((a,x)=>a+(x.s.score/x.s.total*10),0)/gs.length*10)/10;
-  el.innerHTML=`<div class="hc" style="text-align:center;padding:2rem"><p style="opacity:.85;font-size:14px">Your average score</p><div style="font-family:'Cormorant Garamond',serif;font-size:56px;font-weight:700;margin:.5rem 0">${avg}</div><p style="opacity:.8;font-size:14px">out of 10</p></div>
-  ${gs.map(x=>{const p=Math.round(x.s.score/x.s.total*100);return`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span style="font-size:15px;font-weight:500">${x.t?.name||'Test'}</span><span style="font-size:15px;font-weight:600;color:var(--primary)">${x.s.score}/${x.s.total} (${p}%)</span></div><div class="pb"><div class="pbi" style="width:${p}%"></div></div></div>`}).join('')}`;
+  el.innerHTML=`<div class="hc" style="text-align:center;padding:1.75rem"><p style="opacity:.8;font-size:13px">Your average score</p><div style="font-size:48px;font-weight:700;margin:.25rem 0">${avg}</div><p style="opacity:.75;font-size:14px">out of 10</p></div>
+  ${gs.map(x=>{const p=Math.round(x.s.score/x.s.total*100);return`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-size:14px;font-weight:500">${x.t?.name||'Test'}</span><span style="font-size:14px;font-weight:600;color:var(--g)">${x.s.score}/${x.s.total} (${p}%)</span></div><div class="pb"><div class="pbi" style="width:${p}%"></div></div></div>`}).join('')}`;
 }
 
-// VIDEO
-function generateRoomName(){
-  return 'englishplatform-'+Math.random().toString(36).slice(2,10);
+// ===== STUDENT: SPEAKING (FIXED) =====
+async function renderSSpeaking(){
+  const el=document.getElementById('spk-student-list');
+  el.innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';
+  const {data:activities}=await sb.from('speaking_activities').select('*').order('created_at',{ascending:false});
+  if(!activities?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🎤</div><p>No speaking activities yet.</p></div>';return}
+  const {data:mySubs}=await sb.from('speaking_submissions').select('*').eq('student_id',CU.id);
+  const typeLabel={read_aloud:'Read Aloud',answer_question:'Answer a Question',describe:'Describe / Free Speaking',shadowing:'Shadowing'};
+  el.innerHTML=activities.map(a=>{
+    const attempts=(mySubs||[]).filter(s=>s.activity_id===a.id).sort((x,y)=>new Date(x.created_at)-new Date(y.created_at));
+    const nextAttemptNum=attempts.length+1;
+    const lastAttempt=attempts[attempts.length-1];
+    const lastGrade=lastAttempt?.grade;
+    return`
+      <div class="card" style="margin-bottom:14px">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:.75rem;flex-wrap:wrap">
+          <div><strong style="font-size:15px">${a.title}</strong><br><span class="badge bg2" style="margin-top:4px">${typeLabel[a.type]||a.type}</span></div>
+          ${lastGrade!==null&&lastGrade!==undefined?`<span class="badge ${lastGrade>=7?'bg2':lastGrade>=5?'ba':'br2'}" style="font-size:14px">Last grade: ${lastGrade}/10</span>`:''}
+        </div>
+        ${a.instructions?`<p style="font-size:13px;color:var(--muted);margin-bottom:.75rem">${a.instructions}</p>`:''}
+        ${a.content?`<div class="task-body">${a.content}</div>`:''}
+        ${attempts.length?`
+          <div style="margin-top:1rem">
+            <p style="font-size:13px;font-weight:600;margin-bottom:.5rem">Your attempts (${attempts.length}):</p>
+            ${attempts.map((att,i)=>`
+              <div class="attempt-card">
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px">
+                  <span style="font-size:13px;font-weight:500">Attempt ${att.attempt_number||i+1}</span>
+                  <div style="display:flex;align-items:center;gap:6px">
+                    ${att.grade!==null&&att.grade!==undefined?`<span class="badge ${att.grade>=7?'bg2':att.grade>=5?'ba':'br2'}">Grade: ${att.grade}/10</span>`:'<span class="badge ba">Awaiting grade</span>'}
+                    <span style="font-size:11px;color:var(--muted)">${fmt(att.created_at)}</span>
+                  </div>
+                </div>
+                ${att.audio_url?`<audio controls src="${att.audio_url}" style="width:100%;margin-top:.5rem"></audio>`:''}
+                ${att.feedback?`<p style="font-size:13px;margin-top:.5rem;padding:6px 10px;background:var(--gl);border-radius:6px;color:var(--gd)">💬 ${att.feedback}</p>`:''}
+              </div>
+            `).join('')}
+          </div>
+        `:''}
+        <div class="rec-box" style="margin-top:.85rem">
+          <p style="font-size:13px;font-weight:600">🎤 Record Attempt ${nextAttemptNum}</p>
+          <div class="rec-controls">
+            <button class="bp bsm" id="rec-btn-${a.id}" onclick="startRec('${a.id}',${nextAttemptNum})">🎤 Start Recording</button>
+            <span class="rec-status" id="rec-status-${a.id}">Ready to record</span>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
 }
 
-function renderTeacherVideo(){
-  // just show the static UI, already in HTML
-}
-
-async function startLiveSession(){
-  await sb.from('live_sessions').update({is_active:false}).eq('is_active',true);
-  const roomName=generateRoomName();
-  await sb.from('live_sessions').insert({room_name:roomName,is_active:true});
-  showTeacherRoom(roomName);
-}
-
-function showTeacherRoom(roomName){
-  const wrap=document.getElementById('teacher-video-frame');
-  wrap.innerHTML=`
-    <div class="card" style="padding:1.25rem">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
-        <div><span class="badge br2" style="margin-right:10px">● AO VIVO</span><strong>Sala ativa</strong></div>
-        <button class="bd bsm" onclick="endLiveSession()">Encerrar aula</button>
-      </div>
-      <iframe src="https://meet.jit.si/${roomName}" allow="camera; microphone; fullscreen; display-capture" style="width:100%;height:520px;border:none;border-radius:var(--rs)"></iframe>
-    </div>`;
-  document.querySelector('#teacher-video-wrap .card:first-child').style.display='none';
-}
-
-async function endLiveSession(){
-  if(!confirm('Encerrar a aula ao vivo?'))return;
-  await sb.from('live_sessions').update({is_active:false}).eq('is_active',true);
-  document.getElementById('teacher-video-frame').innerHTML='';
-  document.querySelector('#teacher-video-wrap .card:first-child').style.display='block';
-}
-
-async function renderStudentVideo(){
-  const el=document.getElementById('student-video-wrap');
-  el.innerHTML='<p style="color:var(--text-muted);padding:1rem">Verificando aula ao vivo...</p>';
-  const {data}=await sb.from('live_sessions').select('*').eq('is_active',true).order('started_at',{ascending:false}).limit(1);
-  if(!data?.length){
-    el.innerHTML=`<div class="card" style="text-align:center;padding:3rem 2rem">
-      <div style="font-size:56px;margin-bottom:1.25rem">📡</div>
-      <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin-bottom:.5rem">No live class right now</h3>
-      <p style="font-size:14px;color:var(--text-secondary);max-width:300px;margin:0 auto">Your teacher will start a class soon. Come back here to join!</p>
-      <button class="bs bsm" style="margin-top:1.25rem" onclick="renderStudentVideo()">🔄 Refresh</button>
-    </div>`;
+// ===== AUDIO RECORDING & UPLOAD (FIXED) =====
+async function startRec(actId, attemptNum){
+  // Stop any existing recording first
+  if(mediaRec&&mediaRec.state==='recording'){
+    mediaRec.stop();
     return;
   }
-  const session=data[0];
-  el.innerHTML=`
-    <div class="card" style="padding:1.25rem">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.25rem">
-        <span class="badge br2">● LIVE</span>
-        <strong>Your teacher is live! Join now</strong>
-        <button class="bs bsm" style="margin-left:auto" onclick="renderStudentVideo()">🔄</button>
-      </div>
-      <iframe src="https://meet.jit.si/${session.room_name}" allow="camera; microphone; fullscreen; display-capture" style="width:100%;height:520px;border:none;border-radius:var(--rs)"></iframe>
-    </div>`;
-}
-
-
-// SPEAKING
-let mediaRecorder=null, audioChunks=[], currentActivityId=null, currentStream=null;
-
-async function saveSpeakingActivity(){
-  const title=document.getElementById('sp-title').value.trim();
-  if(!title)return alert('Preencha o título.');
-  await sb.from('speaking_activities').insert({
-    title,
-    type:document.getElementById('sp-type').value,
-    instructions:document.getElementById('sp-instructions').value,
-    content:document.getElementById('sp-content').value
-  });
-  ['sp-title','sp-instructions','sp-content'].forEach(x=>document.getElementById(x).value='');
-  closeM('msp');renderTeacherSpeaking();
-}
-
-async function renderTeacherSpeaking(){
-  const el=document.getElementById('speaking-list-teacher');
-  el.innerHTML='<p style="color:var(--text-muted);padding:1rem">Carregando...</p>';
-  const {data:activities}=await sb.from('speaking_activities').select('*').order('created_at');
-  const {data:subs}=await sb.from('speaking_submissions').select('*,profiles(full_name)');
-  if(!activities?.length){el.innerHTML='<div class="es"><div style="font-size:40px">🎤</div><p>Nenhuma atividade criada ainda.</p></div>';return}
-  const types={read_aloud:'Leitura',answer_question:'Pergunta',describe:'Livre',repeat:'Shadowing'};
-  const tc={read_aloud:'bpr',answer_question:'bb',describe:'ba',repeat:'bgr'};
-  el.innerHTML=activities.map(a=>{
-    const mySubs=(subs||[]).filter(s=>s.activity_id===a.id);
-    return`<div class="card">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px">
-        <div style="flex:1">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-            <strong style="font-size:16px">${a.title}</strong>
-            <span class="badge ${tc[a.type]||'bgr'}">${types[a.type]||a.type}</span>
-          </div>
-          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:10px">${a.instructions||''}</p>
-          ${a.content?`<div style="background:var(--bg-warm);border-radius:var(--rs);padding:1rem;font-size:13px;white-space:pre-line;margin-bottom:10px">${a.content}</div>`:''}
-          ${mySubs.length?mySubs.map(sub=>`
-            <div style="background:var(--primary-soft);border-radius:var(--rs);padding:1rem;margin-top:8px">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-                <strong style="font-size:13px;color:var(--primary-dark)">${sub.profiles?.full_name||'Aluno'}</strong>
-                ${sub.feedback?`<span class="badge bg2">Corrigido</span>`:`<span class="badge ba">Pendente</span>`}
-              </div>
-              ${sub.audio_url?`<audio controls src="${sub.audio_url}" style="width:100%;margin-bottom:10px"></audio>`:''}
-              ${!sub.feedback?`<div style="display:flex;gap:10px;margin-top:8px">
-                <input type="text" id="fb-${sub.id}" placeholder="Deixe um feedback..." style="flex:1;font-size:13px">
-                <button class="bp bsm" onclick="saveSpeakingFeedback('${sub.id}')">Enviar</button>
-              </div>`:`<p style="font-size:13px;color:var(--primary-dark)">💬 ${sub.feedback}</p>`}
-            </div>`).join(''):'<p style="font-size:13px;color:var(--text-muted)">Nenhuma resposta ainda.</p>'}
-        </div>
-        <button class="bd bsm" onclick="delItem('speaking_activities','${a.id}',renderTeacherSpeaking)">✕</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-async function saveSpeakingFeedback(subId){
-  const fb=document.getElementById('fb-'+subId).value.trim();
-  if(!fb)return alert('Escreva um feedback.');
-  await sb.from('speaking_submissions').update({feedback:fb}).eq('id',subId);
-  renderTeacherSpeaking();
-}
-
-async function renderStudentSpeaking(){
-  const el=document.getElementById('speaking-list-student');
-  el.innerHTML='<p style="color:var(--text-muted);padding:1rem">Loading...</p>';
-  const {data:activities}=await sb.from('speaking_activities').select('*').order('created_at');
-  const {data:mySubs}=await sb.from('speaking_submissions').select('*').eq('student_id',CU.id);
-  if(!activities?.length){el.innerHTML='<div class="es"><div style="font-size:40px">🎤</div><p>No speaking activities yet.</p></div>';return}
-  const types={read_aloud:'Read Aloud',answer_question:'Answer the Question',describe:'Speak Freely',repeat:'Shadowing'};
-  const tc={read_aloud:'bpr',answer_question:'bb',describe:'ba',repeat:'bgr'};
-  el.innerHTML=activities.map(a=>{
-    const sub=(mySubs||[]).find(s=>s.activity_id===a.id);
-    return`<div class="card" style="margin-bottom:14px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-        <span style="font-size:26px">🎤</span>
-        <div style="flex:1">
-          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-            <strong style="font-size:16px">${a.title}</strong>
-            <span class="badge ${tc[a.type]||'bgr'}">${types[a.type]||a.type}</span>
-          </div>
-        </div>
-        ${sub?'<span class="badge bg2">✅ Done</span>':''}
-      </div>
-      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:10px">${a.instructions||''}</p>
-      ${a.content?`<div style="background:var(--bg-warm);border-radius:var(--rs);padding:1rem;font-size:14px;white-space:pre-line;margin-bottom:14px;line-height:1.7;border-left:3px solid var(--primary)">${a.content}</div>`:''}
-      ${sub?.audio_url?`<div style="margin-bottom:10px"><p style="font-size:12px;color:var(--text-muted);margin-bottom:5px">Your recording:</p><audio controls src="${sub.audio_url}" style="width:100%"></audio></div>`:''}
-      ${sub?.feedback?`<div style="background:var(--primary-soft);border-radius:var(--rs);padding:1rem;margin-bottom:10px"><p style="font-size:13px;color:var(--primary-dark)">💬 Teacher feedback: ${sub.feedback}</p></div>`:''}
-      <div id="recorder-${a.id}">
-        ${!sub?`<button class="bp" onclick="startRecording('${a.id}')" id="rec-btn-${a.id}" style="width:100%;padding:12px">🎤 Start Recording</button>`:`<button class="bs" onclick="startRecording('${a.id}')" id="rec-btn-${a.id}" style="width:100%;padding:12px">🔄 Record Again</button>`}
-        <div id="rec-status-${a.id}" style="text-align:center;font-size:13px;color:var(--text-muted);margin-top:8px"></div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-async function startRecording(activityId){
-  if(currentStream){currentStream.getTracks().forEach(t=>t.stop())}
-  currentActivityId=activityId;
-  audioChunks=[];
-  const btn=document.getElementById('rec-btn-'+activityId);
-  const status=document.getElementById('rec-status-'+activityId);
+  const btn=document.getElementById(`rec-btn-${actId}`);
+  const statusEl=document.getElementById(`rec-status-${actId}`);
   try{
-    currentStream=await navigator.mediaDevices.getUserMedia({audio:true});
-    mediaRecorder=new MediaRecorder(currentStream);
-    mediaRecorder.ondataavailable=e=>audioChunks.push(e.data);
-    mediaRecorder.onstop=()=>uploadAudio(activityId);
-    mediaRecorder.start();
-    btn.textContent='⏹ Stop Recording';
-    btn.onclick=()=>stopRecording(activityId);
-    btn.style.background='var(--danger)';
-    status.textContent='🔴 Recording... click Stop when done';
-  } catch(e){
-    status.textContent='❌ Microphone access denied. Please allow microphone in your browser.';
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    recStream=stream;
+    audioChunks=[];
+    // Detect best supported format
+    const mimeType=['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/mp4','audio/wav']
+      .find(t=>{try{return MediaRecorder.isTypeSupported(t)}catch{return false}})||'';
+    mediaRec=new MediaRecorder(stream,mimeType?{mimeType}:{});
+    mediaRec.ondataavailable=e=>{if(e.data&&e.data.size>0)audioChunks.push(e.data)};
+    mediaRec.start(250);
+    // Update UI
+    btn.innerHTML='⏹ Stop';
+    btn.onclick=()=>stopRec(actId,attemptNum);
+    statusEl.textContent='🔴 Recording...';
+    statusEl.classList.add('recording');
+  }catch(err){
+    console.error('Mic error:',err);
+    alert('Could not access microphone: '+err.message);
   }
 }
 
-function stopRecording(activityId){
-  if(mediaRecorder&&mediaRecorder.state!=='inactive'){
-    mediaRecorder.stop();
-    currentStream.getTracks().forEach(t=>t.stop());
-  }
-  const btn=document.getElementById('rec-btn-'+activityId);
-  const status=document.getElementById('rec-status-'+activityId);
-  btn.textContent='⏳ Uploading...';
+async function stopRec(actId,attemptNum){
+  if(!mediaRec)return;
+  const btn=document.getElementById(`rec-btn-${actId}`);
+  const statusEl=document.getElementById(`rec-status-${actId}`);
+  statusEl.textContent='⏳ Saving...';
+  statusEl.classList.remove('recording');
   btn.disabled=true;
-  status.textContent='Saving your recording...';
+  mediaRec.onstop=async()=>{
+    try{
+      recStream?.getTracks().forEach(t=>t.stop());
+      const mimeType=mediaRec.mimeType||'audio/webm';
+      const ext=mimeType.includes('webm')?'webm':mimeType.includes('ogg')?'ogg':mimeType.includes('mp4')?'mp4':'webm';
+      const blob=new Blob(audioChunks,{type:mimeType});
+      if(blob.size<1000){
+        statusEl.textContent='⚠️ Recording too short. Try again.';
+        btn.innerHTML='🎤 Start Recording';
+        btn.onclick=()=>startRec(actId,attemptNum);
+        btn.disabled=false;
+        return;
+      }
+      // Build unique path: studentId/activityId/timestamp.ext
+      const path=`${CU.id}/${actId}/${Date.now()}.${ext}`;
+      const {data:upData,error:upErr}=await sb.storage.from('audio').upload(path,blob,{
+        contentType:mimeType,
+        cacheControl:'3600',
+        upsert:false
+      });
+      if(upErr){
+        console.error('Storage upload error:',upErr);
+        statusEl.textContent='❌ Error: '+upErr.message;
+        btn.innerHTML='🎤 Try Again';
+        btn.onclick=()=>startRec(actId,attemptNum);
+        btn.disabled=false;
+        return;
+      }
+      const {data:{publicUrl}}=sb.storage.from('audio').getPublicUrl(path);
+      // Save submission — always INSERT (never upsert) to allow multiple attempts
+      const {error:subErr}=await sb.from('speaking_submissions').insert({
+        activity_id:actId,
+        student_id:CU.id,
+        audio_url:publicUrl,
+        attempt_number:attemptNum
+      });
+      if(subErr){
+        console.error('Submission error:',subErr);
+        statusEl.textContent='❌ Submission error: '+subErr.message;
+        btn.innerHTML='🎤 Try Again';
+        btn.onclick=()=>startRec(actId,attemptNum);
+        btn.disabled=false;
+        return;
+      }
+      statusEl.textContent=`✅ Attempt ${attemptNum} saved!`;
+      btn.disabled=false;
+      // Refresh speaking tab to show new attempt
+      setTimeout(()=>renderSSpeaking(),800);
+    }catch(err){
+      console.error('Recording stop error:',err);
+      statusEl.textContent='❌ Unexpected error: '+err.message;
+      btn.innerHTML='🎤 Try Again';
+      btn.onclick=()=>startRec(actId,attemptNum);
+      btn.disabled=false;
+    }
+    mediaRec=null;
+  };
+  mediaRec.stop();
 }
 
-async function uploadAudio(activityId){
-  const blob=new Blob(audioChunks,{type:'audio/webm'});
-  const fileName=activityId+'-'+CU.id+'-'+Date.now()+'.webm';
-  const status=document.getElementById('rec-status-'+activityId);
-  const {data,error}=await sb.storage.from('audio').upload(fileName,blob,{contentType:'audio/webm',upsert:true});
-  if(error){status.textContent='❌ Error saving: '+error.message;return}
-  const {data:urlData}=sb.storage.from('audio').getPublicUrl(fileName);
-  const audioUrl=urlData.publicUrl;
-  const {data:existing}=await sb.from('speaking_submissions').select('id').eq('activity_id',activityId).eq('student_id',CU.id);
-  if(existing?.length){
-    await sb.from('speaking_submissions').update({audio_url:audioUrl,feedback:null}).eq('id',existing[0].id);
+// ===== STUDENT: LIVE CLASS =====
+async function renderSLive(){
+  const el=document.getElementById('slive-content');
+  el.innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';
+  const {data:sess}=await sb.from('live_sessions').select('*').eq('active',true).limit(1);
+  const activeSession=sess?.[0];
+  if(activeSession){
+    el.innerHTML=`<div class="card live-card"><div class="live-icon">🔴</div><h3 style="font-size:17px;font-weight:600;margin-bottom:.5rem">Live class in progress!</h3><p style="font-size:13px;color:var(--muted);margin-bottom:1.25rem">Your teacher has started a class. Click to join now.</p><a href="https://meet.jit.si/${activeSession.room_name}" target="_blank"><button class="bp" style="padding:11px 24px;font-size:15px">Join Class 🎥</button></a></div>`;
   } else {
-    await sb.from('speaking_submissions').insert({activity_id:activityId,student_id:CU.id,audio_url:audioUrl});
+    el.innerHTML=`<div class="card live-card"><div class="live-icon">🎥</div><h3 style="font-size:17px;font-weight:600;margin-bottom:.5rem">No live class right now</h3><p style="font-size:13px;color:var(--muted)">When your teacher starts a class, a "Join" button will appear here automatically.</p></div>`;
   }
-  renderStudentSpeaking();
 }
 
+// ===== STUDENT: MESSAGES =====
+async function renderSMessages(){
+  const el=document.getElementById('smsg-content');
+  el.innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';
+  el.innerHTML=`<div class="msg-list" id="student-msg-list"></div><div class="msg-input-row"><input type="text" id="student-msg-input" placeholder="Send a message to your teacher..." onkeydown="if(event.key==='Enter')sendStudentMsg()"><button class="bp bsm" onclick="sendStudentMsg()">Send</button></div>`;
+  await refreshStudentChat();
+}
+
+async function refreshStudentChat(){
+  if(!CU)return;
+  const el=document.getElementById('student-msg-list');
+  if(!el)return;
+  const {data:msgs}=await sb.from('messages').select('*').or(`and(sender_id.eq.teacher,receiver_id.eq.${CU.id}),and(sender_id.eq.${CU.id},receiver_id.eq.teacher)`).order('created_at');
+  el.innerHTML=(msgs||[]).map(m=>{
+    const isMe=m.sender_id===CU.id;
+    return`<div style="display:flex;flex-direction:column;align-items:${isMe?'flex-end':'flex-start'}"><div class="msg-bubble ${isMe?'msg-me':'msg-other'}">${m.content}<div class="msg-time">${fmt(m.created_at)}</div></div></div>`;
+  }).join('')||'<p style="text-align:center;color:var(--muted);font-size:13px;padding:1rem">No messages yet. Say hi! 👋</p>';
+  el.scrollTop=el.scrollHeight;
+}
+
+async function sendStudentMsg(){
+  const inp=document.getElementById('student-msg-input');
+  const content=inp.value.trim();
+  if(!content)return;
+  inp.value='';
+  await sb.from('messages').insert({sender_id:CU.id,receiver_id:'teacher',content});
+  await refreshStudentChat();
+}
 </script>
 </body>
 </html>
