@@ -70,7 +70,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
 .sg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.1rem}
 .sc{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:1rem;text-align:center}
 .sc .num{font-size:26px;font-weight:600;color:var(--g)}.sc .lbl{font-size:12px;color:var(--muted);margin-top:2px}
-.ir{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.ir{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:8px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .irc{flex:1}.irc strong{font-size:14px;font-weight:500;display:block;margin-bottom:3px}.irc p{font-size:13px;color:var(--muted)}
 .div{height:1.5px;background:var(--border);margin:1.1rem 0}
 .qb{background:#F9FAFB;border:1.5px solid var(--border);border-radius:var(--r);padding:1.1rem;margin-bottom:.85rem}
@@ -88,77 +88,66 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
 .spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--g);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
 /* Speaking */
-.rec-box{background:#F9FAFB;border:1.5px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem}
-.rec-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:.75rem}
-.rec-status{font-size:13px;color:var(--muted);font-weight:500}
-.rec-status.recording{color:var(--re);animation:pulse 1s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.rec-box{background:#F9FAFB;border:1.5px solid var(--border);border-radius:var(--r);padding:1.1rem;margin-top:.85rem}
+.rec-btn-wrap{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:.6rem}
+.rec-status{font-size:13px;color:var(--muted);font-style:italic}
+.rec-timer{font-size:13px;font-weight:700;color:var(--re);display:none}
+.pulse-dot{display:inline-block;width:8px;height:8px;background:var(--re);border-radius:50%;margin-right:4px;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 .attempt-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--rs);padding:.85rem;margin-bottom:8px}
-.attempt-card audio{width:100%;margin-top:.5rem;border-radius:6px}
-/* Task view */
-.task-body{background:#F9FAFB;border-radius:var(--rs);padding:1.1rem;margin:.75rem 0;font-size:14px;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-word}
-/* Messages */
+.attempt-card audio{width:100%;height:36px;margin-top:.5rem;display:block}
+.task-body{background:#F9FAFB;border-radius:var(--rs);padding:1rem;font-size:14px;line-height:1.7;white-space:pre-wrap;word-break:break-word;margin:.65rem 0}
+.upload-pb{background:#E5E7EB;border-radius:20px;height:6px;margin-top:8px;overflow:hidden;display:none}
+.upload-pb-inner{background:var(--g);height:100%;border-radius:20px;transition:width .25s}
 .msg-list{display:flex;flex-direction:column;gap:8px;margin-bottom:1rem;max-height:380px;overflow-y:auto;padding:4px}
-.msg-bubble{max-width:75%;padding:9px 13px;border-radius:12px;font-size:14px;line-height:1.5}
+.msg-bubble{max-width:78%;padding:9px 13px;border-radius:12px;font-size:14px;line-height:1.5}
 .msg-me{background:var(--g);color:#fff;align-self:flex-end;border-bottom-right-radius:3px}
 .msg-other{background:#F3F4F6;color:var(--text);align-self:flex-start;border-bottom-left-radius:3px}
 .msg-time{font-size:11px;opacity:.7;margin-top:3px}
 .msg-input-row{display:flex;gap:8px}
-/* Live */
 .live-card{text-align:center;padding:2rem 1rem}
-.live-card .live-icon{font-size:48px;margin-bottom:1rem}
+.live-icon{font-size:48px;margin-bottom:1rem}
 </style>
 </head>
 <body>
 
-<!-- ===== LOGIN ===== -->
+<!-- LOGIN -->
 <div id="screen-login" class="screen active">
-  <div class="lw">
-    <div class="lc">
-      <div style="width:42px;height:42px;background:var(--g);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem"><span style="color:#fff;font-weight:700;font-size:16px">EP</span></div>
-      <h2 id="lt">Welcome back!</h2>
-      <p class="sub" id="ls">Log in to continue learning</p>
-      <div id="lerr" class="emsg" style="display:none"></div>
-      <div class="fg"><label>Email</label><input type="email" id="le" placeholder="your@email.com"></div>
-      <div class="fg"><label>Password</label><input type="password" id="lp" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
-      <button class="bp" style="width:100%;padding:11px" onclick="doLogin()" id="lbtn">Login</button>
-      <div style="text-align:center;margin-top:14px;display:flex;flex-direction:column;gap:9px">
-        <span id="slnk" style="font-size:13px;color:var(--muted)">Don't have an account? <button class="lbtn" onclick="show('screen-signup')">Sign up</button></span>
-        <button class="lbtn" id="tgl" onclick="toggleTL()">Professor? Clique aqui</button>
-      </div>
+  <div class="lw"><div class="lc">
+    <div style="width:42px;height:42px;background:var(--g);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem"><span style="color:#fff;font-weight:700;font-size:16px">EP</span></div>
+    <h2 id="lt">Welcome back!</h2><p class="sub" id="ls">Log in to continue learning</p>
+    <div id="lerr" class="emsg" style="display:none"></div>
+    <div class="fg"><label>Email</label><input type="email" id="le" placeholder="your@email.com"></div>
+    <div class="fg"><label>Password</label><input type="password" id="lp" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="bp" style="width:100%;padding:11px" onclick="doLogin()" id="lbtn">Login</button>
+    <div style="text-align:center;margin-top:14px;display:flex;flex-direction:column;gap:9px">
+      <span id="slnk" style="font-size:13px;color:var(--muted)">Don't have an account? <button class="lbtn" onclick="show('screen-signup')">Sign up</button></span>
+      <button class="lbtn" id="tgl" onclick="toggleTL()">Professor? Clique aqui</button>
     </div>
-  </div>
+  </div></div>
 </div>
 
-<!-- ===== SIGNUP ===== -->
+<!-- SIGNUP -->
 <div id="screen-signup" class="screen">
-  <div class="lw">
-    <div class="lc">
-      <div style="width:42px;height:42px;background:var(--g);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem"><span style="color:#fff;font-weight:700;font-size:16px">EP</span></div>
-      <h2>Create your account</h2>
-      <p class="sub">Start learning English today</p>
-      <div id="serr" class="emsg" style="display:none"></div>
-      <div id="ssuc" class="smsg" style="display:none">Account created! You can now log in.</div>
-      <div class="fg"><label>Full Name</label><input type="text" id="sn2" placeholder="Your full name"></div>
-      <div class="fg"><label>Email</label><input type="email" id="se" placeholder="your@email.com"></div>
-      <div class="fg"><label>Password</label><input type="password" id="sp" placeholder="At least 6 characters"></div>
-      <div class="fg"><label>Confirm Password</label><input type="password" id="sp2" placeholder="Repeat password"></div>
-      <button class="bp" style="width:100%;padding:11px" onclick="doSignup()">Sign up</button>
-      <div style="text-align:center;margin-top:14px;font-size:13px;color:var(--muted)">Already have an account? <button class="lbtn" onclick="show('screen-login')">Login</button></div>
-    </div>
-  </div>
+  <div class="lw"><div class="lc">
+    <div style="width:42px;height:42px;background:var(--g);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem"><span style="color:#fff;font-weight:700;font-size:16px">EP</span></div>
+    <h2>Create your account</h2><p class="sub">Start learning English today</p>
+    <div id="serr" class="emsg" style="display:none"></div>
+    <div id="ssuc" class="smsg" style="display:none">Account created! You can now log in.</div>
+    <div class="fg"><label>Full Name</label><input type="text" id="sn2" placeholder="Your full name"></div>
+    <div class="fg"><label>Email</label><input type="email" id="se" placeholder="your@email.com"></div>
+    <div class="fg"><label>Password</label><input type="password" id="sp" placeholder="At least 6 characters"></div>
+    <div class="fg"><label>Confirm Password</label><input type="password" id="sp2" placeholder="Repeat password"></div>
+    <button class="bp" style="width:100%;padding:11px" onclick="doSignup()">Sign up</button>
+    <div style="text-align:center;margin-top:14px;font-size:13px;color:var(--muted)">Already have an account? <button class="lbtn" onclick="show('screen-login')">Login</button></div>
+  </div></div>
 </div>
 
-<!-- ===== TEACHER ===== -->
+<!-- TEACHER -->
 <div id="screen-teacher" class="screen">
   <div class="tl">
     <div class="sb">
-      <div class="sb-brand">
-        <div class="logo-wrap">
-          <div class="logo"><span>EP</span></div>
-          <div><strong>English Platform</strong><p>Painel do Professor</p></div>
-        </div>
-      </div>
+      <div class="sb-brand"><div class="logo-wrap"><div class="logo"><span>EP</span></div><div><strong>English Platform</strong><p>Painel do Professor</p></div></div></div>
       <div class="sb-nav">
         <div class="ni active" onclick="tTab(this,'tc')"><span>📘</span>Conteúdos</div>
         <div class="ni" onclick="tTab(this,'tt')"><span>📝</span>Tarefas</div>
@@ -175,14 +164,14 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
       <div id="tt" class="tt2" style="display:none"><div class="ph"><h2>Tarefas</h2><button class="bp" onclick="openM('mt')">+ Nova Tarefa</button></div><div id="tl2"></div></div>
       <div id="tp" class="tt2" style="display:none"><div class="ph"><h2>Provas</h2><button class="bp" onclick="openM('mp')">+ Nova Prova</button></div><div id="pl"></div></div>
       <div id="ts" class="tt2" style="display:none"><div class="ph"><h2>Alunos</h2></div><div id="sl2"></div></div>
-      <div id="tspk" class="tt2" style="display:none"><div class="ph"><h2>Speaking</h2><button class="bp" onclick="openM('mspk')">+ Nova Atividade</button></div><div id="spk-teacher-list"></div></div>
-      <div id="tmsg" class="tt2" style="display:none"><div class="ph"><h2>Mensagens</h2></div><div id="tmsg-content"></div></div>
-      <div id="tlive" class="tt2" style="display:none"><div class="ph"><h2>Aula ao Vivo</h2></div><div id="tlive-content"></div></div>
+      <div id="tspk" class="tt2" style="display:none"><div class="ph"><h2>Speaking</h2><button class="bp" onclick="openM('mspk')">+ Nova Atividade</button></div><div id="spk-tl"></div></div>
+      <div id="tmsg" class="tt2" style="display:none"><div class="ph"><h2>Mensagens</h2></div><div id="tmsg-c"></div></div>
+      <div id="tlive" class="tt2" style="display:none"><div class="ph"><h2>Aula ao Vivo</h2></div><div id="tlive-c"></div></div>
     </div>
   </div>
 </div>
 
-<!-- ===== STUDENT ===== -->
+<!-- STUDENT -->
 <div id="screen-student" class="screen">
   <div class="sh">
     <div style="display:flex;align-items:center;gap:10px">
@@ -196,7 +185,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
       <button onclick="sTab(this,'sts')">Tests</button>
       <button onclick="sTab(this,'sp2')">Progress</button>
       <button onclick="sTab(this,'sspk')">Speaking</button>
-      <button onclick="sTab(this,'slive')">Live Class</button>
+      <button onclick="sTab(this,'slive')">Live</button>
       <button onclick="sTab(this,'smsg')">Messages</button>
     </div>
     <button class="bs bsm" onclick="doLogout()">Log out</button>
@@ -214,885 +203,461 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
     <div id="stk" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">📚 Your Tasks</h2><div id="tkl"></div></div>
     <div id="sts" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">🧪 Your Tests</h2><div id="tsl"></div></div>
     <div id="sp2" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">📈 Your Progress</h2><div id="prl"></div></div>
-    <div id="sspk" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">🎤 Speaking Practice</h2><div id="spk-student-list"></div></div>
-    <div id="slive" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">🎥 Live Class</h2><div id="slive-content"></div></div>
-    <div id="smsg" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">💬 Messages</h2><div id="smsg-content"></div></div>
+    <div id="sspk" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">🎤 Speaking Practice</h2><div id="spk-sl"></div></div>
+    <div id="slive" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">🎥 Live Class</h2><div id="slive-c"></div></div>
+    <div id="smsg" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">💬 Messages</h2><div id="smsg-c"></div></div>
   </div>
 </div>
 
-<!-- TEST TAKING -->
+<!-- TEST -->
 <div id="screen-test" class="screen">
-  <div class="sh">
-    <button class="bs bsm" onclick="show('screen-student');sTab(null,'sts')">← Back</button>
-    <span id="ttn" style="font-weight:600;font-size:15px"></span>
-    <div></div>
-  </div>
+  <div class="sh"><button class="bs bsm" onclick="show('screen-student');sTab(null,'sts')">← Back</button><span id="ttn" style="font-weight:600;font-size:15px"></span><div></div></div>
   <div class="sm3"><div id="tqw"></div><button class="bp" style="width:100%;padding:13px;margin-top:1.1rem" onclick="submitTest()">Submit test ✓</button></div>
 </div>
 
 <!-- RESULTS -->
 <div id="screen-results" class="screen">
-  <div class="sh">
-    <button class="bs bsm" onclick="show('screen-student');sTab(null,'sts')">← Tests</button>
-    <span style="font-weight:600;font-size:15px">Results</span><div></div>
-  </div>
+  <div class="sh"><button class="bs bsm" onclick="show('screen-student');sTab(null,'sts')">← Tests</button><span style="font-weight:600;font-size:15px">Results</span><div></div></div>
   <div class="sm3" id="rc2"></div>
 </div>
 
-<!-- TASK VIEW (student) -->
+<!-- TASK VIEW -->
 <div id="screen-task" class="screen">
-  <div class="sh">
-    <button class="bs bsm" onclick="show('screen-student');sTab(null,'stk')">← Tasks</button>
-    <span id="task-screen-title" style="font-weight:600;font-size:15px"></span>
-    <div></div>
-  </div>
-  <div class="sm3">
-    <div id="task-screen-body"></div>
-  </div>
+  <div class="sh"><button class="bs bsm" onclick="show('screen-student');sTab(null,'stk')">← Tasks</button><span id="task-title" style="font-weight:600;font-size:15px"></span><div></div></div>
+  <div class="sm3"><div id="task-body-wrap"></div></div>
 </div>
 
-<!-- ===== MODALS ===== -->
-<div class="mo" id="mc2">
-  <div class="mbox">
-    <h3>Novo Conteúdo</h3>
-    <div class="fg"><label>Título</label><input type="text" id="ctit" placeholder="Ex: Lesson 1 — Greetings"></div>
-    <div class="fg"><label>Descrição</label><input type="text" id="cdesc" placeholder="Breve descrição"></div>
-    <div class="fg"><label>Tipo</label><select id="ctype"><option value="text">Texto</option><option value="exercise">Exercício</option><option value="conversation">Conversação</option></select></div>
-    <div class="fg"><label>Conteúdo (texto)</label><textarea id="cbody" rows="5"></textarea></div>
-    <div class="fg"><label>Anexar PDF (opcional)</label><input type="file" id="cpdf" accept=".pdf"></div>
-    <div class="fe"><button class="bs" onclick="closeM('mc2')">Cancelar</button><button class="bp" onclick="saveContent()">Salvar</button></div>
-  </div>
-</div>
+<!-- MODALS -->
+<div class="mo" id="mc2"><div class="mbox">
+  <h3>Novo Conteúdo</h3>
+  <div class="fg"><label>Título</label><input type="text" id="ctit"></div>
+  <div class="fg"><label>Descrição</label><input type="text" id="cdesc"></div>
+  <div class="fg"><label>Tipo</label><select id="ctype"><option value="text">Texto</option><option value="exercise">Exercício</option><option value="conversation">Conversação</option></select></div>
+  <div class="fg"><label>Conteúdo</label><textarea id="cbody" rows="5"></textarea></div>
+  <div class="fg"><label>PDF (opcional)</label><input type="file" id="cpdf" accept=".pdf"></div>
+  <div class="fe"><button class="bs" onclick="closeM('mc2')">Cancelar</button><button class="bp" onclick="saveContent()">Salvar</button></div>
+</div></div>
 
-<div class="mo" id="mt">
-  <div class="mbox">
-    <h3>Nova Tarefa</h3>
-    <div class="fg"><label>Nome</label><input type="text" id="tkname" placeholder="Ex: Week 1 — Verb to be"></div>
-    <div class="fg"><label>Instruções (em inglês)</label><textarea id="tkins" rows="4"></textarea></div>
-    <div class="fg"><label>Data de entrega</label><input type="date" id="tkdate"></div>
-    <div class="fg"><label>Atribuir para alunos</label><div id="tkasc" style="margin-top:6px;max-height:140px;overflow-y:auto;border:1.5px solid var(--border);border-radius:var(--rs);padding:4px 12px"></div></div>
-    <div class="fe"><button class="bs" onclick="closeM('mt')">Cancelar</button><button class="bp" onclick="saveTask()">Salvar</button></div>
-  </div>
-</div>
+<div class="mo" id="mt"><div class="mbox">
+  <h3>Nova Tarefa</h3>
+  <div class="fg"><label>Nome</label><input type="text" id="tkname"></div>
+  <div class="fg"><label>Instruções</label><textarea id="tkins" rows="4"></textarea></div>
+  <div class="fg"><label>Data de entrega</label><input type="date" id="tkdate"></div>
+  <div class="fg"><label>Atribuir para alunos</label><div id="tkasc" style="margin-top:6px;max-height:140px;overflow-y:auto;border:1.5px solid var(--border);border-radius:var(--rs);padding:4px 12px"></div></div>
+  <div class="fe"><button class="bs" onclick="closeM('mt')">Cancelar</button><button class="bp" onclick="saveTask()">Salvar</button></div>
+</div></div>
 
-<div class="mo" id="mp">
-  <div class="mbox" style="max-width:560px">
-    <h3>Nova Prova</h3>
-    <div class="fg"><label>Nome</label><input type="text" id="pname" placeholder="Ex: Test 1 — Review"></div>
-    <div class="fg"><label>Descrição</label><textarea id="pdesc" rows="2"></textarea></div>
-    <div class="fr">
-      <div class="fg"><label>Data</label><input type="date" id="pdate"></div>
-      <div class="fg"><label>Tempo (min)</label><input type="number" id="ptime" placeholder="opcional"></div>
-    </div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin:.85rem 0 .5rem">
-      <strong style="font-size:14px">Questões</strong>
-      <button class="bs bsm" onclick="addQ()">+ Adicionar</button>
-    </div>
-    <div id="qed"></div>
-    <div class="fg" style="margin-top:10px"><label>Atribuir para alunos</label><div id="pasc" style="margin-top:6px;max-height:140px;overflow-y:auto;border:1.5px solid var(--border);border-radius:var(--rs);padding:4px 12px"></div></div>
-    <div class="fe"><button class="bs" onclick="closeM('mp')">Cancelar</button><button class="bp" onclick="saveTest()">Salvar Prova</button></div>
-  </div>
-</div>
+<div class="mo" id="mp"><div class="mbox" style="max-width:560px">
+  <h3>Nova Prova</h3>
+  <div class="fg"><label>Nome</label><input type="text" id="pname"></div>
+  <div class="fg"><label>Descrição</label><textarea id="pdesc" rows="2"></textarea></div>
+  <div class="fr"><div class="fg"><label>Data</label><input type="date" id="pdate"></div><div class="fg"><label>Tempo (min)</label><input type="number" id="ptime"></div></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin:.85rem 0 .5rem"><strong style="font-size:14px">Questões</strong><button class="bs bsm" onclick="addQ()">+ Adicionar</button></div>
+  <div id="qed"></div>
+  <div class="fg" style="margin-top:10px"><label>Atribuir para alunos</label><div id="pasc" style="margin-top:6px;max-height:140px;overflow-y:auto;border:1.5px solid var(--border);border-radius:var(--rs);padding:4px 12px"></div></div>
+  <div class="fe"><button class="bs" onclick="closeM('mp')">Cancelar</button><button class="bp" onclick="saveTest()">Salvar Prova</button></div>
+</div></div>
 
-<div class="mo" id="mg">
-  <div class="mbox" style="max-width:560px">
-    <h3>Corrigir Respostas Abertas</h3>
-    <div id="gc"></div>
-    <div class="fe"><button class="bs" onclick="closeM('mg')">Fechar</button><button class="bp" onclick="saveGrades()">Salvar Correção</button></div>
-  </div>
-</div>
+<div class="mo" id="mg"><div class="mbox" style="max-width:560px">
+  <h3>Corrigir Respostas Abertas</h3><div id="gc"></div>
+  <div class="fe"><button class="bs" onclick="closeM('mg')">Fechar</button><button class="bp" onclick="saveGrades()">Salvar Correção</button></div>
+</div></div>
 
-<!-- MODAL: Nova Atividade Speaking -->
-<div class="mo" id="mspk">
-  <div class="mbox">
-    <h3>Nova Atividade de Speaking</h3>
-    <div class="fg"><label>Título</label><input type="text" id="spk-title" placeholder="Ex: Talk about your weekend"></div>
-    <div class="fg"><label>Tipo</label>
-      <select id="spk-type">
-        <option value="read_aloud">Leitura em Voz Alta</option>
-        <option value="answer_question">Responder Pergunta</option>
-        <option value="describe">Descrever / Falar Livremente</option>
-        <option value="shadowing">Repetição (Shadowing)</option>
-      </select>
-    </div>
-    <div class="fg"><label>Instruções para a aluna</label><textarea id="spk-instructions" rows="3" placeholder="Ex: Read the paragraph below aloud clearly."></textarea></div>
-    <div class="fg"><label>Conteúdo (texto, pergunta ou frases)</label><textarea id="spk-content" rows="4" placeholder="Ex: Hello, my name is..."></textarea></div>
-    <div class="fe"><button class="bs" onclick="closeM('mspk')">Cancelar</button><button class="bp" onclick="saveSpeakingActivity()">Salvar</button></div>
-  </div>
-</div>
+<div class="mo" id="mspk"><div class="mbox">
+  <h3>Nova Atividade de Speaking</h3>
+  <div class="fg"><label>Título</label><input type="text" id="spk-title"></div>
+  <div class="fg"><label>Tipo</label><select id="spk-type"><option value="read_aloud">Leitura em Voz Alta</option><option value="answer_question">Responder Pergunta</option><option value="describe">Descrever / Falar Livremente</option><option value="shadowing">Repetição (Shadowing)</option></select></div>
+  <div class="fg"><label>Instruções</label><textarea id="spk-inst" rows="3"></textarea></div>
+  <div class="fg"><label>Conteúdo</label><textarea id="spk-cnt" rows="4"></textarea></div>
+  <div class="fe"><button class="bs" onclick="closeM('mspk')">Cancelar</button><button class="bp" onclick="saveSpeakingActivity()">Salvar</button></div>
+</div></div>
 
-<!-- MODAL: Corrigir Speaking (professor) -->
-<div class="mo" id="mspk-grade">
-  <div class="mbox" style="max-width:560px">
-    <h3 id="spk-grade-title">Corrigir Speaking</h3>
-    <div id="spk-grade-content"></div>
-    <div class="fe"><button class="bs" onclick="closeM('mspk-grade')">Fechar</button></div>
-  </div>
-</div>
+<div class="mo" id="mspk-grade"><div class="mbox" style="max-width:580px">
+  <h3 id="spk-grade-title">Corrigir Speaking</h3><div id="spk-grade-content"></div>
+  <div class="fe"><button class="bs" onclick="closeM('mspk-grade')">Fechar</button></div>
+</div></div>
 
 <script>
 const SUPA_URL='https://fkhnrliohydiylsdequb.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZraG5ybGlvaHlkaXlsc2RlcXViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3OTgxNDMsImV4cCI6MjA5MTM3NDE0M30._p20wkWgZqEhTGeW2vXrnMRshVytMU98IsiptJ4jWO0';
 const sb=supabase.createClient(SUPA_URL,SUPA_KEY);
-
 const TEACHER={email:'professor@englishplatform.com',password:'thamires2024',name:'Professora Thamires'};
+
 let CU=null,isTeacher=false,CTI=null,CAs={},NQs=[],GT=null,isTL=false;
 
-// Recording state
-let mediaRec=null,audioChunks=[],recStream=null;
+// Per-activity recording state: { [actId]: { stage:'idle'|'recording'|'preview'|'uploading', mediaRec, chunks, stream, blob, mimeType, timer } }
+const RS={};
 
-// ===== UTILS =====
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
-function fmt(dt){if(!dt)return'';try{return new Date(dt).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}catch{return dt}}
+function fmt(d){if(!d)return'';try{return new Date(d).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}catch{return d}}
+function g(id){return document.getElementById(id)}
+function bestMime(){const T=['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/mp4','audio/wav'];for(const t of T){try{if(MediaRecorder.isTypeSupported(t))return t}catch(e){}}return''}
+function mimeExt(m){if(m.includes('ogg'))return'ogg';if(m.includes('mp4'))return'm4a';if(m.includes('wav'))return'wav';return'webm'}
 
 // ===== AUTH =====
-function toggleTL(){
-  isTL=!isTL;
-  document.getElementById('lt').textContent=isTL?'Área do Professor':'Welcome back!';
-  document.getElementById('ls').textContent=isTL?'Faça login para gerenciar suas aulas':'Log in to continue learning';
-  document.getElementById('lbtn').textContent=isTL?'Entrar':'Login';
-  document.getElementById('slnk').style.display=isTL?'none':'block';
-  document.getElementById('tgl').textContent=isTL?'← Student login':'Professor? Clique aqui';
-  document.getElementById('lerr').style.display='none';
-}
+function toggleTL(){isTL=!isTL;g('lt').textContent=isTL?'Área do Professor':'Welcome back!';g('ls').textContent=isTL?'Faça login para gerenciar suas aulas':'Log in to continue learning';g('lbtn').textContent=isTL?'Entrar':'Login';g('slnk').style.display=isTL?'none':'block';g('tgl').textContent=isTL?'← Student login':'Professor? Clique aqui';g('lerr').style.display='none'}
 
 async function doLogin(){
-  const email=document.getElementById('le').value.trim();
-  const pass=document.getElementById('lp').value;
-  const err=document.getElementById('lerr');
-  err.style.display='none';
-  document.getElementById('lbtn').innerHTML='<span class="spinner"></span>';
+  const email=g('le').value.trim(),pass=g('lp').value,err=g('lerr');
+  err.style.display='none';g('lbtn').innerHTML='<span class="spinner"></span>';
   if(isTL){
-    if(email===TEACHER.email&&pass===TEACHER.password){
-      isTeacher=true;CU={id:'teacher',name:TEACHER.name,email:TEACHER.email};
-      document.getElementById('lbtn').textContent='Entrar';
-      renderTeacher();show('screen-teacher');
-    } else {
-      err.textContent='Credenciais inválidas.';err.style.display='block';
-      document.getElementById('lbtn').textContent='Entrar';
-    }
+    if(email===TEACHER.email&&pass===TEACHER.password){isTeacher=true;CU={id:'teacher',name:TEACHER.name,email:TEACHER.email};g('lbtn').textContent='Entrar';renderTeacher();show('screen-teacher')}
+    else{err.textContent='Credenciais inválidas.';err.style.display='block';g('lbtn').textContent='Entrar'}
     return;
   }
   const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
-  document.getElementById('lbtn').textContent='Login';
+  g('lbtn').textContent='Login';
   if(error){err.textContent='Invalid credentials.';err.style.display='block';return}
   const {data:profile}=await sb.from('profiles').select('*').eq('id',data.user.id).single();
-  isTeacher=false;
-  CU={id:data.user.id,name:profile?.full_name||email,email};
+  isTeacher=false;CU={id:data.user.id,name:profile?.full_name||email,email};
   renderSD();show('screen-student');
 }
 
 async function doSignup(){
-  const name=document.getElementById('sn2').value.trim();
-  const email=document.getElementById('se').value.trim();
-  const p=document.getElementById('sp').value;
-  const p2=document.getElementById('sp2').value;
-  const err=document.getElementById('serr'),suc=document.getElementById('ssuc');
-  err.style.display='none';suc.style.display='none';
+  const name=g('sn2').value.trim(),email=g('se').value.trim(),p=g('sp').value,p2=g('sp2').value;
+  const err=g('serr'),suc=g('ssuc');err.style.display='none';suc.style.display='none';
   if(!name||!email||!p){err.textContent='Please fill all fields.';err.style.display='block';return}
   if(p.length<6){err.textContent='Password must be at least 6 characters.';err.style.display='block';return}
   if(p!==p2){err.textContent='Passwords do not match.';err.style.display='block';return}
   const {data,error}=await sb.auth.signUp({email,password:p});
   if(error){err.textContent=error.message;err.style.display='block';return}
   if(data.user)await sb.from('profiles').insert({id:data.user.id,full_name:name,role:'student'});
-  suc.style.display='block';
-  setTimeout(()=>{show('screen-login');document.getElementById('le').value=email},2000);
+  suc.style.display='block';setTimeout(()=>{show('screen-login');g('le').value=email},2000);
 }
 
-function doLogout(){sb.auth.signOut();CU=null;isTeacher=false;CTI=null;show('screen-login')}
+function doLogout(){Object.values(RS).forEach(r=>{try{if(r.mediaRec&&r.mediaRec.state!=='inactive')r.mediaRec.stop()}catch(e){}try{r.stream?.getTracks().forEach(t=>t.stop())}catch(e){}if(r.timer)clearInterval(r.timer)});sb.auth.signOut();CU=null;isTeacher=false;show('screen-login')}
 
 // ===== MODALS =====
-async function openM(id){
-  if(id==='mt'||id==='mp')await renderAsc(id==='mt'?'tkasc':'pasc');
-  if(id==='mp'){NQs=[];document.getElementById('qed').innerHTML=''}
-  document.getElementById(id).classList.add('active');
-}
-function closeM(id){document.getElementById(id).classList.remove('active')}
-
-async function renderAsc(cid){
-  const el=document.getElementById(cid);
-  el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando alunos...</div>';
-  const {data}=await sb.from('profiles').select('*').eq('role','student');
-  if(!data?.length){el.innerHTML='<p style="font-size:13px;color:var(--muted);padding:8px 0">Nenhum aluno cadastrado ainda.</p>';return}
-  el.innerHTML=data.map(s=>`<label class="ac"><input type="checkbox" value="${s.id}" name="asc"> <span>${s.full_name}</span></label>`).join('');
-}
+async function openM(id){if(id==='mt'||id==='mp')await renderAsc(id==='mt'?'tkasc':'pasc');if(id==='mp'){NQs=[];g('qed').innerHTML=''}g(id).classList.add('active')}
+function closeM(id){g(id).classList.remove('active')}
+async function renderAsc(cid){const el=g(cid);el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';const {data}=await sb.from('profiles').select('*').eq('role','student');el.innerHTML=data?.length?data.map(s=>`<label class="ac"><input type="checkbox" value="${s.id}" name="asc"> ${s.full_name}</label>`).join(''):'<p style="font-size:13px;color:var(--muted);padding:8px 0">Nenhum aluno ainda.</p>'}
 function getAsc(cid){return[...document.querySelectorAll(`#${cid} input[name="asc"]:checked`)].map(i=>i.value)}
 
-// ===== TEACHER NAV =====
-function tTab(el,tab){
-  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
-  document.querySelectorAll('.tt2').forEach(t=>t.style.display='none');
-  if(el)el.classList.add('active');
-  document.getElementById(tab).style.display='block';
-  if(tab==='tc')renderContents();
-  if(tab==='tt')renderTasks();
-  if(tab==='tp')renderTests();
-  if(tab==='ts')renderStudents();
-  if(tab==='tspk')renderTeacherSpeaking();
-  if(tab==='tmsg')renderTeacherMessages();
-  if(tab==='tlive')renderTeacherLive();
-}
+// ===== TEACHER =====
+function tTab(el,tab){document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));document.querySelectorAll('.tt2').forEach(t=>t.style.display='none');if(el)el.classList.add('active');g(tab).style.display='block';({tc:renderContents,tt:renderTasks,tp:renderTests,ts:renderStudents,tspk:renderTeacherSpeaking,tmsg:renderTeacherMessages,tlive:renderTeacherLive})[tab]?.()}
 function renderTeacher(){renderContents()}
 
-// ===== TEACHER: CONTENTS =====
-async function saveContent(){
-  const title=document.getElementById('ctit').value.trim();
-  if(!title)return alert('Preencha o título.');
-  let file_url=null;
-  const pdfFile=document.getElementById('cpdf').files[0];
-  if(pdfFile){
-    const path=`${Date.now()}-${pdfFile.name.replace(/\s+/g,'_')}`;
-    const {data:upData,error:upErr}=await sb.storage.from('contents').upload(path,pdfFile,{contentType:'application/pdf',upsert:false});
-    if(upErr){alert('Erro ao enviar PDF: '+upErr.message);return}
-    const {data:{publicUrl}}=sb.storage.from('contents').getPublicUrl(path);
-    file_url=publicUrl;
-  }
-  await sb.from('contents').insert({title,description:document.getElementById('cdesc').value,type:document.getElementById('ctype').value,body:document.getElementById('cbody').value,file_url});
-  ['ctit','cdesc','cbody'].forEach(x=>document.getElementById(x).value='');
-  document.getElementById('cpdf').value='';
-  closeM('mc2');renderContents();
-}
+async function saveContent(){const title=g('ctit').value.trim();if(!title)return alert('Preencha o título.');let file_url=null;const pf=g('cpdf').files[0];if(pf){const path=`${Date.now()}-${pf.name.replace(/\s+/g,'_')}`;const {error}=await sb.storage.from('contents').upload(path,pf,{contentType:'application/pdf',upsert:false});if(error){alert('Erro PDF: '+error.message);return}const {data:{publicUrl}}=sb.storage.from('contents').getPublicUrl(path);file_url=publicUrl}await sb.from('contents').insert({title,description:g('cdesc').value,type:g('ctype').value,body:g('cbody').value,file_url});['ctit','cdesc','cbody'].forEach(x=>g(x).value='');g('cpdf').value='';closeM('mc2');renderContents()}
 
-async function renderContents(){
-  const el=document.getElementById('cl');
-  el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
-  const {data}=await sb.from('contents').select('*').order('created_at');
-  if(!data?.length){el.innerHTML='<div class="es"><div style="font-size:32px">📘</div><p>Nenhum conteúdo criado ainda.</p></div>';return}
-  const tb={text:'Texto',exercise:'Exercício',conversation:'Conversação'};
-  const tc={text:'bb',exercise:'ba',conversation:'bg2'};
-  el.innerHTML=data.map(c=>`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><strong>${c.title}</strong><span class="badge ${tc[c.type]||'bgr'}">${tb[c.type]||c.type}</span></div><p style="font-size:13px;color:var(--muted)">${c.description||''}</p>${c.file_url?`<a href="${c.file_url}" target="_blank" style="font-size:12px;color:var(--bl);margin-top:4px;display:inline-block">📎 Ver PDF</a>`:''}</div><button class="bd bsm" onclick="delItem('contents','${c.id}',renderContents)">✕</button></div></div>`).join('');
-}
+async function renderContents(){const el=g('cl');el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';const {data}=await sb.from('contents').select('*').order('created_at');if(!data?.length){el.innerHTML='<div class="es"><div style="font-size:32px">📘</div><p>Nenhum conteúdo.</p></div>';return}const tb={text:'Texto',exercise:'Exercício',conversation:'Conversação'};const tc={text:'bb',exercise:'ba',conversation:'bg2'};el.innerHTML=data.map(c=>`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><strong>${c.title}</strong><span class="badge ${tc[c.type]||'bgr'}">${tb[c.type]||c.type}</span></div><p style="font-size:13px;color:var(--muted)">${c.description||''}</p>${c.file_url?`<a href="${c.file_url}" target="_blank" style="font-size:12px;color:var(--bl);margin-top:4px;display:inline-block">📎 PDF</a>`:''}</div><button class="bd bsm" onclick="delItem('contents','${c.id}',renderContents)">✕</button></div></div>`).join('')}
 
-// ===== TEACHER: TASKS =====
-async function saveTask(){
-  const name=document.getElementById('tkname').value.trim();
-  if(!name)return alert('Preencha o nome.');
-  const {data:task}=await sb.from('tasks').insert({name,instructions:document.getElementById('tkins').value,due_date:document.getElementById('tkdate').value||null}).select().single();
-  const students=getAsc('tkasc');
-  if(task&&students.length)await sb.from('task_assignments').insert(students.map(sid=>({task_id:task.id,student_id:sid})));
-  closeM('mt');renderTasks();
-}
+async function saveTask(){const name=g('tkname').value.trim();if(!name)return alert('Preencha o nome.');const {data:task}=await sb.from('tasks').insert({name,instructions:g('tkins').value,due_date:g('tkdate').value||null}).select().single();const st=getAsc('tkasc');if(task&&st.length)await sb.from('task_assignments').insert(st.map(sid=>({task_id:task.id,student_id:sid})));closeM('mt');renderTasks()}
 
-async function renderTasks(){
-  const el=document.getElementById('tl2');
-  el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
-  const {data:tasks}=await sb.from('tasks').select('*').order('created_at');
-  const {data:assigns}=await sb.from('task_assignments').select('task_id,student_id,completed,profiles(full_name)');
-  if(!tasks?.length){el.innerHTML='<div class="es"><div style="font-size:32px">📝</div><p>Nenhuma tarefa criada ainda.</p></div>';return}
-  el.innerHTML=tasks.map(t=>{
-    const myAssigns=(assigns||[]).filter(a=>a.task_id===t.id);
-    const chips=myAssigns.map(a=>{
-      const done=a.completed;
-      return`<span class="badge ${done?'bg2':'bgr'}" style="margin-right:4px">${done?'✅ ':''}${a.profiles?.full_name||''}</span>`;
-    }).join('');
-    const doneCount=myAssigns.filter(a=>a.completed).length;
-    return`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><strong>${t.name}</strong>${t.due_date?`<span style="font-size:12px;color:var(--muted);margin-left:8px">📅 ${t.due_date}</span>`:''}<p style="font-size:13px;color:var(--muted);margin-top:4px">${t.instructions||''}</p><div style="margin-top:8px">${chips||'<span class="badge bgr">Sem alunos atribuídos</span>'}</div>${myAssigns.length?`<p style="font-size:12px;color:var(--muted);margin-top:4px">${doneCount}/${myAssigns.length} concluídas</p>`:''}</div><button class="bd bsm" onclick="delItem('tasks','${t.id}',renderTasks)">✕</button></div></div>`;
-  }).join('');
-}
+async function renderTasks(){const el=g('tl2');el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';const {data:tasks}=await sb.from('tasks').select('*').order('created_at');const {data:asgn}=await sb.from('task_assignments').select('task_id,student_id,completed,profiles(full_name)');if(!tasks?.length){el.innerHTML='<div class="es"><div style="font-size:32px">📝</div><p>Nenhuma tarefa.</p></div>';return}el.innerHTML=tasks.map(t=>{const a=(asgn||[]).filter(x=>x.task_id===t.id);const chips=a.map(x=>`<span class="badge ${x.completed?'bg2':'bgr'}" style="margin-right:4px">${x.completed?'✅ ':''}${x.profiles?.full_name||''}</span>`).join('');return`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><strong>${t.name}</strong>${t.due_date?`<span style="font-size:12px;color:var(--muted);margin-left:8px">📅 ${t.due_date}</span>`:''}<p style="font-size:13px;color:var(--muted);margin-top:4px">${t.instructions||''}</p><div style="margin-top:8px">${chips||'<span class="badge bgr">Sem alunos</span>'}</div><p style="font-size:12px;color:var(--muted);margin-top:4px">${a.filter(x=>x.completed).length}/${a.length} concluídas</p></div><button class="bd bsm" onclick="delItem('tasks','${t.id}',renderTasks)">✕</button></div></div>`}).join('')}
 
-// ===== TEACHER: TESTS =====
-async function saveTest(){
-  const name=document.getElementById('pname').value.trim();
-  if(!name)return alert('Preencha o nome.');
-  if(!NQs.length)return alert('Adicione pelo menos uma questão.');
-  const {data:test}=await sb.from('tests').insert({name,description:document.getElementById('pdesc').value,test_date:document.getElementById('pdate').value||null,time_limit:document.getElementById('ptime').value||null}).select().single();
-  if(test){
-    await sb.from('test_questions').insert(NQs.map((q,i)=>({test_id:test.id,question_type:q.type,question_text:q.text,options:q.options?.filter(o=>o).length?q.options:null,correct_answer:q.correct||null,sort_order:i})));
-    const students=getAsc('pasc');
-    if(students.length)await sb.from('test_assignments').insert(students.map(sid=>({test_id:test.id,student_id:sid})));
-  }
-  NQs=[];closeM('mp');renderTests();
-}
+async function saveTest(){const name=g('pname').value.trim();if(!name)return alert('Preencha o nome.');if(!NQs.length)return alert('Adicione questões.');const {data:test}=await sb.from('tests').insert({name,description:g('pdesc').value,test_date:g('pdate').value||null,time_limit:g('ptime').value||null}).select().single();if(test){await sb.from('test_questions').insert(NQs.map((q,i)=>({test_id:test.id,question_type:q.type,question_text:q.text,options:q.options?.filter(o=>o).length?q.options:null,correct_answer:q.correct||null,sort_order:i})));const st=getAsc('pasc');if(st.length)await sb.from('test_assignments').insert(st.map(sid=>({test_id:test.id,student_id:sid})))}NQs=[];closeM('mp');renderTests()}
 
-async function renderTests(){
-  const el=document.getElementById('pl');
-  el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
-  const {data:tests}=await sb.from('tests').select('*').order('created_at');
-  const {data:assigns}=await sb.from('test_assignments').select('test_id,student_id,profiles(full_name)');
-  const {data:questions}=await sb.from('test_questions').select('test_id');
-  const {data:subs}=await sb.from('test_submissions').select('test_id,needs_grade');
-  if(!tests?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🧪</div><p>Nenhuma prova criada ainda.</p></div>';return}
-  el.innerHTML=tests.map(t=>{
-    const chips=(assigns||[]).filter(a=>a.test_id===t.id).map(a=>`<span class="badge bg2" style="margin-right:4px">${a.profiles?.full_name||''}</span>`).join('');
-    const qCount=(questions||[]).filter(q=>q.test_id===t.id).length;
-    const pend=(subs||[]).filter(s=>s.test_id===t.id&&s.needs_grade).length;
-    return`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><strong>${t.name}</strong>${pend?`<span class="badge ba">⏳ ${pend} pendente(s)</span>`:''}</div><p style="font-size:13px;color:var(--muted);margin-top:3px">${t.description||''}</p><div style="display:flex;gap:6px;margin-top:6px"><span class="badge bgr">${qCount} questão(ões)</span>${t.test_date?`<span class="badge bgr">📅 ${t.test_date}</span>`:''}</div><div style="margin-top:8px">${chips||'<span class="badge bgr">Sem alunos atribuídos</span>'}</div></div><div style="display:flex;flex-direction:column;gap:6px">${pend?`<button class="bs bsm" onclick="openGrade('${t.id}')">Corrigir</button>`:''}<button class="bd bsm" onclick="delItem('tests','${t.id}',renderTests)">✕</button></div></div></div>`;
-  }).join('');
-}
+async function renderTests(){const el=g('pl');el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';const {data:tests}=await sb.from('tests').select('*').order('created_at');const {data:asgn}=await sb.from('test_assignments').select('test_id,student_id,profiles(full_name)');const {data:qs}=await sb.from('test_questions').select('test_id');const {data:subs}=await sb.from('test_submissions').select('test_id,needs_grade');if(!tests?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🧪</div><p>Nenhuma prova.</p></div>';return}el.innerHTML=tests.map(t=>{const chips=(asgn||[]).filter(a=>a.test_id===t.id).map(a=>`<span class="badge bg2" style="margin-right:4px">${a.profiles?.full_name||''}</span>`).join('');const qc=(qs||[]).filter(q=>q.test_id===t.id).length;const pend=(subs||[]).filter(s=>s.test_id===t.id&&s.needs_grade).length;return`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><strong>${t.name}</strong>${pend?`<span class="badge ba">⏳ ${pend}</span>`:''}</div><p style="font-size:13px;color:var(--muted);margin-top:3px">${t.description||''}</p><div style="display:flex;gap:6px;margin-top:6px"><span class="badge bgr">${qc} questão(ões)</span>${t.test_date?`<span class="badge bgr">📅 ${t.test_date}</span>`:''}</div><div style="margin-top:8px">${chips||'<span class="badge bgr">Sem alunos</span>'}</div></div><div style="display:flex;flex-direction:column;gap:6px">${pend?`<button class="bs bsm" onclick="openGrade('${t.id}')">Corrigir</button>`:''}<button class="bd bsm" onclick="delItem('tests','${t.id}',renderTests)">✕</button></div></div></div>`}).join('')}
 
-async function renderStudents(){
-  const el=document.getElementById('sl2');
-  el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
-  const {data:students}=await sb.from('profiles').select('*').eq('role','student');
-  const {data:subs}=await sb.from('test_submissions').select('student_id,score,total');
-  if(!students?.length){el.innerHTML='<div class="es"><div style="font-size:32px">👩‍🎓</div><p>Nenhum aluno cadastrado ainda.</p></div>';return}
-  el.innerHTML=students.map(s=>{
-    const mySubs=(subs||[]).filter(x=>x.student_id===s.id&&x.score!=null);
-    const avg=mySubs.length?Math.round(mySubs.reduce((a,b)=>a+(b.score/b.total*10),0)/mySubs.length*10)/10:null;
-    return`<div class="card"><strong style="font-size:15px">${s.full_name}</strong><p style="font-size:13px;color:var(--muted);margin-top:3px">${s.email||''}</p><div style="margin-top:8px;display:flex;gap:6px">${avg!==null?`<span class="badge bg2">Média: ${avg}/10</span>`:''}<span class="badge bgr">${mySubs.length} prova(s)</span></div></div>`;
-  }).join('');
-}
+async function renderStudents(){const el=g('sl2');el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';const {data:students}=await sb.from('profiles').select('*').eq('role','student');const {data:subs}=await sb.from('test_submissions').select('student_id,score,total');if(!students?.length){el.innerHTML='<div class="es"><div style="font-size:32px">👩‍🎓</div><p>Nenhum aluno.</p></div>';return}el.innerHTML=students.map(s=>{const ms=(subs||[]).filter(x=>x.student_id===s.id&&x.score!=null);const avg=ms.length?Math.round(ms.reduce((a,b)=>a+(b.score/b.total*10),0)/ms.length*10)/10:null;return`<div class="card"><strong style="font-size:15px">${s.full_name}</strong><p style="font-size:13px;color:var(--muted);margin-top:3px">${s.email||''}</p><div style="margin-top:8px;display:flex;gap:6px">${avg!==null?`<span class="badge bg2">Média: ${avg}/10</span>`:''}<span class="badge bgr">${ms.length} prova(s)</span></div></div>`}).join('')}
 
-async function delItem(table,id,cb){
-  if(!confirm('Confirmar exclusão?'))return;
-  await sb.from(table).delete().eq('id',id);cb();
-}
+async function delItem(table,id,cb){if(!confirm('Confirmar exclusão?'))return;await sb.from(table).delete().eq('id',id);cb()}
 
-// ===== Q EDITOR =====
 function addQ(){NQs.push({id:Date.now().toString(36),type:'multiple_choice',text:'',options:['','',''],correct:''});renderQEditor()}
-function renderQEditor(){
-  const el=document.getElementById('qed');
-  if(!NQs.length){el.innerHTML='';return}
-  el.innerHTML=NQs.map((q,i)=>`<div class="card" style="margin-bottom:8px;padding:.9rem">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><span style="font-size:13px;font-weight:600;color:var(--muted)">Q${i+1}</span><button class="bd bsm" onclick="remQ(${i})">✕</button></div>
-    <div class="fg"><label>Tipo</label><select onchange="updQ(${i},'type',this.value)"><option value="multiple_choice" ${q.type==='multiple_choice'?'selected':''}>Múltipla Escolha</option><option value="fill_blank" ${q.type==='fill_blank'?'selected':''}>Preencher Lacuna</option><option value="translation" ${q.type==='translation'?'selected':''}>Tradução</option><option value="open_answer" ${q.type==='open_answer'?'selected':''}>Resposta Aberta</option></select></div>
-    <div class="fg"><label>Texto</label><input type="text" value="${q.text.replace(/"/g,'&quot;')}" onchange="updQ(${i},'text',this.value)"></div>
-    ${q.type==='multiple_choice'?`<div class="fg"><label>Opções</label>${(q.options||[]).map((o,j)=>`<input type="text" value="${o.replace(/"/g,'&quot;')}" onchange="updOpt(${i},${j},this.value)" placeholder="Opção ${String.fromCharCode(65+j)}" style="margin-bottom:5px">`).join('')}<button class="bs bsm" style="margin-top:4px" onclick="addOpt(${i})">+ Opção</button></div>`:''}
-    ${q.type!=='open_answer'?`<div class="fg"><label>Resposta correta</label><input type="text" value="${(q.correct||'').replace(/"/g,'&quot;')}" onchange="updQ(${i},'correct',this.value)"></div>`:''}
-  </div>`).join('');
-}
+function renderQEditor(){const el=g('qed');if(!NQs.length){el.innerHTML='';return}el.innerHTML=NQs.map((q,i)=>`<div class="card" style="margin-bottom:8px;padding:.9rem"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><span style="font-size:13px;font-weight:600;color:var(--muted)">Q${i+1}</span><button class="bd bsm" onclick="remQ(${i})">✕</button></div><div class="fg"><label>Tipo</label><select onchange="updQ(${i},'type',this.value)"><option value="multiple_choice" ${q.type==='multiple_choice'?'selected':''}>Múltipla Escolha</option><option value="fill_blank" ${q.type==='fill_blank'?'selected':''}>Preencher Lacuna</option><option value="translation" ${q.type==='translation'?'selected':''}>Tradução</option><option value="open_answer" ${q.type==='open_answer'?'selected':''}>Resposta Aberta</option></select></div><div class="fg"><label>Texto</label><input type="text" value="${q.text.replace(/"/g,'&quot;')}" onchange="updQ(${i},'text',this.value)"></div>${q.type==='multiple_choice'?`<div class="fg"><label>Opções</label>${(q.options||[]).map((o,j)=>`<input type="text" value="${o.replace(/"/g,'&quot;')}" onchange="updOpt(${i},${j},this.value)" placeholder="Opção ${String.fromCharCode(65+j)}" style="margin-bottom:5px">`).join('')}<button class="bs bsm" style="margin-top:4px" onclick="addOpt(${i})">+ Opção</button></div>`:''}${q.type!=='open_answer'?`<div class="fg"><label>Resposta correta</label><input type="text" value="${(q.correct||'').replace(/"/g,'&quot;')}" onchange="updQ(${i},'correct',this.value)"></div>`:''}</div>`).join('')}
 function updQ(i,f,v){NQs[i][f]=v;if(f==='type')renderQEditor()}
 function updOpt(i,j,v){NQs[i].options[j]=v}
 function addOpt(i){NQs[i].options.push('');renderQEditor()}
 function remQ(i){NQs.splice(i,1);renderQEditor()}
 
-// ===== GRADE TESTS =====
-async function openGrade(tid){
-  GT=tid;
-  const {data:subs}=await sb.from('test_submissions').select('*,profiles(full_name)').eq('test_id',tid).eq('needs_grade',true);
-  const {data:openQs}=await sb.from('test_questions').select('*').eq('test_id',tid).eq('question_type','open_answer');
-  const el=document.getElementById('gc');
-  if(!subs?.length){el.innerHTML='<p style="color:var(--muted)">Nenhuma resposta pendente.</p>';document.getElementById('mg').classList.add('active');return}
-  el.innerHTML=subs.map(sub=>`<div class="card"><strong>${sub.profiles?.full_name||'Aluno'}</strong>${(openQs||[]).map(q=>{
-    const ans=(sub.answers||{})[q.id]||'(sem resposta)';
-    return`<div style="margin-top:.85rem"><p style="font-size:13px;font-weight:500">${q.question_text}</p><p style="font-size:13px;color:var(--muted);font-style:italic;margin-top:3px;padding:8px;background:#F9FAFB;border-radius:6px">"${ans}"</p><div style="display:flex;gap:8px;margin-top:8px;align-items:center"><label style="font-size:13px;white-space:nowrap">Pontos (0-1):</label><input type="number" min="0" max="1" step="0.5" value="0" id="gr-${sub.id}-${q.id}" style="width:80px"><input type="text" placeholder="Feedback..." id="fb-${sub.id}-${q.id}" style="flex:1"></div></div>`;
-  }).join('')}</div>`).join('');
-  document.getElementById('mg').classList.add('active');
-}
+async function openGrade(tid){GT=tid;const {data:subs}=await sb.from('test_submissions').select('*,profiles(full_name)').eq('test_id',tid).eq('needs_grade',true);const {data:oqs}=await sb.from('test_questions').select('*').eq('test_id',tid).eq('question_type','open_answer');const el=g('gc');if(!subs?.length){el.innerHTML='<p style="color:var(--muted)">Nenhuma pendente.</p>';g('mg').classList.add('active');return}el.innerHTML=subs.map(sub=>`<div class="card"><strong>${sub.profiles?.full_name||'Aluno'}</strong>${(oqs||[]).map(q=>{const ans=(sub.answers||{})[q.id]||'(sem resposta)';return`<div style="margin-top:.85rem"><p style="font-size:13px;font-weight:500">${q.question_text}</p><p style="font-size:13px;color:var(--muted);font-style:italic;margin-top:3px;padding:8px;background:#F9FAFB;border-radius:6px">"${ans}"</p><div style="display:flex;gap:8px;margin-top:8px;align-items:center"><label style="font-size:13px;white-space:nowrap">Pontos:</label><input type="number" min="0" max="1" step="0.5" value="0" id="gr-${sub.id}-${q.id}" style="width:80px"><input type="text" placeholder="Feedback..." id="fb-${sub.id}-${q.id}" style="flex:1"></div></div>`}).join('')}</div>`).join('');g('mg').classList.add('active')}
+async function saveGrades(){const {data:subs}=await sb.from('test_submissions').select('*').eq('test_id',GT).eq('needs_grade',true);const {data:oqs}=await sb.from('test_questions').select('*').eq('test_id',GT).eq('question_type','open_answer');for(const sub of(subs||[])){let bonus=0,feedback={};for(const q of(oqs||[])){bonus+=parseFloat(g(`gr-${sub.id}-${q.id}`)?.value||'0');const fb=g(`fb-${sub.id}-${q.id}`)?.value||'';if(fb)feedback[q.id]=fb}await sb.from('test_submissions').update({score:(sub.score||0)+bonus,needs_grade:false,feedback}).eq('id',sub.id)}closeM('mg');renderTests();alert('Correção salva!')}
 
-async function saveGrades(){
-  const {data:subs}=await sb.from('test_submissions').select('*').eq('test_id',GT).eq('needs_grade',true);
-  const {data:openQs}=await sb.from('test_questions').select('*').eq('test_id',GT).eq('question_type','open_answer');
-  for(const sub of(subs||[])){
-    let bonus=0,feedback={};
-    for(const q of(openQs||[])){
-      bonus+=parseFloat(document.getElementById(`gr-${sub.id}-${q.id}`)?.value||'0');
-      const fb=document.getElementById(`fb-${sub.id}-${q.id}`)?.value||'';
-      if(fb)feedback[q.id]=fb;
-    }
-    await sb.from('test_submissions').update({score:(sub.score||0)+bonus,needs_grade:false,feedback}).eq('id',sub.id);
-  }
-  closeM('mg');renderTests();alert('Correção salva!');
-}
+// ===== TEACHER SPEAKING =====
+async function saveSpeakingActivity(){const title=g('spk-title').value.trim();if(!title)return alert('Preencha o título.');await sb.from('speaking_activities').insert({title,type:g('spk-type').value,instructions:g('spk-inst').value,content:g('spk-cnt').value});['spk-title','spk-inst','spk-cnt'].forEach(x=>g(x).value='');closeM('mspk');renderTeacherSpeaking()}
 
-// ===== TEACHER: SPEAKING =====
-async function saveSpeakingActivity(){
-  const title=document.getElementById('spk-title').value.trim();
-  if(!title)return alert('Preencha o título.');
-  await sb.from('speaking_activities').insert({
-    title,
-    type:document.getElementById('spk-type').value,
-    instructions:document.getElementById('spk-instructions').value,
-    content:document.getElementById('spk-content').value
-  });
-  ['spk-title','spk-instructions','spk-content'].forEach(x=>document.getElementById(x).value='');
-  closeM('mspk');renderTeacherSpeaking();
-}
+async function renderTeacherSpeaking(){const el=g('spk-tl');el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';const {data:acts}=await sb.from('speaking_activities').select('*').order('created_at',{ascending:false});if(!acts?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🎤</div><p>Nenhuma atividade.</p></div>';return}const {data:subs}=await sb.from('speaking_submissions').select('activity_id,grade');const TL={read_aloud:'Leitura',answer_question:'Pergunta',describe:'Descrever',shadowing:'Shadowing'};el.innerHTML=acts.map(a=>{const ms=(subs||[]).filter(s=>s.activity_id===a.id);const pend=ms.filter(s=>s.grade==null).length;return`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px"><strong>${a.title}</strong><span class="badge bg2">${TL[a.type]||a.type}</span>${pend?`<span class="badge ba">⏳ ${pend}</span>`:''}</div><p style="font-size:13px;color:var(--muted)">${a.instructions||''}</p><p style="font-size:12px;color:var(--muted);margin-top:4px">${ms.length} submissão(ões)</p></div><div style="display:flex;flex-direction:column;gap:6px"><button class="bs bsm" onclick="viewSpkSubs('${a.id}','${a.title.replace(/'/g,"\\'")}')">Ver respostas</button><button class="bd bsm" onclick="delItem('speaking_activities','${a.id}',renderTeacherSpeaking)">✕</button></div></div></div>`}).join('')}
 
-async function renderTeacherSpeaking(){
-  const el=document.getElementById('spk-teacher-list');
-  el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
-  const {data:activities}=await sb.from('speaking_activities').select('*').order('created_at',{ascending:false});
-  if(!activities?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🎤</div><p>Nenhuma atividade criada ainda.</p></div>';return}
-  const {data:subs}=await sb.from('speaking_submissions').select('activity_id,student_id,grade');
-  const typeLabel={read_aloud:'Leitura',answer_question:'Pergunta',describe:'Descrever',shadowing:'Shadowing'};
-  el.innerHTML=activities.map(a=>{
-    const mySubs=(subs||[]).filter(s=>s.activity_id===a.id);
-    const pending=mySubs.filter(s=>s.grade===null||s.grade===undefined).length;
-    return`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><strong>${a.title}</strong><span class="badge bg2">${typeLabel[a.type]||a.type}</span>${pending?`<span class="badge ba">⏳ ${pending} pendente(s)</span>`:''}</div><p style="font-size:13px;color:var(--muted)">${a.instructions||''}</p><p style="font-size:13px;color:var(--muted);margin-top:4px">${mySubs.length} submissão(ões)</p></div><div style="display:flex;flex-direction:column;gap:6px"><button class="bs bsm" onclick="viewSpeakingSubmissions('${a.id}','${a.title.replace(/'/g,"\\'")}')">Ver respostas</button><button class="bd bsm" onclick="delItem('speaking_activities','${a.id}',renderTeacherSpeaking)">✕</button></div></div></div>`;
-  }).join('');
-}
+async function viewSpkSubs(actId,actTitle){const el=g('spk-grade-content');g('spk-grade-title').textContent=`Speaking — ${actTitle}`;el.innerHTML='<div class="loading"><span class="spinner"></span></div>';g('mspk-grade').classList.add('active');const {data:subs}=await sb.from('speaking_submissions').select('*,profiles(full_name)').eq('activity_id',actId).order('created_at',{ascending:false});if(!subs?.length){el.innerHTML='<p style="color:var(--muted)">Nenhuma resposta ainda.</p>';return}const byS={};subs.forEach(s=>{if(!byS[s.student_id])byS[s.student_id]={name:s.profiles?.full_name||'Aluno',atts:[]};byS[s.student_id].atts.push(s)});el.innerHTML=Object.values(byS).map(st=>`<div class="card" style="margin-bottom:12px"><strong style="font-size:15px">${st.name}</strong><p style="font-size:13px;color:var(--muted);margin-bottom:.75rem">${st.atts.length} tentativa(s)</p>${st.atts.map((att,i)=>`<div class="attempt-card"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px"><span style="font-size:13px;font-weight:500">Tentativa ${att.attempt_number||i+1} <span style="color:var(--muted);font-size:12px">— ${fmt(att.created_at)}</span></span>${att.grade!=null?`<span class="badge bg2">Nota: ${att.grade}/10</span>`:'<span class="badge ba">Sem nota</span>'}</div>${att.audio_url?`<audio controls src="${att.audio_url}"></audio>`:'<p style="font-size:13px;color:var(--muted);margin-top:.5rem">⚠️ Sem áudio</p>'}${att.feedback?`<p style="font-size:13px;margin-top:.5rem;padding:6px 10px;background:#F9FAFB;border-radius:6px">💬 ${att.feedback}</p>`:''}<div style="display:flex;gap:8px;margin-top:.75rem;align-items:center;flex-wrap:wrap"><label style="font-size:13px;white-space:nowrap">Nota (0-10):</label><input type="number" min="0" max="10" step="0.5" value="${att.grade!=null?att.grade:''}" id="sn-${att.id}" style="width:80px"><input type="text" placeholder="Feedback..." value="${att.feedback||''}" id="sf-${att.id}" style="flex:1;min-width:120px"><button class="bp bsm" onclick="saveSpkGrade('${att.id}',this)">Salvar</button></div></div>`).join('')}</div>`).join('')}
 
-async function viewSpeakingSubmissions(actId,actTitle){
-  const el=document.getElementById('spk-grade-content');
-  document.getElementById('spk-grade-title').textContent=`Speaking — ${actTitle}`;
-  el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
-  document.getElementById('mspk-grade').classList.add('active');
-  const {data:subs}=await sb.from('speaking_submissions').select('*,profiles(full_name)').eq('activity_id',actId).order('created_at',{ascending:false});
-  if(!subs?.length){el.innerHTML='<p style="color:var(--muted);padding:.5rem 0">Nenhuma resposta ainda.</p>';return}
-  // Group by student
-  const byStudent={};
-  subs.forEach(s=>{
-    const sid=s.student_id;
-    if(!byStudent[sid])byStudent[sid]={name:s.profiles?.full_name||'Aluno',attempts:[]};
-    byStudent[sid].attempts.push(s);
-  });
-  el.innerHTML=Object.values(byStudent).map(st=>`
-    <div class="card" style="margin-bottom:12px">
-      <strong style="font-size:15px">${st.name}</strong>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:.75rem">${st.attempts.length} tentativa(s)</p>
-      ${st.attempts.map((att,i)=>`
-        <div class="attempt-card">
-          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-            <span style="font-size:13px;font-weight:500">Tentativa ${att.attempt_number||i+1} <span style="color:var(--muted);font-weight:400;font-size:12px">— ${fmt(att.created_at)}</span></span>
-            ${att.grade!==null&&att.grade!==undefined?`<span class="badge bg2">Nota: ${att.grade}/10</span>`:'<span class="badge ba">Sem nota</span>'}
-          </div>
-          ${att.audio_url?`<audio controls src="${att.audio_url}"></audio>`:'<p style="font-size:13px;color:var(--muted);margin-top:.5rem">⚠️ Sem áudio</p>'}
-          ${att.feedback?`<p style="font-size:13px;margin-top:.5rem;padding:6px 10px;background:#F9FAFB;border-radius:6px">💬 ${att.feedback}</p>`:''}
-          <div style="display:flex;gap:8px;margin-top:.75rem;align-items:center;flex-wrap:wrap">
-            <label style="font-size:13px;white-space:nowrap">Nota (0-10):</label>
-            <input type="number" min="0" max="10" step="0.5" value="${att.grade||''}" id="spk-note-${att.id}" style="width:80px">
-            <input type="text" placeholder="Feedback..." value="${att.feedback||''}" id="spk-fb-${att.id}" style="flex:1;min-width:120px">
-            <button class="bp bsm" onclick="saveSpeakingGrade('${att.id}')">Salvar</button>
-          </div>
-        </div>
-      `).join('')}
-    </div>
-  `).join('');
-}
+async function saveSpkGrade(subId,btn){const grade=parseFloat(g(`sn-${subId}`)?.value);const feedback=g(`sf-${subId}`)?.value||'';await sb.from('speaking_submissions').update({grade:isNaN(grade)?null:grade,feedback}).eq('id',subId);if(btn){btn.textContent='✅';btn.disabled=true;setTimeout(()=>{btn.textContent='Salvar';btn.disabled=false},2000)}}
 
-async function saveSpeakingGrade(subId){
-  const grade=parseFloat(document.getElementById(`spk-note-${subId}`)?.value);
-  const feedback=document.getElementById(`spk-fb-${subId}`)?.value||'';
-  await sb.from('speaking_submissions').update({grade:isNaN(grade)?null:grade,feedback}).eq('id',subId);
-  // Refresh inline
-  const btn=event?.target;
-  if(btn){btn.textContent='✅ Salvo';btn.disabled=true;setTimeout(()=>{btn.textContent='Salvar';btn.disabled=false},2000)}
-}
+// ===== TEACHER MESSAGES =====
+async function renderTeacherMessages(){const el=g('tmsg-c');el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';const {data:students}=await sb.from('profiles').select('*').eq('role','student');if(!students?.length){el.innerHTML='<div class="es"><p>Nenhum aluno.</p></div>';return}el.innerHTML=`<div class="fg"><label>Selecionar aluna</label><select id="msg-sel" onchange="loadTChat(this.value)"><option value="">Escolha...</option>${students.map(s=>`<option value="${s.id}">${s.full_name}</option>`).join('')}</select></div><div id="tchat" style="display:none"><div class="msg-list" id="tmsgl"></div><div class="msg-input-row"><input type="text" id="tmsgi" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendTMsg()"><button class="bp bsm" onclick="sendTMsg()">Send</button></div></div>`}
+let tChatSid=null;
+async function loadTChat(sid){if(!sid)return;tChatSid=sid;g('tchat').style.display='block';await refreshTChat()}
+async function refreshTChat(){if(!tChatSid)return;const el=g('tmsgl');const {data:msgs}=await sb.from('messages').select('*').or(`and(sender_id.eq.teacher,receiver_id.eq.${tChatSid}),and(sender_id.eq.${tChatSid},receiver_id.eq.teacher)`).order('created_at');el.innerHTML=(msgs||[]).map(m=>{const me=m.sender_id==='teacher';return`<div style="display:flex;flex-direction:column;align-items:${me?'flex-end':'flex-start'}"><div class="msg-bubble ${me?'msg-me':'msg-other'}">${m.content}<div class="msg-time">${fmt(m.created_at)}</div></div></div>`}).join('')||'<p style="text-align:center;color:var(--muted);font-size:13px;padding:1rem">Nenhuma mensagem.</p>';el.scrollTop=el.scrollHeight}
+async function sendTMsg(){const inp=g('tmsgi'),content=inp.value.trim();if(!content||!tChatSid)return;inp.value='';await sb.from('messages').insert({sender_id:'teacher',receiver_id:tChatSid,content});await refreshTChat()}
 
-// ===== TEACHER: MESSAGES =====
-async function renderTeacherMessages(){
-  const el=document.getElementById('tmsg-content');
-  el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
-  const {data:students}=await sb.from('profiles').select('*').eq('role','student');
-  if(!students?.length){el.innerHTML='<div class="es"><p>Nenhum aluno cadastrado.</p></div>';return}
-  el.innerHTML=`<div class="fg"><label>Selecionar aluna</label><select id="msg-student-sel" onchange="loadTeacherChat(this.value)"><option value="">Escolha uma aluna...</option>${students.map(s=>`<option value="${s.id}">${s.full_name}</option>`).join('')}</select></div><div id="teacher-chat-area" style="display:none"><div class="msg-list" id="teacher-msg-list"></div><div class="msg-input-row"><input type="text" id="teacher-msg-input" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendTeacherMsg()"><button class="bp bsm" onclick="sendTeacherMsg()">Send</button></div></div>`;
-}
+// ===== TEACHER LIVE =====
+async function renderTeacherLive(){const el=g('tlive-c');el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';const {data:sess}=await sb.from('live_sessions').select('*').eq('active',true).limit(1);const a=sess?.[0];el.innerHTML=a?`<div class="card live-card"><div class="live-icon">🔴</div><h3 style="font-size:17px;font-weight:600;margin-bottom:.5rem">Aula em andamento</h3><p style="font-size:13px;color:var(--muted);margin-bottom:1.25rem">Sala: <strong>${a.room_name}</strong></p><div style="display:flex;gap:8px;justify-content:center"><a href="https://meet.jit.si/${a.room_name}" target="_blank"><button class="bp">Entrar 🎥</button></a><button class="bd" onclick="endLive('${a.id}')">Encerrar</button></div></div>`:`<div class="card live-card"><div class="live-icon">🎥</div><h3 style="font-size:17px;font-weight:600;margin-bottom:.5rem">Iniciar aula ao vivo</h3><p style="font-size:13px;color:var(--muted);margin-bottom:1.25rem">Clique para criar uma sala.</p><button class="bp" onclick="startLive()">▶ Iniciar Aula</button></div>`}
+async function startLive(){await sb.from('live_sessions').insert({room_name:'ep-'+Date.now().toString(36),active:true});renderTeacherLive()}
+async function endLive(id){await sb.from('live_sessions').update({active:false}).eq('id',id);renderTeacherLive()}
 
-let teacherChatStudentId=null;
-async function loadTeacherChat(sid){
-  if(!sid)return;
-  teacherChatStudentId=sid;
-  document.getElementById('teacher-chat-area').style.display='block';
-  await refreshTeacherChat();
-}
+// ===== STUDENT NAV =====
+function sTab(el,tab){document.querySelectorAll('.sn button').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.st2').forEach(t=>t.style.display='none');if(el)el.classList.add('active');g(tab).style.display='block';({sd:renderSD,sls:renderSLessons,stk:renderSTasks,sts:renderSTests,sp2:renderSProgress,sspk:renderSSpeaking,slive:renderSLive,smsg:renderSMessages})[tab]?.()}
 
-async function refreshTeacherChat(){
-  if(!teacherChatStudentId)return;
-  const el=document.getElementById('teacher-msg-list');
-  const {data:msgs}=await sb.from('messages').select('*').or(`and(sender_id.eq.teacher,receiver_id.eq.${teacherChatStudentId}),and(sender_id.eq.${teacherChatStudentId},receiver_id.eq.teacher)`).order('created_at');
-  el.innerHTML=(msgs||[]).map(m=>{
-    const isMe=m.sender_id==='teacher';
-    return`<div style="display:flex;flex-direction:column;align-items:${isMe?'flex-end':'flex-start'}"><div class="msg-bubble ${isMe?'msg-me':'msg-other'}">${m.content}<div class="msg-time">${fmt(m.created_at)}</div></div></div>`;
-  }).join('')||'<p style="text-align:center;color:var(--muted);font-size:13px;padding:1rem">Nenhuma mensagem ainda.</p>';
-  el.scrollTop=el.scrollHeight;
-}
+async function renderSD(){g('wn').textContent=CU?.name||'Student';const {data:t}=await sb.from('task_assignments').select('task_id').eq('student_id',CU.id);const {data:ts}=await sb.from('test_assignments').select('test_id').eq('student_id',CU.id);const {data:subs}=await sb.from('test_submissions').select('score,total').eq('student_id',CU.id);const gs=(subs||[]).filter(s=>s.score!=null);const avg=gs.length?Math.round(gs.reduce((a,b)=>a+(b.score/b.total*10),0)/gs.length*10)/10:null;g('st1').textContent=(t||[]).length;g('st2').textContent=(ts||[]).length;g('st3').textContent=avg!==null?avg:'—'}
 
-async function sendTeacherMsg(){
-  const inp=document.getElementById('teacher-msg-input');
-  const content=inp.value.trim();
-  if(!content||!teacherChatStudentId)return;
-  inp.value='';
-  await sb.from('messages').insert({sender_id:'teacher',receiver_id:teacherChatStudentId,content});
-  await refreshTeacherChat();
-}
+async function renderSLessons(){const el=g('lsl');el.innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';const {data}=await sb.from('contents').select('*').order('created_at');if(!data?.length){el.innerHTML='<div class="es"><div style="font-size:32px">📚</div><p>No lessons yet.</p></div>';return}const tb={text:'Text',exercise:'Exercise',conversation:'Conversation'};const tc={text:'bb',exercise:'ba',conversation:'bg2'};el.innerHTML=data.map(c=>`<div class="card"><div style="display:flex;align-items:flex-start;gap:12px"><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><strong>${c.title}</strong><span class="badge ${tc[c.type]||'bgr'}">${tb[c.type]||c.type}</span></div><p style="font-size:13px;color:var(--muted)">${c.description||''}</p>${c.body?`<div class="task-body" style="margin-top:.75rem;font-size:13px">${c.body}</div>`:''}</div></div>${c.file_url?`<div style="margin-top:.75rem"><a href="${c.file_url}" target="_blank"><button class="bs bsm">📎 Open PDF</button></a></div>`:''}</div>`).join('')}
 
-// ===== TEACHER: LIVE CLASS =====
-async function renderTeacherLive(){
-  const el=document.getElementById('tlive-content');
-  el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
-  const {data:sess}=await sb.from('live_sessions').select('*').eq('active',true).limit(1);
-  const activeSession=sess?.[0];
-  if(activeSession){
-    el.innerHTML=`<div class="card live-card"><div class="live-icon">🔴</div><h3 style="font-size:17px;font-weight:600;margin-bottom:.5rem">Aula em andamento</h3><p style="font-size:13px;color:var(--muted);margin-bottom:1.25rem">Sala: <strong>${activeSession.room_name}</strong></p><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><a href="https://meet.jit.si/${activeSession.room_name}" target="_blank"><button class="bp">Entrar na sala 🎥</button></a><button class="bd" onclick="endLiveClass('${activeSession.id}')">Encerrar aula</button></div></div>`;
-  } else {
-    el.innerHTML=`<div class="card live-card"><div class="live-icon">🎥</div><h3 style="font-size:17px;font-weight:600;margin-bottom:.5rem">Iniciar uma aula ao vivo</h3><p style="font-size:13px;color:var(--muted);margin-bottom:1.25rem">Clique para criar uma sala. Seus alunos verão o botão para entrar automaticamente.</p><button class="bp" onclick="startLiveClass()">▶ Iniciar Aula</button></div>`;
-  }
-}
+// ===== STUDENT TASKS =====
+let _assigns=[];
+async function renderSTasks(){const el=g('tkl');el.innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';const {data:asgn}=await sb.from('task_assignments').select('*,tasks(*)').eq('student_id',CU.id);if(!asgn?.length){el.innerHTML='<div class="es"><div style="font-size:32px">📚</div><p>No tasks assigned yet.</p></div>';return}_assigns=asgn;el.innerHTML=asgn.map(a=>{const t=a.tasks;const done=!!a.completed;return`<div class="ir"><div style="font-size:24px">${done?'✅':'📋'}</div><div class="irc"><strong>${t.name}</strong><p>${(t.instructions||'').substring(0,80)}${(t.instructions||'').length>80?'…':''}</p>${t.due_date?`<p style="font-size:12px;margin-top:3px">📅 ${t.due_date}</p>`:''}</div><div>${done?'<span class="badge bg2">Done ✓</span>':`<button class="bp bsm" onclick="openTaskView('${a.id}')">Open →</button>`}</div></div>`}).join('')}
 
-async function startLiveClass(){
-  const room='english-platform-'+Date.now().toString(36);
-  await sb.from('live_sessions').insert({room_name:room,active:true});
-  renderTeacherLive();
-}
+function openTaskView(aid){const a=_assigns.find(x=>x.id===aid);if(!a)return;const t=a.tasks;g('task-title').textContent=t.name;g('task-body-wrap').innerHTML=`<div class="card" style="margin-bottom:1rem;background:var(--gl);border-color:#86EFAC"><p style="font-size:13px;color:var(--gd);font-weight:500">Read the instructions and complete below.</p>${t.due_date?`<p style="font-size:12px;color:var(--gd);margin-top:4px">📅 Due: ${t.due_date}</p>`:''}</div><div class="card"><h3 style="font-size:15px;font-weight:600;margin-bottom:.75rem">📋 Instructions</h3><div class="task-body">${t.instructions||''}</div></div><div class="card" style="margin-top:1rem"><h3 style="font-size:15px;font-weight:600;margin-bottom:.75rem">✍️ Your Response</h3><textarea id="task-resp" rows="5" placeholder="Type your response here..."></textarea><div style="margin-top:1rem"><button class="bp" style="width:100%;padding:12px" onclick="submitTask('${aid}')">Mark as Complete ✓</button></div></div>`;show('screen-task')}
 
-async function endLiveClass(id){
-  await sb.from('live_sessions').update({active:false}).eq('id',id);
-  renderTeacherLive();
-}
+async function submitTask(aid){if(!confirm('Mark this task as complete?'))return;const resp=g('task-resp')?.value||'';await sb.from('task_assignments').update({completed:true,submitted_at:new Date().toISOString(),response:resp}).eq('id',aid);alert('Task marked as complete! 🎉');show('screen-student');sTab(null,'stk');document.querySelectorAll('.sn button').forEach((b,i)=>{if(b.textContent==='Tasks')b.classList.add('active')})}
 
-// ===== STUDENT: HOME =====
-function sTab(el,tab){
-  document.querySelectorAll('.sn button').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.st2').forEach(t=>t.style.display='none');
-  if(el)el.classList.add('active');
-  document.getElementById(tab).style.display='block';
-  if(tab==='sd')renderSD();
-  if(tab==='sls')renderSLessons();
-  if(tab==='stk')renderSTasks();
-  if(tab==='sts')renderSTests();
-  if(tab==='sp2')renderSProgress();
-  if(tab==='sspk')renderSSpeaking();
-  if(tab==='slive')renderSLive();
-  if(tab==='smsg')renderSMessages();
-}
+// ===== STUDENT TESTS =====
+async function renderSTests(){const el=g('tsl');el.innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';const {data:asgn}=await sb.from('test_assignments').select('test_id,tests(*)').eq('student_id',CU.id);const {data:subs}=await sb.from('test_submissions').select('*').eq('student_id',CU.id);if(!asgn?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🧪</div><p>No tests yet.</p></div>';return}el.innerHTML=asgn.map(a=>{const t=a.tests;const sub=(subs||[]).find(s=>s.test_id===t.id);return`<div class="ir"><div style="font-size:24px">${sub?'✅':'📄'}</div><div class="irc"><strong>${t.name}</strong><p>${t.description||''}</p>${sub&&sub.score!=null?`<p style="font-size:13px;color:var(--g);margin-top:4px;font-weight:500">Score: ${sub.score}/${sub.total} — ${Math.round(sub.score/sub.total*100)}%</p>`:''}</div>${sub?`<button class="bs bsm" onclick="viewRes('${t.id}')">Results</button>`:`<button class="bp bsm" onclick="startTest('${t.id}')">Start →</button>`}</div>`}).join('')}
 
-async function renderSD(){
-  document.getElementById('wn').textContent=CU?.name||'Student';
-  const {data:myTasks}=await sb.from('task_assignments').select('task_id').eq('student_id',CU.id);
-  const {data:myTests}=await sb.from('test_assignments').select('test_id').eq('student_id',CU.id);
-  const {data:subs}=await sb.from('test_submissions').select('test_id,score,total').eq('student_id',CU.id);
-  const gradedSubs=(subs||[]).filter(s=>s.score!=null);
-  const avg=gradedSubs.length?Math.round(gradedSubs.reduce((a,b)=>a+(b.score/b.total*10),0)/gradedSubs.length*10)/10:null;
-  document.getElementById('st1').textContent=(myTasks||[]).length;
-  document.getElementById('st2').textContent=(myTests||[]).length;
-  document.getElementById('st3').textContent=avg!==null?avg:'—';
-}
+async function startTest(tid){CTI=tid;CAs={};const {data:test}=await sb.from('tests').select('*').eq('id',tid).single();const {data:qs}=await sb.from('test_questions').select('*').eq('test_id',tid).order('sort_order');g('ttn').textContent=test.name;const tl={multiple_choice:'Multiple Choice',fill_blank:'Fill in the Blank',translation:'Translation',open_answer:'Open Answer'};const byT={};(qs||[]).forEach(q=>{if(!byT[q.question_type])byT[q.question_type]=[];byT[q.question_type].push(q)});g('tqw').innerHTML=`<div class="card" style="margin-bottom:1rem;background:var(--gl);border-color:#86EFAC"><p style="font-size:13px;color:var(--gd)">${test.description||'Answer all questions carefully.'}</p></div>`+Object.entries(byT).map(([type,qs2])=>`<h3 style="font-size:15px;font-weight:600;margin:.9rem 0 .75rem">${tl[type]||type}</h3>${qs2.map(q=>`<div class="qb"><p>${q.question_text}</p>${type==='multiple_choice'?(q.options||[]).map((o,i)=>`<label class="ol" id="o-${q.id}-${i}"><input type="radio" name="q-${q.id}" onchange="selOpt('${q.id}','${o.replace(/'/g,"\\'")}',${i})"> ${String.fromCharCode(97+i)}) ${o}</label>`).join(''):type==='open_answer'?`<textarea placeholder="Write your answer..." rows="3" onchange="CAs['${q.id}']=this.value" style="width:100%"></textarea>`:`<input type="text" placeholder="Type your answer..." onchange="CAs['${q.id}']=this.value">`}</div>`).join('')}`).join('');show('screen-test')}
 
-// ===== STUDENT: LESSONS =====
-async function renderSLessons(){
-  const el=document.getElementById('lsl');
-  el.innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';
-  const {data}=await sb.from('contents').select('*').order('created_at');
-  if(!data?.length){el.innerHTML='<div class="es"><div style="font-size:32px">📚</div><p>No lessons available yet.</p></div>';return}
-  const tb={text:'Text',exercise:'Exercise',conversation:'Conversation'};
-  const tc={text:'bb',exercise:'ba',conversation:'bg2'};
-  el.innerHTML=data.map(c=>`<div class="card"><div style="display:flex;align-items:flex-start;gap:12px"><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><strong>${c.title}</strong><span class="badge ${tc[c.type]||'bgr'}">${tb[c.type]||c.type}</span></div><p style="font-size:13px;color:var(--muted)">${c.description||''}</p>${c.body?`<div class="task-body" style="margin-top:.75rem;font-size:13px">${c.body}</div>`:''}</div></div>${c.file_url?`<div style="margin-top:.75rem"><a href="${c.file_url}" target="_blank"><button class="bs bsm">📎 Open PDF</button></a></div>`:''}</div>`).join('');
-}
+function selOpt(qid,val,idx){CAs[qid]=val;document.querySelectorAll(`[id^="o-${qid}-"]`).forEach(el=>el.classList.remove('sel'));g(`o-${qid}-${idx}`)?.classList.add('sel')}
 
-// ===== STUDENT: TASKS (FIXED) =====
-async function renderSTasks(){
-  const el=document.getElementById('tkl');
-  el.innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';
-  const {data:assigns}=await sb.from('task_assignments').select('*,tasks(*)').eq('student_id',CU.id);
-  if(!assigns?.length){el.innerHTML='<div class="es"><div style="font-size:32px">📚</div><p>No tasks assigned yet.</p></div>';return}
-  el.innerHTML=assigns.map((a,i)=>{
-    const t=a.tasks;
-    const done=!!a.completed;
-    return`<div class="ir" style="flex-wrap:wrap;gap:10px"><div style="font-size:24px">${done?'✅':'📋'}</div><div class="irc"><strong>${t.name}</strong><p>${t.instructions?.substring(0,80)||''}${t.instructions?.length>80?'…':''}</p>${t.due_date?`<p style="font-size:12px;margin-top:3px">📅 Due: ${t.due_date}</p>`:''}</div><div style="display:flex;gap:8px;align-items:center">${done?'<span class="badge bg2">Completed ✓</span>':`<button class="bp bsm" onclick="openTaskScreen('${a.id}','${t.name.replace(/'/g,"\\'")}','${(t.instructions||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}','${t.due_date||''}')">Open Task →</button>`}</div></div>`;
-  }).join('');
-}
+async function submitTest(){if(!confirm('Submit your test?'))return;const {data:qs}=await sb.from('test_questions').select('*').eq('test_id',CTI);let correct=0,total=(qs||[]).length,needsGrade=false;(qs||[]).forEach(q=>{if(q.question_type==='open_answer'){needsGrade=true;return}if((CAs[q.id]||'').trim().toLowerCase()===(q.correct_answer||'').trim().toLowerCase())correct++});await sb.from('test_submissions').insert({test_id:CTI,student_id:CU.id,score:correct,total,needs_grade:needsGrade,answers:CAs});viewRes(CTI)}
 
-function openTaskScreen(assignId,name,instructions,dueDate){
-  document.getElementById('task-screen-title').textContent=name;
-  document.getElementById('task-screen-body').innerHTML=`
-    <div class="card" style="margin-bottom:1rem;background:var(--gl);border-color:#86EFAC">
-      <p style="font-size:13px;color:var(--gd);font-weight:500">Read the instructions carefully and complete the activity below.</p>
-      ${dueDate?`<p style="font-size:12px;color:var(--gd);margin-top:4px">📅 Due: ${dueDate}</p>`:''}
-    </div>
-    <div class="card">
-      <h3 style="font-size:15px;font-weight:600;margin-bottom:.75rem">📋 Instructions</h3>
-      <div class="task-body">${instructions.replace(/\\n/g,'\n')}</div>
-    </div>
-    <div class="card" style="margin-top:1rem">
-      <h3 style="font-size:15px;font-weight:600;margin-bottom:.75rem">✍️ Your Response</h3>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:.75rem">Write your answer or notes below (optional):</p>
-      <textarea id="task-response-input" rows="5" placeholder="Type your response here..."></textarea>
-      <div style="margin-top:1rem">
-        <button class="bp" style="width:100%;padding:12px" onclick="submitTask('${assignId}')">Mark as Complete ✓</button>
-      </div>
-    </div>
-  `;
-  show('screen-task');
-}
+async function viewRes(tid){const {data:test}=await sb.from('tests').select('*').eq('id',tid).single();const {data:sub}=await sb.from('test_submissions').select('*').eq('test_id',tid).eq('student_id',CU.id).order('created_at',{ascending:false}).limit(1).single();const {data:qs}=await sb.from('test_questions').select('*').eq('test_id',tid).order('sort_order');const pct=sub?Math.round(sub.score/sub.total*100):0;const emoji=pct>=80?'🎉':pct>=60?'👍':'💪';g('rc2').innerHTML=`<div style="text-align:center;padding:2rem 1rem 1.25rem"><div style="font-size:48px;margin-bottom:.5rem">${emoji}</div><h2 style="font-size:18px;font-weight:600">${test.name}</h2><div style="font-size:48px;font-weight:700;color:var(--g);margin:.5rem 0">${sub?.score||0}/${sub?.total||0}</div><div class="pb" style="max-width:260px;margin:.75rem auto"><div class="pbi" style="width:${pct}%"></div></div><span class="badge ${pct>=70?'bg2':pct>=50?'ba':'br2'}" style="font-size:14px;padding:5px 14px">${pct}%</span>${sub?.needs_grade?'<p style="font-size:13px;color:var(--muted);margin-top:.85rem">⏳ Some answers pending teacher review.</p>':''}</div><div class="div"></div><h3 style="font-size:15px;font-weight:600;margin-bottom:.85rem">Detailed Results</h3>${(qs||[]).map(q=>{const ans=(sub?.answers||{})[q.id]||'';const isOpen=q.question_type==='open_answer';const ok=!isOpen&&ans.trim().toLowerCase()===(q.correct_answer||'').trim().toLowerCase();const fb=(sub?.feedback||{})[q.id];return`<div class="ri ${isOpen?'rp':ok?'rc':'rw'}"><span style="font-size:18px">${isOpen?'⏳':ok?'✅':'❌'}</span><div style="flex:1"><p style="font-size:13px;font-weight:500;margin-bottom:3px">${q.question_text}</p><p style="font-size:13px">Your answer: <strong>${ans||'(no answer)'}</strong></p>${!isOpen&&!ok&&q.correct_answer?`<p style="font-size:13px;color:var(--gd);margin-top:2px">Correct: ${q.correct_answer}</p>`:''}${isOpen?'<p style="font-size:12px;color:var(--am);margin-top:3px">Pending review</p>':''}${fb?`<p style="font-size:12px;margin-top:4px;padding:5px 8px;background:rgba(255,255,255,.6);border-radius:5px">💬 ${fb}</p>`:''}</div></div>`}).join('')}`;show('screen-results')}
 
-async function submitTask(assignId){
-  if(!confirm('Mark this task as complete?'))return;
-  const response=document.getElementById('task-response-input')?.value||'';
-  // Update task_assignment with completed status and response
-  const {error}=await sb.from('task_assignments').update({
-    completed:true,
-    submitted_at:new Date().toISOString(),
-    response
-  }).eq('id',assignId);
-  if(error){
-    // If columns don't exist yet, still show success to student
-    console.warn('Task update error (may need DB migration):', error.message);
-  }
-  alert('Task marked as complete! Great job! 🎉');
-  show('screen-student');
-  sTab(null,'stk');
-  // Re-activate the Tasks button
-  document.querySelectorAll('.sn button').forEach(b=>{if(b.textContent==='Tasks')b.classList.add('active')});
-}
+async function renderSProgress(){const el=g('prl');el.innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';const {data:asgn}=await sb.from('test_assignments').select('test_id,tests(name)').eq('student_id',CU.id);const {data:subs}=await sb.from('test_submissions').select('*').eq('student_id',CU.id).not('score','is',null);const gs=(asgn||[]).map(a=>({t:a.tests,s:(subs||[]).find(s=>s.test_id===a.test_id)})).filter(x=>x.s);if(!gs.length){el.innerHTML='<div class="es"><div style="font-size:32px">📈</div><p>No completed tests yet.</p></div>';return}const avg=Math.round(gs.reduce((a,x)=>a+(x.s.score/x.s.total*10),0)/gs.length*10)/10;el.innerHTML=`<div class="hc" style="text-align:center;padding:1.75rem"><p style="opacity:.8;font-size:13px">Your average score</p><div style="font-size:48px;font-weight:700;margin:.25rem 0">${avg}</div><p style="opacity:.75;font-size:14px">out of 10</p></div>${gs.map(x=>{const p=Math.round(x.s.score/x.s.total*100);return`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-size:14px;font-weight:500">${x.t?.name||'Test'}</span><span style="font-size:14px;font-weight:600;color:var(--g)">${x.s.score}/${x.s.total} (${p}%)</span></div><div class="pb"><div class="pbi" style="width:${p}%"></div></div></div>`}).join('')}`}
 
-// ===== STUDENT: TESTS =====
-async function renderSTests(){
-  const el=document.getElementById('tsl');
-  el.innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';
-  const {data:assigns}=await sb.from('test_assignments').select('test_id,tests(*)').eq('student_id',CU.id);
-  const {data:subs}=await sb.from('test_submissions').select('*').eq('student_id',CU.id);
-  if(!assigns?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🧪</div><p>No tests available yet.</p></div>';return}
-  el.innerHTML=assigns.map(a=>{
-    const t=a.tests;const sub=(subs||[]).find(s=>s.test_id===t.id);
-    return`<div class="ir"><div style="font-size:24px">${sub?'✅':'📄'}</div><div class="irc"><strong>${t.name}</strong><p>${t.description||''}</p>${sub&&sub.score!=null?`<p style="font-size:13px;color:var(--g);margin-top:4px;font-weight:500">Score: ${sub.score}/${sub.total} — ${Math.round(sub.score/sub.total*100)}%</p>`:''}</div>${sub?`<button class="bs bsm" onclick="viewRes('${t.id}')">Results</button>`:`<button class="bp bsm" onclick="startTest('${t.id}')">Start test →</button>`}</div>`;
-  }).join('');
-}
+// =============================================================
+// ===== STUDENT SPEAKING — COMPLETELY REWRITTEN & ROBUST ======
+// =============================================================
 
-async function startTest(tid){
-  CTI=tid;CAs={};
-  const {data:test}=await sb.from('tests').select('*').eq('id',tid).single();
-  const {data:questions}=await sb.from('test_questions').select('*').eq('test_id',tid).order('sort_order');
-  document.getElementById('ttn').textContent=test.name;
-  const tl={multiple_choice:'Multiple Choice',fill_blank:'Fill in the Blank',translation:'Translation',open_answer:'Open Answer'};
-  const byType={};
-  (questions||[]).forEach(q=>{if(!byType[q.question_type])byType[q.question_type]=[];byType[q.question_type].push(q)});
-  document.getElementById('tqw').innerHTML=`<div class="card" style="margin-bottom:1rem;background:var(--gl);border-color:#86EFAC"><p style="font-size:13px;color:var(--gd)">${test.description||'Answer all questions carefully.'}</p></div>`+
-  Object.entries(byType).map(([type,qs])=>`<h3 style="font-size:15px;font-weight:600;margin:.9rem 0 .75rem">${tl[type]||type}</h3>${qs.map(q=>`<div class="qb"><p>${q.question_text}</p>${
-    type==='multiple_choice'?(q.options||[]).map((o,i)=>`<label class="ol" id="o-${q.id}-${i}"><input type="radio" name="q-${q.id}" onchange="selOpt('${q.id}','${o.replace(/'/g,"\\'")}',${i})"> ${String.fromCharCode(97+i)}) ${o}</label>`).join(''):
-    type==='open_answer'?`<textarea placeholder="Write your answer..." rows="3" onchange="CAs['${q.id}']=this.value" style="width:100%"></textarea>`:
-    `<input type="text" placeholder="Type your answer..." onchange="CAs['${q.id}']=this.value">`
-  }</div>`).join('')}`).join('');
-  show('screen-test');
-}
-
-function selOpt(qid,val,idx){
-  CAs[qid]=val;
-  document.querySelectorAll(`[id^="o-${qid}-"]`).forEach(el=>el.classList.remove('sel'));
-  const el=document.getElementById(`o-${qid}-${idx}`);
-  if(el)el.classList.add('sel');
-}
-
-async function submitTest(){
-  if(!confirm('Submit your test?'))return;
-  const {data:questions}=await sb.from('test_questions').select('*').eq('test_id',CTI);
-  let correct=0,total=(questions||[]).length,needsGrade=false;
-  (questions||[]).forEach(q=>{
-    if(q.question_type==='open_answer'){needsGrade=true;return}
-    if((CAs[q.id]||'').trim().toLowerCase()===(q.correct_answer||'').trim().toLowerCase())correct++;
-  });
-  await sb.from('test_submissions').insert({test_id:CTI,student_id:CU.id,score:correct,total,needs_grade:needsGrade,answers:CAs});
-  viewRes(CTI);
-}
-
-async function viewRes(tid){
-  const {data:test}=await sb.from('tests').select('*').eq('id',tid).single();
-  const {data:sub}=await sb.from('test_submissions').select('*').eq('test_id',tid).eq('student_id',CU.id).order('created_at',{ascending:false}).limit(1).single();
-  const {data:questions}=await sb.from('test_questions').select('*').eq('test_id',tid).order('sort_order');
-  const pct=sub?Math.round(sub.score/sub.total*100):0;
-  const emoji=pct>=80?'🎉':pct>=60?'👍':'💪';
-  document.getElementById('rc2').innerHTML=`
-    <div style="text-align:center;padding:2rem 1rem 1.25rem">
-      <div style="font-size:48px;margin-bottom:.5rem">${emoji}</div>
-      <h2 style="font-size:18px;font-weight:600">${test.name}</h2>
-      <div style="font-size:48px;font-weight:700;color:var(--g);margin:.5rem 0">${sub?.score||0}/${sub?.total||0}</div>
-      <div class="pb" style="max-width:260px;margin:.75rem auto"><div class="pbi" style="width:${pct}%"></div></div>
-      <span class="badge ${pct>=70?'bg2':pct>=50?'ba':'br2'}" style="font-size:14px;padding:5px 14px">${pct}%</span>
-      ${sub?.needs_grade?'<p style="font-size:13px;color:var(--muted);margin-top:.85rem">⏳ Some answers pending teacher review.</p>':''}
-    </div>
-    <div class="div"></div>
-    <h3 style="font-size:15px;font-weight:600;margin-bottom:.85rem">Detailed Results</h3>
-    ${(questions||[]).map(q=>{
-      const ans=(sub?.answers||{})[q.id]||'';
-      const isOpen=q.question_type==='open_answer';
-      const ok=!isOpen&&ans.trim().toLowerCase()===(q.correct_answer||'').trim().toLowerCase();
-      const fb=(sub?.feedback||{})[q.id];
-      return`<div class="ri ${isOpen?'rp':ok?'rc':'rw'}"><span style="font-size:18px">${isOpen?'⏳':ok?'✅':'❌'}</span><div style="flex:1"><p style="font-size:13px;font-weight:500;margin-bottom:3px">${q.question_text}</p><p style="font-size:13px">Your answer: <strong>${ans||'(no answer)'}</strong></p>${!isOpen&&!ok&&q.correct_answer?`<p style="font-size:13px;color:var(--gd);margin-top:2px">Correct: ${q.correct_answer}</p>`:''}${isOpen?'<p style="font-size:12px;color:var(--am);margin-top:3px">Pending review</p>':''}${fb?`<p style="font-size:12px;margin-top:4px;padding:5px 8px;background:rgba(255,255,255,.6);border-radius:5px">💬 ${fb}</p>`:''}</div></div>`;
-    }).join('')}`;
-  show('screen-results');
-}
-
-// ===== STUDENT: PROGRESS =====
-async function renderSProgress(){
-  const el=document.getElementById('prl');
-  el.innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';
-  const {data:assigns}=await sb.from('test_assignments').select('test_id,tests(name)').eq('student_id',CU.id);
-  const {data:subs}=await sb.from('test_submissions').select('*').eq('student_id',CU.id).not('score','is',null);
-  const gs=(assigns||[]).map(a=>({t:a.tests,s:(subs||[]).find(s=>s.test_id===a.test_id)})).filter(x=>x.s);
-  if(!gs.length){el.innerHTML='<div class="es"><div style="font-size:32px">📈</div><p>No completed tests yet.</p></div>';return}
-  const avg=Math.round(gs.reduce((a,x)=>a+(x.s.score/x.s.total*10),0)/gs.length*10)/10;
-  el.innerHTML=`<div class="hc" style="text-align:center;padding:1.75rem"><p style="opacity:.8;font-size:13px">Your average score</p><div style="font-size:48px;font-weight:700;margin:.25rem 0">${avg}</div><p style="opacity:.75;font-size:14px">out of 10</p></div>
-  ${gs.map(x=>{const p=Math.round(x.s.score/x.s.total*100);return`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-size:14px;font-weight:500">${x.t?.name||'Test'}</span><span style="font-size:14px;font-weight:600;color:var(--g)">${x.s.score}/${x.s.total} (${p}%)</span></div><div class="pb"><div class="pbi" style="width:${p}%"></div></div></div>`}).join('')}`;
-}
-
-// ===== STUDENT: SPEAKING (FIXED) =====
 async function renderSSpeaking(){
-  const el=document.getElementById('spk-student-list');
+  const el=g('spk-sl');
   el.innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';
-  const {data:activities}=await sb.from('speaking_activities').select('*').order('created_at',{ascending:false});
-  if(!activities?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🎤</div><p>No speaking activities yet.</p></div>';return}
-  const {data:mySubs}=await sb.from('speaking_submissions').select('*').eq('student_id',CU.id);
-  const typeLabel={read_aloud:'Read Aloud',answer_question:'Answer a Question',describe:'Describe / Free Speaking',shadowing:'Shadowing'};
-  el.innerHTML=activities.map(a=>{
-    const attempts=(mySubs||[]).filter(s=>s.activity_id===a.id).sort((x,y)=>new Date(x.created_at)-new Date(y.created_at));
-    const nextAttemptNum=attempts.length+1;
-    const lastAttempt=attempts[attempts.length-1];
-    const lastGrade=lastAttempt?.grade;
-    return`
-      <div class="card" style="margin-bottom:14px">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:.75rem;flex-wrap:wrap">
-          <div><strong style="font-size:15px">${a.title}</strong><br><span class="badge bg2" style="margin-top:4px">${typeLabel[a.type]||a.type}</span></div>
-          ${lastGrade!==null&&lastGrade!==undefined?`<span class="badge ${lastGrade>=7?'bg2':lastGrade>=5?'ba':'br2'}" style="font-size:14px">Last grade: ${lastGrade}/10</span>`:''}
+  const {data:acts}=await sb.from('speaking_activities').select('*').order('created_at',{ascending:false});
+  if(!acts?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🎤</div><p>No speaking activities yet.</p></div>';return}
+  const {data:mySubs}=await sb.from('speaking_submissions').select('*').eq('student_id',CU.id).order('created_at',{ascending:true});
+  const TL={read_aloud:'Read Aloud',answer_question:'Answer a Question',describe:'Describe / Free Speaking',shadowing:'Shadowing'};
+
+  el.innerHTML=acts.map(a=>{
+    const atts=(mySubs||[]).filter(s=>s.activity_id===a.id);
+    const nextNum=atts.length+1;
+    const lastGrade=atts.length?atts[atts.length-1].grade:null;
+    return`<div class="card" style="margin-bottom:14px">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:.65rem">
+        <div><strong style="font-size:15px">${a.title}</strong><br><span class="badge bg2" style="margin-top:5px;display:inline-block">${TL[a.type]||a.type}</span></div>
+        ${lastGrade!=null?`<span class="badge ${lastGrade>=7?'bg2':lastGrade>=5?'ba':'br2'}" style="font-size:14px">Last: ${lastGrade}/10</span>`:''}
+      </div>
+      ${a.instructions?`<p style="font-size:13px;color:var(--muted);margin-bottom:.5rem">${a.instructions}</p>`:''}
+      ${a.content?`<div class="task-body">${a.content}</div>`:''}
+      ${atts.length?`<div style="margin-top:1rem"><p style="font-size:13px;font-weight:600;margin-bottom:.5rem">Your attempts (${atts.length}):</p>${atts.map((att,i)=>`<div class="attempt-card"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px"><span style="font-size:13px;font-weight:500">Attempt ${att.attempt_number||i+1}</span><div style="display:flex;align-items:center;gap:6px">${att.grade!=null?`<span class="badge ${att.grade>=7?'bg2':att.grade>=5?'ba':'br2'}">Grade: ${att.grade}/10</span>`:'<span class="badge ba">Awaiting grade</span>'}<span style="font-size:11px;color:var(--muted)">${fmt(att.created_at)}</span></div></div>${att.audio_url?`<audio controls src="${att.audio_url}"></audio>`:'<p style="font-size:12px;color:var(--muted);margin-top:.35rem">No audio</p>'}${att.feedback?`<p style="font-size:13px;margin-top:.5rem;padding:6px 10px;background:var(--gl);border-radius:6px;color:var(--gd)">💬 ${att.feedback}</p>`:''}</div>`).join('')}</div>`:''}
+      <div class="rec-box" id="rb-${a.id}">
+        <p style="font-size:13px;font-weight:600">🎤 New Attempt (${nextNum})</p>
+        <div class="rec-btn-wrap">
+          <button class="bp bsm" id="rbtn-${a.id}" onclick="recToggle('${a.id}',${nextNum})">🎤 Start Recording</button>
+          <span class="rec-status" id="rstat-${a.id}">Ready</span>
+          <span class="rec-timer" id="rtimer-${a.id}"></span>
         </div>
-        ${a.instructions?`<p style="font-size:13px;color:var(--muted);margin-bottom:.75rem">${a.instructions}</p>`:''}
-        ${a.content?`<div class="task-body">${a.content}</div>`:''}
-        ${attempts.length?`
-          <div style="margin-top:1rem">
-            <p style="font-size:13px;font-weight:600;margin-bottom:.5rem">Your attempts (${attempts.length}):</p>
-            ${attempts.map((att,i)=>`
-              <div class="attempt-card">
-                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px">
-                  <span style="font-size:13px;font-weight:500">Attempt ${att.attempt_number||i+1}</span>
-                  <div style="display:flex;align-items:center;gap:6px">
-                    ${att.grade!==null&&att.grade!==undefined?`<span class="badge ${att.grade>=7?'bg2':att.grade>=5?'ba':'br2'}">Grade: ${att.grade}/10</span>`:'<span class="badge ba">Awaiting grade</span>'}
-                    <span style="font-size:11px;color:var(--muted)">${fmt(att.created_at)}</span>
-                  </div>
-                </div>
-                ${att.audio_url?`<audio controls src="${att.audio_url}" style="width:100%;margin-top:.5rem"></audio>`:''}
-                ${att.feedback?`<p style="font-size:13px;margin-top:.5rem;padding:6px 10px;background:var(--gl);border-radius:6px;color:var(--gd)">💬 ${att.feedback}</p>`:''}
-              </div>
-            `).join('')}
-          </div>
-        `:''}
-        <div class="rec-box" style="margin-top:.85rem">
-          <p style="font-size:13px;font-weight:600">🎤 Record Attempt ${nextAttemptNum}</p>
-          <div class="rec-controls">
-            <button class="bp bsm" id="rec-btn-${a.id}" onclick="startRec('${a.id}',${nextAttemptNum})">🎤 Start Recording</button>
-            <span class="rec-status" id="rec-status-${a.id}">Ready to record</span>
+        <div class="upload-pb" id="upb-${a.id}"><div class="upload-pb-inner" id="upbi-${a.id}" style="width:0%"></div></div>
+        <div id="rprev-${a.id}" style="display:none;margin-top:.75rem">
+          <p style="font-size:13px;font-weight:500;color:var(--gd);margin-bottom:.35rem">Preview:</p>
+          <audio id="rprev-audio-${a.id}" controls style="width:100%;height:36px;display:block"></audio>
+          <div style="display:flex;gap:8px;margin-top:.65rem">
+            <button class="bs bsm" onclick="recDiscard('${a.id}',${nextNum})">🗑 Discard</button>
+            <button class="bp bsm" style="flex:1" id="rsubmit-${a.id}" onclick="recSubmit('${a.id}',${nextNum})">✅ Submit Attempt ${nextNum}</button>
           </div>
         </div>
-      </div>`;
+      </div>
+    </div>`;
   }).join('');
 }
 
-// ===== AUDIO RECORDING & UPLOAD (FIXED) =====
-async function startRec(actId, attemptNum){
-  // Stop any existing recording first
-  if(mediaRec&&mediaRec.state==='recording'){
-    mediaRec.stop();
+function setStat(id,html,isRec){
+  const el=g(`rstat-${id}`);
+  if(!el)return;
+  el.innerHTML=html;
+  el.className='rec-status'+(isRec?' recording':'');
+}
+
+function recToggle(actId,num){
+  const r=RS[actId];
+  if(r&&r.mediaRec&&r.mediaRec.state==='recording'){
+    recStop(actId,num);
+  }else{
+    recStart(actId,num);
+  }
+}
+
+async function recStart(actId,num){
+  // Stop any other active recording
+  for(const [id,r] of Object.entries(RS)){
+    if(id!==actId&&r.mediaRec&&r.mediaRec.state==='recording'){
+      recStop(id);
+    }
+  }
+  const btn=g(`rbtn-${actId}`);
+  const timerEl=g(`rtimer-${actId}`);
+  const prevEl=g(`rprev-${actId}`);
+  if(prevEl)prevEl.style.display='none';
+  setStat(actId,'Requesting mic...');
+  if(btn)btn.disabled=true;
+
+  let stream;
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+  }catch(err){
+    let msg='Mic error: '+err.message;
+    if(err.name==='NotAllowedError'||err.name==='PermissionDeniedError')
+      msg='❌ Microphone permission denied. Please allow microphone access and try again.';
+    else if(err.name==='NotFoundError')
+      msg='❌ No microphone found on this device.';
+    setStat(actId,msg);
+    if(btn){btn.disabled=false}
     return;
   }
-  const btn=document.getElementById(`rec-btn-${actId}`);
-  const statusEl=document.getElementById(`rec-status-${actId}`);
-  try{
-    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-    recStream=stream;
-    audioChunks=[];
-    // Detect best supported format
-    const mimeType=['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/mp4','audio/wav']
-      .find(t=>{try{return MediaRecorder.isTypeSupported(t)}catch{return false}})||'';
-    mediaRec=new MediaRecorder(stream,mimeType?{mimeType}:{});
-    mediaRec.ondataavailable=e=>{if(e.data&&e.data.size>0)audioChunks.push(e.data)};
-    mediaRec.start(250);
-    // Update UI
-    btn.innerHTML='⏹ Stop';
-    btn.onclick=()=>stopRec(actId,attemptNum);
-    statusEl.textContent='🔴 Recording...';
-    statusEl.classList.add('recording');
-  }catch(err){
-    console.error('Mic error:',err);
-    alert('Could not access microphone: '+err.message);
-  }
+
+  const mime=bestMime();
+  let mr;
+  try{mr=new MediaRecorder(stream,mime?{mimeType:mime}:{});}
+  catch(e){try{mr=new MediaRecorder(stream)}catch(e2){setStat(actId,'❌ MediaRecorder not supported: '+e2.message);stream.getTracks().forEach(t=>t.stop());if(btn)btn.disabled=false;return}}
+
+  const chunks=[];
+  mr.ondataavailable=e=>{if(e.data&&e.data.size>0)chunks.push(e.data)};
+
+  let secs=0;
+  if(timerEl)timerEl.style.display='inline';
+  const timer=setInterval(()=>{secs++;if(timerEl)timerEl.textContent=`${Math.floor(secs/60)}:${String(secs%60).padStart(2,'0')}`},1000);
+
+  RS[actId]={mediaRec:mr,chunks,stream,timer,blob:null,mimeType:mime||'audio/webm'};
+
+  mr.start(500); // chunk every 500ms = reliable data
+
+  setStat(actId,'<span class="pulse-dot"></span> Recording...',true);
+  if(btn){btn.disabled=false;btn.textContent='⏹ Stop Recording'}
 }
 
-async function stopRec(actId,attemptNum){
-  if(!mediaRec)return;
-  const btn=document.getElementById(`rec-btn-${actId}`);
-  const statusEl=document.getElementById(`rec-status-${actId}`);
-  statusEl.textContent='⏳ Saving...';
-  statusEl.classList.remove('recording');
-  btn.disabled=true;
-  mediaRec.onstop=async()=>{
-    try{
-      recStream?.getTracks().forEach(t=>t.stop());
-      const mimeType=mediaRec.mimeType||'audio/webm';
-      const ext=mimeType.includes('webm')?'webm':mimeType.includes('ogg')?'ogg':mimeType.includes('mp4')?'mp4':'webm';
-      const blob=new Blob(audioChunks,{type:mimeType});
-      if(blob.size<1000){
-        statusEl.textContent='⚠️ Recording too short. Try again.';
-        btn.innerHTML='🎤 Start Recording';
-        btn.onclick=()=>startRec(actId,attemptNum);
-        btn.disabled=false;
-        return;
-      }
-      // Build unique path: studentId/activityId/timestamp.ext
-      const path=`${CU.id}/${actId}/${Date.now()}.${ext}`;
-      const {data:upData,error:upErr}=await sb.storage.from('audio').upload(path,blob,{
-        contentType:mimeType,
-        cacheControl:'3600',
-        upsert:false
-      });
-      if(upErr){
-        console.error('Storage upload error:',upErr);
-        statusEl.textContent='❌ Error: '+upErr.message;
-        btn.innerHTML='🎤 Try Again';
-        btn.onclick=()=>startRec(actId,attemptNum);
-        btn.disabled=false;
-        return;
-      }
-      const {data:{publicUrl}}=sb.storage.from('audio').getPublicUrl(path);
-      // Save submission — always INSERT (never upsert) to allow multiple attempts
-      const {error:subErr}=await sb.from('speaking_submissions').insert({
-        activity_id:actId,
-        student_id:CU.id,
-        audio_url:publicUrl,
-        attempt_number:attemptNum
-      });
-      if(subErr){
-        console.error('Submission error:',subErr);
-        statusEl.textContent='❌ Submission error: '+subErr.message;
-        btn.innerHTML='🎤 Try Again';
-        btn.onclick=()=>startRec(actId,attemptNum);
-        btn.disabled=false;
-        return;
-      }
-      statusEl.textContent=`✅ Attempt ${attemptNum} saved!`;
-      btn.disabled=false;
-      // Refresh speaking tab to show new attempt
-      setTimeout(()=>renderSSpeaking(),800);
-    }catch(err){
-      console.error('Recording stop error:',err);
-      statusEl.textContent='❌ Unexpected error: '+err.message;
-      btn.innerHTML='🎤 Try Again';
-      btn.onclick=()=>startRec(actId,attemptNum);
-      btn.disabled=false;
+function recStop(actId,num){
+  const r=RS[actId];
+  if(!r)return;
+  const btn=g(`rbtn-${actId}`);
+  const timerEl=g(`rtimer-${actId}`);
+  if(btn)btn.disabled=true;
+  if(r.timer)clearInterval(r.timer);
+  if(timerEl)timerEl.style.display='none';
+  setStat(actId,'Processing...');
+
+  // IMPORTANT: set onstop BEFORE calling stop()
+  r.mediaRec.onstop=()=>{
+    r.stream?.getTracks().forEach(t=>t.stop());
+    const mime=r.mediaRec.mimeType||'audio/webm';
+    const blob=new Blob(r.chunks,{type:mime});
+    if(blob.size<500){
+      setStat(actId,'⚠️ Too short. Please try again.');
+      if(btn){btn.disabled=false;btn.textContent='🎤 Start Recording';btn.onclick=()=>recToggle(actId,num)}
+      delete RS[actId];
+      return;
     }
-    mediaRec=null;
+    // Store blob
+    RS[actId]={blob,mimeType:mime};
+    // Show preview
+    const prevEl=g(`rprev-${actId}`);
+    const audioEl=g(`rprev-audio-${actId}`);
+    if(prevEl&&audioEl){
+      audioEl.src=URL.createObjectURL(blob);
+      prevEl.style.display='block';
+    }
+    setStat(actId,'Done! Preview below and submit ↓');
+    if(btn){btn.disabled=false;btn.textContent='🎤 Record Again';btn.onclick=()=>recStart(actId,num+1)}
   };
-  mediaRec.stop();
-}
 
-// ===== STUDENT: LIVE CLASS =====
-async function renderSLive(){
-  const el=document.getElementById('slive-content');
-  el.innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';
-  const {data:sess}=await sb.from('live_sessions').select('*').eq('active',true).limit(1);
-  const activeSession=sess?.[0];
-  if(activeSession){
-    el.innerHTML=`<div class="card live-card"><div class="live-icon">🔴</div><h3 style="font-size:17px;font-weight:600;margin-bottom:.5rem">Live class in progress!</h3><p style="font-size:13px;color:var(--muted);margin-bottom:1.25rem">Your teacher has started a class. Click to join now.</p><a href="https://meet.jit.si/${activeSession.room_name}" target="_blank"><button class="bp" style="padding:11px 24px;font-size:15px">Join Class 🎥</button></a></div>`;
-  } else {
-    el.innerHTML=`<div class="card live-card"><div class="live-icon">🎥</div><h3 style="font-size:17px;font-weight:600;margin-bottom:.5rem">No live class right now</h3><p style="font-size:13px;color:var(--muted)">When your teacher starts a class, a "Join" button will appear here automatically.</p></div>`;
+  if(r.mediaRec.state==='inactive'){
+    r.mediaRec.onstop(); // already stopped, fire manually
+  }else{
+    r.mediaRec.stop();
   }
 }
 
-// ===== STUDENT: MESSAGES =====
-async function renderSMessages(){
-  const el=document.getElementById('smsg-content');
-  el.innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';
-  el.innerHTML=`<div class="msg-list" id="student-msg-list"></div><div class="msg-input-row"><input type="text" id="student-msg-input" placeholder="Send a message to your teacher..." onkeydown="if(event.key==='Enter')sendStudentMsg()"><button class="bp bsm" onclick="sendStudentMsg()">Send</button></div>`;
-  await refreshStudentChat();
+function recDiscard(actId,num){
+  delete RS[actId];
+  const p=g(`rprev-${actId}`);if(p)p.style.display='none';
+  setStat(actId,'Ready');
+  const btn=g(`rbtn-${actId}`);
+  if(btn){btn.textContent='🎤 Start Recording';btn.disabled=false;btn.onclick=()=>recToggle(actId,num)}
 }
 
-async function refreshStudentChat(){
-  if(!CU)return;
-  const el=document.getElementById('student-msg-list');
-  if(!el)return;
-  const {data:msgs}=await sb.from('messages').select('*').or(`and(sender_id.eq.teacher,receiver_id.eq.${CU.id}),and(sender_id.eq.${CU.id},receiver_id.eq.teacher)`).order('created_at');
-  el.innerHTML=(msgs||[]).map(m=>{
-    const isMe=m.sender_id===CU.id;
-    return`<div style="display:flex;flex-direction:column;align-items:${isMe?'flex-end':'flex-start'}"><div class="msg-bubble ${isMe?'msg-me':'msg-other'}">${m.content}<div class="msg-time">${fmt(m.created_at)}</div></div></div>`;
-  }).join('')||'<p style="text-align:center;color:var(--muted);font-size:13px;padding:1rem">No messages yet. Say hi! 👋</p>';
-  el.scrollTop=el.scrollHeight;
+async function recSubmit(actId,num){
+  const r=RS[actId];
+  if(!r||!r.blob){setStat(actId,'⚠️ Nothing to submit. Please record first.');return}
+
+  const submitBtn=g(`rsubmit-${actId}`);
+  const recBtn=g(`rbtn-${actId}`);
+  const pb=g(`upb-${actId}`);
+  const pbi=g(`upbi-${actId}`);
+
+  if(submitBtn){submitBtn.disabled=true;submitBtn.textContent='Uploading...'}
+  if(recBtn)recBtn.disabled=true;
+  setStat(actId,'⬆️ Uploading...');
+  if(pb)pb.style.display='block';
+
+  // Animate progress bar
+  let prog=0;
+  const fakeT=setInterval(()=>{prog=Math.min(prog+4,88);if(pbi)pbi.style.width=prog+'%'},200);
+
+  const ext=mimeExt(r.mimeType);
+  // Unique path with timestamp — never collides
+  const path=`${CU.id}/${actId}/${Date.now()}_att${num}.${ext}`;
+
+  try{
+    const {error:upErr}=await sb.storage.from('audio').upload(path,r.blob,{
+      contentType:r.mimeType,
+      cacheControl:'3600',
+      upsert:false
+    });
+
+    clearInterval(fakeT);
+
+    if(upErr){
+      if(pb)pb.style.display='none';
+      let msg=upErr.message||'Upload failed';
+      if(msg.toLowerCase().includes('security')||msg.toLowerCase().includes('policy')||msg.toLowerCase().includes('unauthorized')){
+        msg='❌ Storage permission denied. Ask your teacher to set the Supabase "audio" bucket policy to allow authenticated uploads.';
+      }else{
+        msg='❌ Upload error: '+msg;
+      }
+      setStat(actId,msg);
+      if(submitBtn){submitBtn.disabled=false;submitBtn.textContent='✅ Submit Attempt '+num}
+      if(recBtn)recBtn.disabled=false;
+      return;
+    }
+
+    if(pbi)pbi.style.width='92%';
+    const {data:{publicUrl}}=sb.storage.from('audio').getPublicUrl(path);
+
+    // Insert new submission row — always INSERT, never upsert
+    const {error:dbErr}=await sb.from('speaking_submissions').insert({
+      activity_id:actId,
+      student_id:CU.id,
+      audio_url:publicUrl,
+      attempt_number:num,
+      grade:null,
+      feedback:null
+    });
+
+    if(dbErr){
+      if(pb)pb.style.display='none';
+      setStat(actId,'❌ DB error: '+dbErr.message);
+      if(submitBtn){submitBtn.disabled=false;submitBtn.textContent='✅ Submit Attempt '+num}
+      if(recBtn)recBtn.disabled=false;
+      return;
+    }
+
+    if(pbi)pbi.style.width='100%';
+    setTimeout(()=>{if(pb)pb.style.display='none'},600);
+    delete RS[actId];
+    setStat(actId,`✅ Attempt ${num} submitted successfully!`);
+    setTimeout(()=>renderSSpeaking(),900);
+
+  }catch(err){
+    clearInterval(fakeT);
+    if(pb)pb.style.display='none';
+    setStat(actId,'❌ Unexpected error: '+err.message);
+    if(submitBtn){submitBtn.disabled=false;submitBtn.textContent='✅ Submit Attempt '+num}
+    if(recBtn)recBtn.disabled=false;
+  }
 }
 
-async function sendStudentMsg(){
-  const inp=document.getElementById('student-msg-input');
-  const content=inp.value.trim();
-  if(!content)return;
-  inp.value='';
-  await sb.from('messages').insert({sender_id:CU.id,receiver_id:'teacher',content});
-  await refreshStudentChat();
-}
+// ===== STUDENT LIVE =====
+async function renderSLive(){const el=g('slive-c');el.innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';const {data:sess}=await sb.from('live_sessions').select('*').eq('active',true).limit(1);const a=sess?.[0];el.innerHTML=a?`<div class="card live-card"><div class="live-icon">🔴</div><h3 style="font-size:17px;font-weight:600;margin-bottom:.5rem">Live class in progress!</h3><p style="font-size:13px;color:var(--muted);margin-bottom:1.25rem">Click to join your teacher.</p><a href="https://meet.jit.si/${a.room_name}" target="_blank"><button class="bp" style="padding:11px 24px;font-size:15px">Join Class 🎥</button></a></div>`:`<div class="card live-card"><div class="live-icon">🎥</div><h3 style="font-size:17px;font-weight:600;margin-bottom:.5rem">No live class right now</h3><p style="font-size:13px;color:var(--muted)">When your teacher starts a class, a Join button will appear here.</p></div>`}
+
+// ===== STUDENT MESSAGES =====
+async function renderSMessages(){const el=g('smsg-c');el.innerHTML=`<div class="msg-list" id="smsgl"></div><div class="msg-input-row"><input type="text" id="smsgi" placeholder="Send a message to your teacher..." onkeydown="if(event.key==='Enter')sendSMsg()"><button class="bp bsm" onclick="sendSMsg()">Send</button></div>`;await refreshSChat()}
+async function refreshSChat(){const el=g('smsgl');if(!el)return;const {data:msgs}=await sb.from('messages').select('*').or(`and(sender_id.eq.teacher,receiver_id.eq.${CU.id}),and(sender_id.eq.${CU.id},receiver_id.eq.teacher)`).order('created_at');el.innerHTML=(msgs||[]).map(m=>{const me=m.sender_id===CU.id;return`<div style="display:flex;flex-direction:column;align-items:${me?'flex-end':'flex-start'}"><div class="msg-bubble ${me?'msg-me':'msg-other'}">${m.content}<div class="msg-time">${fmt(m.created_at)}</div></div></div>`}).join('')||'<p style="text-align:center;color:var(--muted);font-size:13px;padding:1rem">No messages yet. Say hi! 👋</p>';el.scrollTop=el.scrollHeight}
+async function sendSMsg(){const inp=g('smsgi'),content=inp.value.trim();if(!content)return;inp.value='';await sb.from('messages').insert({sender_id:CU.id,receiver_id:'teacher',content});await refreshSChat()}
 </script>
 </body>
 </html>
