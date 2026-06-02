@@ -216,6 +216,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
         <div class="sc"><div class="num" id="st2">0</div><div class="lbl">tests</div></div>
         <div class="sc"><div class="num" id="st3">—</div><div class="lbl">avg score</div></div>
       </div>
+      <div id="gamification-section" style="margin-top:.75rem"></div>
     </div>
     <div id="sls" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">📚 Lessons</h2><div id="lsl"></div></div>
     <div id="stk" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">📚 Your Tasks</h2><div id="tkl"></div></div>
@@ -417,7 +418,83 @@ async function endLive(id){await sb.from('live_sessions').update({active:false})
 // ===== STUDENT NAV =====
 function sTab(el,tab){document.querySelectorAll('.sn button').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.st2').forEach(t=>t.style.display='none');if(el)el.classList.add('active');g(tab).style.display='block';({sd:renderSD,sls:renderSLessons,stk:renderSTasks,sts:renderSTests,sp2:renderSProgress,sspk:renderSSpeaking,slive:renderSLive,smsg:renderSMessages,slist:renderSListening})[tab]?.()}
 
-async function renderSD(){g('wn').textContent=CU?.name||'Student';const {data:t}=await sb.from('task_assignments').select('task_id').eq('student_id',CU.id);const {data:ts}=await sb.from('test_assignments').select('test_id').eq('student_id',CU.id);const {data:subs}=await sb.from('test_submissions').select('score,total').eq('student_id',CU.id);const gs=(subs||[]).filter(s=>s.score!=null);const avg=gs.length?Math.round(gs.reduce((a,b)=>a+(b.score/b.total*10),0)/gs.length*10)/10:null;g('st1').textContent=(t||[]).length;g('st2').textContent=(ts||[]).length;g('st3').textContent=avg!==null?avg:'—'}
+function starsForScore(score,total){if(!total)return 0;const p=score/total;return p>=0.8?3:p>=0.6?2:p>0?1:0}
+
+async function renderSD(){
+  g('wn').textContent=CU?.name?.split(' ')[0]||'Student';
+  const [{data:taskAsgn},{data:testAsgn},{data:testSubs},{data:lisSubs},{data:spkSubs}]=await Promise.all([
+    sb.from('task_assignments').select('task_id,completed').eq('student_id',CU.id),
+    sb.from('test_assignments').select('test_id').eq('student_id',CU.id),
+    sb.from('test_submissions').select('score,total').eq('student_id',CU.id),
+    sb.from('listening_submissions').select('score,total').eq('student_id',CU.id),
+    sb.from('speaking_submissions').select('activity_id').eq('student_id',CU.id),
+  ]);
+  const gs=(testSubs||[]).filter(s=>s.score!=null);
+  const avg=gs.length?Math.round(gs.reduce((a,b)=>a+(b.score/b.total*10),0)/gs.length*10)/10:null;
+  g('st1').textContent=(taskAsgn||[]).length;
+  g('st2').textContent=(testAsgn||[]).length;
+  g('st3').textContent=avg!==null?avg:'—';
+
+  // ── Stars calculation ──
+  let stars=0;
+  (testSubs||[]).forEach(s=>{stars+=starsForScore(s.score,s.total)});
+  (lisSubs||[]).forEach(s=>{stars+=starsForScore(s.score,s.total)});
+  stars+=(taskAsgn||[]).filter(t=>t.completed).length;
+  const uniqSpk=new Set((spkSubs||[]).map(s=>s.activity_id));
+  stars+=uniqSpk.size;
+
+  // ── Levels ──
+  const LEVELS=[
+    {min:0, max:4,  name:'Beginner', emoji:'🌱', color:'#10B981', next:5},
+    {min:5, max:14, name:'Explorer', emoji:'🌟', color:'#F59E0B', next:15},
+    {min:15,max:29, name:'Champion', emoji:'🏆', color:'#6C63FF', next:30},
+    {min:30,max:Infinity,name:'Master',emoji:'🚀',color:'#EF4444',next:null},
+  ];
+  const lvl=LEVELS.find(l=>stars>=l.min&&stars<=l.max)||LEVELS[0];
+  const nextLvl=LEVELS.find(l=>l.min===lvl.next);
+  const pct=nextLvl?Math.min(Math.round((stars-lvl.min)/(lvl.next-lvl.min)*100),100):100;
+
+  // ── Achievements ──
+  const allSubs=[...(testSubs||[]),...(lisSubs||[])];
+  const achievements=[
+    {icon:'🎯',name:'First Steps',    desc:'Completed an activity',   earned:allSubs.length>0||(taskAsgn||[]).some(t=>t.completed)},
+    {icon:'📝',name:'Test Taker',     desc:'Finished a test',         earned:(testSubs||[]).length>0},
+    {icon:'⭐',name:'Perfect Score',  desc:'Got 100% on a test',      earned:allSubs.some(s=>s.score===s.total&&s.total>0)},
+    {icon:'🎧',name:'Great Listener', desc:'Completed listening',      earned:(lisSubs||[]).length>0},
+    {icon:'🎤',name:'Speaker',        desc:'Recorded speaking',        earned:(spkSubs||[]).length>0},
+    {icon:'✅',name:'Task Master',    desc:'Completed a task',         earned:(taskAsgn||[]).some(t=>t.completed)},
+    {icon:'🌟',name:'Star Collector', desc:'Earned 10 stars',          earned:stars>=10},
+    {icon:'🚀',name:'Master',         desc:'Earned 30 stars',          earned:stars>=30},
+  ];
+
+  const gEl=g('gamification-section');
+  if(!gEl)return;
+  gEl.innerHTML=`
+    <div style="background:linear-gradient(135deg,${lvl.color}20,${lvl.color}10);border:2px solid ${lvl.color}50;border-radius:var(--r);padding:1.25rem 1.5rem;margin-bottom:.85rem;display:flex;align-items:center;justify-content:space-between;gap:12px">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="font-size:44px;line-height:1">${lvl.emoji}</div>
+        <div>
+          <p style="font-size:11px;font-weight:700;color:${lvl.color};text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px">Your Level</p>
+          <p style="font-size:20px;font-weight:900;color:var(--text)">${lvl.name}</p>
+          <p style="font-size:12px;color:var(--muted);margin-top:2px">${nextLvl?`${lvl.next-stars} ⭐ to ${nextLvl.name} ${nextLvl.emoji}`:'Top level reached! 🎉'}</p>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <p style="font-size:34px;font-weight:900;color:${lvl.color};line-height:1">${stars}<span style="font-size:18px"> ⭐</span></p>
+        <p style="font-size:11px;color:var(--muted);font-weight:700;margin-top:2px">total stars</p>
+      </div>
+    </div>
+    ${nextLvl?`<div style="margin-bottom:1.1rem"><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px"><span>${lvl.name}</span><span>${nextLvl.name}</span></div><div class="pb" style="height:10px"><div style="background:linear-gradient(90deg,${lvl.color},${nextLvl.color});height:100%;border-radius:20px;width:${pct}%"></div></div></div>`:''}
+    <p style="font-size:14px;font-weight:800;color:var(--text);margin-bottom:.65rem">🏅 Achievements</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px">
+      ${achievements.map(a=>`<div style="background:${a.earned?'#fff':'#F8F7FF'};border:2px solid ${a.earned?'var(--border)':'#EDE9FF'};border-radius:var(--r);padding:.85rem .75rem;text-align:center;opacity:${a.earned?1:.4}">
+        <div style="font-size:26px;margin-bottom:4px">${a.icon}</div>
+        <p style="font-size:12px;font-weight:800;color:var(--text);line-height:1.2">${a.name}</p>
+        <p style="font-size:11px;color:var(--muted);margin-top:3px;line-height:1.3">${a.desc}</p>
+        ${a.earned?`<p style="font-size:10px;font-weight:700;color:var(--g);margin-top:4px">✓ Unlocked!</p>`:''}
+      </div>`).join('')}
+    </div>`;
+}
 
 async function renderSLessons(){const el=g('lsl');el.innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';const {data}=await sb.from('contents').select('*').order('created_at');if(!data?.length){el.innerHTML='<div class="es"><div style="font-size:32px">📚</div><p>No lessons yet.</p></div>';return}const tb={text:'Text',exercise:'Exercise',conversation:'Conversation'};const tc={text:'bb',exercise:'ba',conversation:'bg2'};el.innerHTML=data.map(c=>`<div class="card"><div style="display:flex;align-items:flex-start;gap:12px"><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><strong>${c.title}</strong><span class="badge ${tc[c.type]||'bgr'}">${tb[c.type]||c.type}</span></div><p style="font-size:13px;color:var(--muted)">${c.description||''}</p>${c.body?`<div class="task-body" style="margin-top:.75rem;font-size:13px">${c.body}</div>`:''}</div></div>${c.file_url?`<div style="margin-top:.75rem"><a href="${c.file_url}" target="_blank"><button class="bs bsm">📎 Open PDF</button></a></div>`:''}</div>`).join('')}
 
@@ -427,7 +504,7 @@ async function renderSTasks(){const el=g('tkl');el.innerHTML='<div class="loadin
 
 function openTaskView(aid){const a=_assigns.find(x=>x.id===aid);if(!a)return;const t=a.tasks;g('task-title').textContent=t.name;g('task-body-wrap').innerHTML=`<div class="card" style="margin-bottom:1rem;background:var(--gl);border-color:#86EFAC"><p style="font-size:13px;color:var(--gd);font-weight:500">Read the instructions and complete below.</p>${t.due_date?`<p style="font-size:12px;color:var(--gd);margin-top:4px">📅 Due: ${t.due_date}</p>`:''}</div><div class="card"><h3 style="font-size:15px;font-weight:600;margin-bottom:.75rem">📋 Instructions</h3><div class="task-body">${t.instructions||''}</div></div><div class="card" style="margin-top:1rem"><h3 style="font-size:15px;font-weight:600;margin-bottom:.75rem">✍️ Your Response</h3><textarea id="task-resp" rows="5" placeholder="Type your response here..."></textarea><div style="margin-top:1rem"><button class="bp" style="width:100%;padding:12px" onclick="submitTask('${aid}')">Mark as Complete ✓</button></div></div>`;show('screen-task')}
 
-async function submitTask(aid){if(!confirm('Mark this task as complete?'))return;const resp=g('task-resp')?.value||'';await sb.from('task_assignments').update({completed:true,submitted_at:new Date().toISOString(),response:resp}).eq('id',aid);alert('Task marked as complete! 🎉');show('screen-student');sTab(null,'stk');document.querySelectorAll('.sn button').forEach((b,i)=>{if(b.textContent==='Tasks')b.classList.add('active')})}
+async function submitTask(aid){if(!confirm('Mark this task as complete?'))return;const resp=g('task-resp')?.value||'';await sb.from('task_assignments').update({completed:true,submitted_at:new Date().toISOString(),response:resp}).eq('id',aid);alert('Task marked as complete! 🎉\n+1 ⭐ star earned!');show('screen-student');sTab(null,'stk');document.querySelectorAll('.sn button').forEach((b,i)=>{if(b.textContent==='Tasks')b.classList.add('active')})}
 
 // ===== STUDENT TESTS =====
 async function renderSTests(){const el=g('tsl');el.innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';const {data:asgn}=await sb.from('test_assignments').select('test_id,tests(*)').eq('student_id',CU.id);const {data:subs}=await sb.from('test_submissions').select('*').eq('student_id',CU.id);if(!asgn?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🧪</div><p>No tests yet.</p></div>';return}el.innerHTML=asgn.map(a=>{const t=a.tests;const sub=(subs||[]).find(s=>s.test_id===t.id);return`<div class="ir"><div style="font-size:24px">${sub?'✅':'📄'}</div><div class="irc"><strong>${t.name}</strong><p>${t.description||''}</p>${sub&&sub.score!=null?`<p style="font-size:13px;color:var(--g);margin-top:4px;font-weight:500">Score: ${sub.score}/${sub.total} — ${Math.round(sub.score/sub.total*100)}%</p>`:''}</div>${sub?`<button class="bs bsm" onclick="viewRes('${t.id}')">Results</button>`:`<button class="bp bsm" onclick="startTest('${t.id}')">Start →</button>`}</div>`}).join('')}
@@ -779,7 +856,8 @@ async function submitLis(actId){
   await sb.from('listening_submissions').insert({activity_id:actId,student_id:CU.id,answers:CLisAsn,score:correct,total});
   const pct=total?Math.round(correct/total*100):0;
   const emoji=pct>=80?'🎉':pct>=60?'👍':'💪';
-  alert(`${emoji} Submitted! You got ${correct}/${total} correct.`);
+  const earned=starsForScore(correct,total);
+  alert(`${emoji} Submitted! You got ${correct}/${total} correct.\n+${earned} ⭐ star${earned!==1?'s':''} earned!`);
   renderSListening();
 }
 </script>
