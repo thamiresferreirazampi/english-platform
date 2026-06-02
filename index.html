@@ -4,20 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>English Platform — Thamires</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --g:#1D9E75;--gl:#E1F5EE;--gd:#0F6E56;
-  --am:#BA7517;--al:#FAEEDA;
-  --re:#A32D2D;--rl:#FCEBEB;
-  --bl:#185FA5;--bll:#E6F1FB;
-  --bg:#F7F8FA;--card:#fff;--border:#E5E7EB;
-  --text:#111827;--muted:#6B7280;
-  --r:12px;--rs:8px;
+  --g:#6C63FF;--gl:#EDE9FF;--gd:#4B44CC;
+  --am:#FF8C42;--al:#FFF0E6;
+  --re:#E53E3E;--rl:#FFF5F5;
+  --bl:#3B82F6;--bll:#EFF6FF;
+  --bg:#F5F3FF;--card:#fff;--border:#DDD6FE;
+  --text:#1E1B4B;--muted:#6B7280;
+  --r:16px;--rs:10px;
+  --success:#10B981;--star:#FFD700;
 }
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:15px;min-height:100vh}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);font-size:15px;min-height:100vh}
 input,select,textarea{font-family:inherit;font-size:14px;padding:9px 13px;border:1.5px solid var(--border);border-radius:var(--rs);width:100%;background:#fff;color:var(--text);outline:none;transition:border-color .15s}
 input:focus,select:focus,textarea:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(29,158,117,.1)}
 textarea{resize:vertical;min-height:80px}
@@ -37,8 +38,8 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
 .fg{margin-bottom:13px}.fg label{display:block;font-size:13px;font-weight:500;color:var(--muted);margin-bottom:5px}
 .fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .tl{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
-.sb{background:#fff;border-right:1.5px solid var(--border);display:flex;flex-direction:column}
-.sb-brand{padding:1.1rem 1.35rem;border-bottom:1.5px solid var(--border)}
+.sb{background:#fff;border-right:2px solid var(--border);display:flex;flex-direction:column}
+.sb-brand{padding:1.1rem 1.35rem;border-bottom:2px solid var(--border);background:linear-gradient(135deg,#F8F7FF,#EDE9FF)}
 .logo-wrap{display:flex;align-items:center;gap:10px}
 .logo{width:34px;height:34px;background:var(--g);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .logo span{color:#fff;font-weight:700;font-size:14px}
@@ -53,19 +54,19 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
 .ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.35rem}
 .ph h2{font-size:20px;font-weight:600}
 .es{text-align:center;padding:3.5rem 1rem;color:var(--muted)}
-.lw{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem;background:var(--bg)}
-.lc{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:2.25rem;width:100%;max-width:390px;box-shadow:0 8px 32px rgba(0,0,0,.08)}
-.lc h2{text-align:center;font-size:20px;font-weight:600;margin-bottom:.25rem}
+.lw{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem;background:linear-gradient(135deg,#F0EEFF 0%,#E8F0FF 50%,#F5EEFF 100%)}
+.lc{background:#fff;border:2px solid var(--border);border-radius:24px;padding:2.25rem;width:100%;max-width:390px;box-shadow:0 12px 40px rgba(108,99,255,.15)}
+.lc h2{text-align:center;font-size:22px;font-weight:800;margin-bottom:.25rem;color:var(--text)}
 .lc .sub{text-align:center;font-size:13px;color:var(--muted);margin-bottom:1.75rem}
 .lbtn{background:none;border:none;color:var(--g);cursor:pointer;font-size:13px;text-decoration:underline;padding:0;font-family:inherit}
 .emsg{background:var(--rl);color:var(--re);border-radius:var(--rs);padding:9px 13px;font-size:13px;margin-bottom:12px}
 .smsg{background:var(--gl);color:var(--gd);border-radius:var(--rs);padding:9px 13px;font-size:13px;margin-bottom:12px}
-.sh{background:#fff;border-bottom:1.5px solid var(--border);padding:.85rem 1.35rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
-.sn{display:flex;gap:4px;flex-wrap:wrap}
-.sn button{background:transparent;border:none;padding:7px 14px;border-radius:var(--rs);font-size:14px;color:var(--muted);font-family:inherit}
-.sn button.active{background:var(--gl);color:var(--gd);font-weight:500}
+.sh{background:linear-gradient(135deg,#6C63FF,#9B5DE5);border-bottom:none;padding:.85rem 1.35rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 4px 16px rgba(108,99,255,.3)}
+.sn{display:flex;gap:6px;flex-wrap:wrap}
+.sn button{background:rgba(255,255,255,.2);border:none;padding:7px 16px;border-radius:20px;font-size:13px;color:rgba(255,255,255,.85);font-family:'Nunito',sans-serif;font-weight:700;transition:all .15s}
+.sn button.active{background:#fff;color:var(--g);font-weight:800;box-shadow:0 2px 8px rgba(0,0,0,.15)}
 .sm3{padding:1.35rem;max-width:660px;margin:0 auto}
-.hc{background:linear-gradient(135deg,#1D9E75,#0F6E56);border-radius:var(--r);padding:1.5rem 1.75rem;color:#fff;margin-bottom:1.1rem}
+.hc{background:linear-gradient(135deg,#6C63FF,#9B5DE5);border-radius:var(--r);padding:1.5rem 1.75rem;color:#fff;margin-bottom:1.1rem;box-shadow:0 8px 24px rgba(108,99,255,.3)}
 .hc h3{font-size:22px;font-weight:600;margin-bottom:3px}
 .sg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.1rem}
 .sc{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:1rem;text-align:center}
@@ -107,6 +108,20 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
 .msg-input-row{display:flex;gap:8px}
 .live-card{text-align:center;padding:2rem 1rem}
 .live-icon{font-size:48px;margin-bottom:1rem}
+/* ── Student fun styles ── */
+.sc{background:#fff;border:2px solid var(--border);border-radius:var(--r);padding:1rem;text-align:center;box-shadow:0 4px 12px rgba(108,99,255,.08);transition:transform .15s}
+.sc:hover{transform:translateY(-2px)}
+.sc .num{font-size:28px;font-weight:900;color:var(--g)}.sc .lbl{font-size:12px;color:var(--muted);margin-top:2px;font-weight:600}
+.ir{background:#fff;border:2px solid var(--border);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:10px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:0 2px 8px rgba(108,99,255,.06);transition:all .15s}
+.ir:hover{border-color:var(--g);box-shadow:0 4px 16px rgba(108,99,255,.15)}
+.card{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:1.1rem 1.35rem;margin-bottom:10px;box-shadow:0 2px 8px rgba(108,99,255,.06)}
+.bp{background:linear-gradient(135deg,var(--g),#9B5DE5);color:#fff;font-weight:700;box-shadow:0 4px 12px rgba(108,99,255,.3)}.bp:hover{background:linear-gradient(135deg,var(--gd),#7B4DC5);box-shadow:0 6px 16px rgba(108,99,255,.4);transform:translateY(-1px)}
+.qb{background:#F8F7FF;border:2px solid var(--border);border-radius:var(--r);padding:1.1rem;margin-bottom:.85rem}
+.ol:hover{border-color:var(--g);background:var(--gl)}.ol.sel{border-color:var(--g);background:var(--gl)}
+.pbi{background:linear-gradient(90deg,var(--g),#9B5DE5);height:100%;border-radius:20px}
+.badge.bg2{background:var(--gl);color:var(--gd);font-weight:700}
+/* Student name in header */
+#screen-student .sh span[style*="font-weight:600"]{color:#fff;font-weight:800!important}
 </style>
 </head>
 <body>
@@ -156,6 +171,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
         <div class="ni" onclick="tTab(this,'tspk')"><span>🎤</span>Speaking</div>
         <div class="ni" onclick="tTab(this,'tmsg')"><span>💬</span>Mensagens</div>
         <div class="ni" onclick="tTab(this,'tlive')"><span>🎥</span>Aula ao Vivo</div>
+        <div class="ni" onclick="tTab(this,'tlis')"><span>🎧</span>Listening</div>
       </div>
       <div class="sb-foot"><div class="ni" onclick="doLogout()"><span>🚪</span>Sair</div></div>
     </div>
@@ -167,6 +183,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
       <div id="tspk" class="tt2" style="display:none"><div class="ph"><h2>Speaking</h2><button class="bp" onclick="openM('mspk')">+ Nova Atividade</button></div><div id="spk-tl"></div></div>
       <div id="tmsg" class="tt2" style="display:none"><div class="ph"><h2>Mensagens</h2></div><div id="tmsg-c"></div></div>
       <div id="tlive" class="tt2" style="display:none"><div class="ph"><h2>Aula ao Vivo</h2></div><div id="tlive-c"></div></div>
+      <div id="tlis" class="tt2" style="display:none"><div class="ph"><h2>Listening</h2><button class="bp" onclick="openM('mlis')">+ Nova Atividade</button></div><div id="lis-tl"></div></div>
     </div>
   </div>
 </div>
@@ -187,6 +204,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
       <button onclick="sTab(this,'sspk')">Speaking</button>
       <button onclick="sTab(this,'slive')">Live</button>
       <button onclick="sTab(this,'smsg')">Messages</button>
+      <button onclick="sTab(this,'slist')">🎧 Listening</button>
     </div>
     <button class="bs bsm" onclick="doLogout()">Log out</button>
   </div>
@@ -206,6 +224,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
     <div id="sspk" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">🎤 Speaking Practice</h2><div id="spk-sl"></div></div>
     <div id="slive" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">🎥 Live Class</h2><div id="slive-c"></div></div>
     <div id="smsg" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">💬 Messages</h2><div id="smsg-c"></div></div>
+    <div id="slist" class="st2" style="display:none"><h2 style="font-size:18px;font-weight:600;margin-bottom:1rem">🎧 Listening Practice</h2><div id="lis-sl"></div></div>
   </div>
 </div>
 
@@ -261,6 +280,17 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
 <div class="mo" id="mg"><div class="mbox" style="max-width:560px">
   <h3>Corrigir Respostas Abertas</h3><div id="gc"></div>
   <div class="fe"><button class="bs" onclick="closeM('mg')">Fechar</button><button class="bp" onclick="saveGrades()">Salvar Correção</button></div>
+</div></div>
+
+<div class="mo" id="mlis"><div class="mbox" style="max-width:580px">
+  <h3>Nova Atividade de Listening</h3>
+  <div class="fg"><label>Título</label><input type="text" id="lis-title" placeholder="Ex: Lesson 1 — Greetings Dialogue"></div>
+  <div class="fg"><label>Instruções para o aluno</label><textarea id="lis-inst" rows="2" placeholder="Ex: Listen carefully and answer the questions below."></textarea></div>
+  <div class="fg"><label>URL do Áudio (YouTube ou link direto .mp3)</label><input type="url" id="lis-url" placeholder="https://..."></div>
+  <div class="fg"><label>Atribuir para alunos</label><div id="lis-asc" style="margin-top:6px;max-height:140px;overflow-y:auto;border:1.5px solid var(--border);border-radius:var(--rs);padding:4px 12px"></div></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin:.85rem 0 .5rem"><strong style="font-size:14px">Questões</strong><button class="bs bsm" onclick="addLisQ()">+ Adicionar</button></div>
+  <div id="lis-qed"></div>
+  <div class="fe"><button class="bs" onclick="closeM('mlis')">Cancelar</button><button class="bp" onclick="saveLis()">Salvar</button></div>
 </div></div>
 
 <div class="mo" id="mspk"><div class="mbox">
@@ -328,13 +358,13 @@ async function doSignup(){
 function doLogout(){Object.values(RS).forEach(r=>{try{if(r.mediaRec&&r.mediaRec.state!=='inactive')r.mediaRec.stop()}catch(e){}try{r.stream?.getTracks().forEach(t=>t.stop())}catch(e){}if(r.timer)clearInterval(r.timer)});sb.auth.signOut();CU=null;isTeacher=false;show('screen-login')}
 
 // ===== MODALS =====
-async function openM(id){if(id==='mt'||id==='mp')await renderAsc(id==='mt'?'tkasc':'pasc');if(id==='mp'){NQs=[];g('qed').innerHTML=''}g(id).classList.add('active')}
+async function openM(id){if(id==='mt'||id==='mp'||id==='mlis')await renderAsc(id==='mt'?'tkasc':id==='mlis'?'lis-asc':'pasc');if(id==='mp'){NQs=[];g('qed').innerHTML=''}if(id==='mlis'){LisQs=[];g('lis-qed').innerHTML=''}g(id).classList.add('active')}
 function closeM(id){g(id).classList.remove('active')}
 async function renderAsc(cid){const el=g(cid);el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';const {data}=await sb.from('profiles').select('*').eq('role','student');el.innerHTML=data?.length?data.map(s=>`<label class="ac"><input type="checkbox" value="${s.id}" name="asc"> ${s.full_name}</label>`).join(''):'<p style="font-size:13px;color:var(--muted);padding:8px 0">Nenhum aluno ainda.</p>'}
 function getAsc(cid){return[...document.querySelectorAll(`#${cid} input[name="asc"]:checked`)].map(i=>i.value)}
 
 // ===== TEACHER =====
-function tTab(el,tab){document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));document.querySelectorAll('.tt2').forEach(t=>t.style.display='none');if(el)el.classList.add('active');g(tab).style.display='block';({tc:renderContents,tt:renderTasks,tp:renderTests,ts:renderStudents,tspk:renderTeacherSpeaking,tmsg:renderTeacherMessages,tlive:renderTeacherLive})[tab]?.()}
+function tTab(el,tab){document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));document.querySelectorAll('.tt2').forEach(t=>t.style.display='none');if(el)el.classList.add('active');g(tab).style.display='block';({tc:renderContents,tt:renderTasks,tp:renderTests,ts:renderStudents,tspk:renderTeacherSpeaking,tmsg:renderTeacherMessages,tlive:renderTeacherLive,tlis:renderTeacherListening})[tab]?.()}
 function renderTeacher(){renderContents()}
 
 async function saveContent(){const title=g('ctit').value.trim();if(!title)return alert('Preencha o título.');let file_url=null;const pf=g('cpdf').files[0];if(pf){const path=`${Date.now()}-${pf.name.replace(/\s+/g,'_')}`;const {error}=await sb.storage.from('contents').upload(path,pf,{contentType:'application/pdf',upsert:false});if(error){alert('Erro PDF: '+error.message);return}const {data:{publicUrl}}=sb.storage.from('contents').getPublicUrl(path);file_url=publicUrl}await sb.from('contents').insert({title,description:g('cdesc').value,type:g('ctype').value,body:g('cbody').value,file_url});['ctit','cdesc','cbody'].forEach(x=>g(x).value='');g('cpdf').value='';closeM('mc2');renderContents()}
@@ -385,7 +415,7 @@ async function startLive(){await sb.from('live_sessions').insert({room_name:'ep-
 async function endLive(id){await sb.from('live_sessions').update({active:false}).eq('id',id);renderTeacherLive()}
 
 // ===== STUDENT NAV =====
-function sTab(el,tab){document.querySelectorAll('.sn button').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.st2').forEach(t=>t.style.display='none');if(el)el.classList.add('active');g(tab).style.display='block';({sd:renderSD,sls:renderSLessons,stk:renderSTasks,sts:renderSTests,sp2:renderSProgress,sspk:renderSSpeaking,slive:renderSLive,smsg:renderSMessages})[tab]?.()}
+function sTab(el,tab){document.querySelectorAll('.sn button').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.st2').forEach(t=>t.style.display='none');if(el)el.classList.add('active');g(tab).style.display='block';({sd:renderSD,sls:renderSLessons,stk:renderSTasks,sts:renderSTests,sp2:renderSProgress,sspk:renderSSpeaking,slive:renderSLive,smsg:renderSMessages,slist:renderSListening})[tab]?.()}
 
 async function renderSD(){g('wn').textContent=CU?.name||'Student';const {data:t}=await sb.from('task_assignments').select('task_id').eq('student_id',CU.id);const {data:ts}=await sb.from('test_assignments').select('test_id').eq('student_id',CU.id);const {data:subs}=await sb.from('test_submissions').select('score,total').eq('student_id',CU.id);const gs=(subs||[]).filter(s=>s.score!=null);const avg=gs.length?Math.round(gs.reduce((a,b)=>a+(b.score/b.total*10),0)/gs.length*10)/10:null;g('st1').textContent=(t||[]).length;g('st2').textContent=(ts||[]).length;g('st3').textContent=avg!==null?avg:'—'}
 
@@ -658,6 +688,100 @@ async function renderSLive(){const el=g('slive-c');el.innerHTML='<div class="loa
 async function renderSMessages(){const el=g('smsg-c');el.innerHTML=`<div class="msg-list" id="smsgl"></div><div class="msg-input-row"><input type="text" id="smsgi" placeholder="Send a message to your teacher..." onkeydown="if(event.key==='Enter')sendSMsg()"><button class="bp bsm" onclick="sendSMsg()">Send</button></div>`;await refreshSChat()}
 async function refreshSChat(){const el=g('smsgl');if(!el)return;const {data:msgs}=await sb.from('messages').select('*').or(`and(sender_id.eq.teacher,receiver_id.eq.${CU.id}),and(sender_id.eq.${CU.id},receiver_id.eq.teacher)`).order('created_at');el.innerHTML=(msgs||[]).map(m=>{const me=m.sender_id===CU.id;return`<div style="display:flex;flex-direction:column;align-items:${me?'flex-end':'flex-start'}"><div class="msg-bubble ${me?'msg-me':'msg-other'}">${m.content}<div class="msg-time">${fmt(m.created_at)}</div></div></div>`}).join('')||'<p style="text-align:center;color:var(--muted);font-size:13px;padding:1rem">No messages yet. Say hi! 👋</p>';el.scrollTop=el.scrollHeight}
 async function sendSMsg(){const inp=g('smsgi'),content=inp.value.trim();if(!content)return;inp.value='';await sb.from('messages').insert({sender_id:CU.id,receiver_id:'teacher',content});await refreshSChat()}
+
+// ===== LISTENING =====
+let LisQs=[],CLisId=null,CLisAsn={};
+
+function addLisQ(){LisQs.push({id:Date.now().toString(36),type:'multiple_choice',text:'',options:['','',''],correct:''});renderLisQEditor()}
+function remLisQ(i){LisQs.splice(i,1);renderLisQEditor()}
+function updLisQ(i,f,v){LisQs[i][f]=v;if(f==='type')renderLisQEditor()}
+function updLisOpt(i,j,v){LisQs[i].options[j]=v}
+function addLisOpt(i){LisQs[i].options.push('');renderLisQEditor()}
+
+function renderLisQEditor(){
+  const el=g('lis-qed');
+  if(!LisQs.length){el.innerHTML='';return}
+  el.innerHTML=LisQs.map((q,i)=>`<div class="card" style="margin-bottom:8px;padding:.9rem"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><span style="font-size:13px;font-weight:600;color:var(--muted)">Q${i+1}</span><button class="bd bsm" onclick="remLisQ(${i})">✕</button></div><div class="fg"><label>Tipo</label><select onchange="updLisQ(${i},'type',this.value)"><option value="multiple_choice" ${q.type==='multiple_choice'?'selected':''}>Múltipla Escolha</option><option value="true_false" ${q.type==='true_false'?'selected':''}>Verdadeiro / Falso</option><option value="fill_blank" ${q.type==='fill_blank'?'selected':''}>Completar Lacuna</option></select></div><div class="fg"><label>Pergunta</label><input type="text" value="${q.text.replace(/"/g,'&quot;')}" onchange="updLisQ(${i},'text',this.value)"></div>${q.type==='multiple_choice'?`<div class="fg"><label>Opções</label>${(q.options||[]).map((o,j)=>`<input type="text" value="${o.replace(/"/g,'&quot;')}" onchange="updLisOpt(${i},${j},this.value)" placeholder="Opção ${String.fromCharCode(65+j)}" style="margin-bottom:5px">`).join('')}<button class="bs bsm" style="margin-top:4px" onclick="addLisOpt(${i})">+ Opção</button></div>`:''}<div class="fg"><label>Resposta correta</label><input type="text" value="${(q.correct||'').replace(/"/g,'&quot;')}" onchange="updLisQ(${i},'correct',this.value)" placeholder="${q.type==='true_false'?'True ou False':'Resposta exata'}"></div></div>`).join('');
+}
+
+async function saveLis(){
+  const title=g('lis-title').value.trim();
+  if(!title)return alert('Preencha o título.');
+  if(!LisQs.length)return alert('Adicione pelo menos uma questão.');
+  const {data:act}=await sb.from('listening_activities').insert({title,instructions:g('lis-inst').value,audio_url:g('lis-url').value.trim()||null}).select().single();
+  if(act){
+    await sb.from('listening_questions').insert(LisQs.map((q,i)=>({activity_id:act.id,question_type:q.type,question_text:q.text,options:q.options?.filter(o=>o).length?q.options:null,correct_answer:q.correct||null,sort_order:i})));
+    const st=getAsc('lis-asc');
+    if(st.length)await sb.from('listening_assignments').insert(st.map(sid=>({activity_id:act.id,student_id:sid})));
+  }
+  LisQs=[];['lis-title','lis-inst','lis-url'].forEach(x=>g(x).value='');
+  closeM('mlis');renderTeacherListening();
+}
+
+async function renderTeacherListening(){
+  const el=g('lis-tl');el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
+  const {data:acts}=await sb.from('listening_activities').select('*').order('created_at',{ascending:false});
+  if(!acts?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🎧</div><p>Nenhuma atividade de listening ainda.<br>Clique em "+ Nova Atividade" para começar.</p></div>';return}
+  const {data:asgn}=await sb.from('listening_assignments').select('activity_id,profiles(full_name)');
+  const {data:subs}=await sb.from('listening_submissions').select('activity_id');
+  const {data:qs}=await sb.from('listening_questions').select('activity_id');
+  el.innerHTML=acts.map(a=>{
+    const chips=(asgn||[]).filter(x=>x.activity_id===a.id).map(x=>`<span class="badge bg2" style="margin-right:4px">${x.profiles?.full_name||''}</span>`).join('');
+    const qc=(qs||[]).filter(q=>q.activity_id===a.id).length;
+    const sc=(subs||[]).filter(s=>s.activity_id===a.id).length;
+    return`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><strong style="font-size:15px">${a.title}</strong>${a.instructions?`<p style="font-size:13px;color:var(--muted);margin-top:3px">${a.instructions}</p>`:''}<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap"><span class="badge bgr">${qc} questão(ões)</span><span class="badge bgr">${sc} resposta(s)</span>${a.audio_url?`<a href="${a.audio_url}" target="_blank" class="badge bb" style="text-decoration:none">🔗 Áudio</a>`:''}</div><div style="margin-top:8px">${chips||'<span class="badge bgr">Sem alunos atribuídos</span>'}</div></div><button class="bd bsm" onclick="delItem('listening_activities','${a.id}',renderTeacherListening)">✕</button></div></div>`;
+  }).join('');
+}
+
+async function renderSListening(){
+  const el=g('lis-sl');el.innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';
+  const {data:asgn}=await sb.from('listening_assignments').select('activity_id,listening_activities(*)').eq('student_id',CU.id);
+  if(!asgn?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🎧</div><p>No listening activities yet.<br>Your teacher will assign some soon!</p></div>';return}
+  const {data:subs}=await sb.from('listening_submissions').select('*').eq('student_id',CU.id);
+  el.innerHTML=asgn.map(a=>{
+    const act=a.listening_activities;
+    const sub=(subs||[]).find(s=>s.activity_id===act.id);
+    const pct=sub&&sub.total?Math.round(sub.score/sub.total*100):0;
+    return`<div class="card" style="margin-bottom:12px"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap"><div style="flex:1"><strong style="font-size:15px">🎧 ${act.title}</strong>${act.instructions?`<p style="font-size:13px;color:var(--muted);margin-top:3px">${act.instructions}</p>`:''}</div>${sub?`<span class="badge bg2" style="font-size:13px;white-space:nowrap">✅ ${sub.score}/${sub.total}</span>`:`<button class="bp bsm" onclick="startLisActivity('${act.id}')">Start →</button>`}</div>${sub?`<div style="margin-top:.75rem"><div class="pb"><div class="pbi" style="width:${pct}%"></div></div><p style="font-size:12px;color:var(--muted);margin-top:4px">${sub.score}/${sub.total} correct (${pct}%)</p></div>`:''}<div id="lis-body-${act.id}" style="display:none;margin-top:1rem;border-top:1.5px solid var(--border);padding-top:1rem"></div></div>`;
+  }).join('');
+}
+
+async function startLisActivity(actId){
+  CLisId=actId;CLisAsn={};
+  const wrap=g(`lis-body-${actId}`);
+  wrap.innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';
+  wrap.style.display='block';
+  const {data:act}=await sb.from('listening_activities').select('*').eq('id',actId).single();
+  const {data:qs}=await sb.from('listening_questions').select('*').eq('activity_id',actId).order('sort_order');
+  let audioHtml='<p style="font-size:13px;color:var(--muted);margin-bottom:.75rem">⚠️ No audio for this activity.</p>';
+  if(act.audio_url){
+    const isYT=act.audio_url.includes('youtube.com')||act.audio_url.includes('youtu.be');
+    if(isYT){const m=act.audio_url.match(/(?:v=|youtu\.be\/)([^&?/]+)/);const ytId=m?m[1]:'';audioHtml=`<div style="position:relative;padding-bottom:56.25%;height:0;margin:.75rem 0;border-radius:8px;overflow:hidden"><iframe src="https://www.youtube.com/embed/${ytId}?rel=0" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none" allowfullscreen></iframe></div>`;}
+    else{audioHtml=`<audio controls style="width:100%;margin:.75rem 0" src="${act.audio_url}">Your browser does not support audio.</audio>`;}
+  }
+  const qHtml=(qs||[]).map((q,i)=>{
+    if(q.question_type==='multiple_choice')return`<div class="qb" style="margin-top:.75rem"><p style="font-weight:500;margin-bottom:.65rem">${i+1}. ${q.question_text}</p>${(q.options||[]).map((o,j)=>`<label class="ol"><input type="radio" name="lisq-${q.id}" onchange="CLisAsn['${q.id}']='${o.replace(/'/g,"\\'")}'" style="width:auto"> ${String.fromCharCode(97+j)}) ${o}</label>`).join('')}</div>`;
+    if(q.question_type==='true_false')return`<div class="qb" style="margin-top:.75rem"><p style="font-weight:500;margin-bottom:.65rem">${i+1}. ${q.question_text}</p><label class="ol"><input type="radio" name="lisq-${q.id}" onchange="CLisAsn['${q.id}']='True'" style="width:auto"> ✅ True</label><label class="ol"><input type="radio" name="lisq-${q.id}" onchange="CLisAsn['${q.id}']='False'" style="width:auto"> ❌ False</label></div>`;
+    return`<div class="qb" style="margin-top:.75rem"><p style="font-weight:500;margin-bottom:.65rem">${i+1}. ${q.question_text}</p><input type="text" placeholder="Type your answer..." onchange="CLisAsn['${q.id}']=this.value"></div>`;
+  }).join('');
+  wrap.innerHTML=`<p style="font-size:13px;font-weight:600;color:var(--muted);margin-bottom:.25rem">🎧 Listen carefully, then answer:</p>${audioHtml}${qHtml}<button class="bp" style="width:100%;padding:12px;margin-top:1rem" onclick="submitLis('${actId}')">Submit Answers ✓</button>`;
+}
+
+async function submitLis(actId){
+  if(!confirm('Submit your answers?'))return;
+  const {data:qs}=await sb.from('listening_questions').select('*').eq('activity_id',actId);
+  let correct=0,total=(qs||[]).length;
+  (qs||[]).forEach(q=>{
+    const ans=(CLisAsn[q.id]||'').trim().toLowerCase();
+    const right=(q.correct_answer||'').trim().toLowerCase();
+    if(ans&&right&&ans===right)correct++;
+  });
+  await sb.from('listening_submissions').insert({activity_id:actId,student_id:CU.id,answers:CLisAsn,score:correct,total});
+  const pct=total?Math.round(correct/total*100):0;
+  const emoji=pct>=80?'🎉':pct>=60?'👍':'💪';
+  alert(`${emoji} Submitted! You got ${correct}/${total} correct.`);
+  renderSListening();
+}
 </script>
 </body>
 </html>
