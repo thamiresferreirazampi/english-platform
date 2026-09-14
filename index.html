@@ -294,6 +294,11 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
   <div class="fe"><button class="bs" onclick="closeM('mlis')">Cancelar</button><button class="bp" onclick="saveLis()">Salvar</button></div>
 </div></div>
 
+<div class="mo" id="mlis-grade"><div class="mbox" style="max-width:600px">
+  <h3 id="lis-grade-title">Corrigir Listening</h3><div id="lis-grade-content"></div>
+  <div class="fe"><button class="bs" onclick="closeM('mlis-grade')">Fechar</button></div>
+</div></div>
+
 <div class="mo" id="mspk"><div class="mbox">
   <h3>Nova Atividade de Speaking</h3>
   <div class="fg"><label>Título</label><input type="text" id="spk-title"></div>
@@ -397,7 +402,7 @@ async function saveGrades(){const {data:subs}=await sb.from('test_submissions').
 // ===== TEACHER SPEAKING =====
 async function saveSpeakingActivity(){const title=g('spk-title').value.trim();if(!title)return alert('Preencha o título.');await sb.from('speaking_activities').insert({title,type:g('spk-type').value,instructions:g('spk-inst').value,content:g('spk-cnt').value});['spk-title','spk-inst','spk-cnt'].forEach(x=>g(x).value='');closeM('mspk');renderTeacherSpeaking()}
 
-async function renderTeacherSpeaking(){const el=g('spk-tl');el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';const {data:acts}=await sb.from('speaking_activities').select('*').order('created_at',{ascending:false});if(!acts?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🎤</div><p>Nenhuma atividade.</p></div>';return}const {data:subs}=await sb.from('speaking_submissions').select('activity_id,grade');const TL={read_aloud:'Leitura',answer_question:'Pergunta',describe:'Descrever',shadowing:'Shadowing'};el.innerHTML=acts.map(a=>{const ms=(subs||[]).filter(s=>s.activity_id===a.id);const pend=ms.filter(s=>s.grade==null).length;return`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px"><strong>${a.title}</strong><span class="badge bg2">${TL[a.type]||a.type}</span>${pend?`<span class="badge ba">⏳ ${pend}</span>`:''}</div><p style="font-size:13px;color:var(--muted)">${a.instructions||''}</p><p style="font-size:12px;color:var(--muted);margin-top:4px">${ms.length} submissão(ões)</p></div><div style="display:flex;flex-direction:column;gap:6px"><button class="bs bsm" onclick="viewSpkSubs('${a.id}','${a.title.replace(/'/g,"\\'")}')">Ver respostas</button><button class="bd bsm" onclick="delItem('speaking_activities','${a.id}',renderTeacherSpeaking)">✕</button></div></div></div>`}).join('')}
+async function renderTeacherSpeaking(){const el=g('spk-tl');el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';const {data:acts}=await sb.from('speaking_activities').select('*').order('created_at',{ascending:false});if(!acts?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🎤</div><p>Nenhuma atividade.</p></div>';return}const {data:subs}=await sb.from('speaking_submissions').select('activity_id,grade');const TL={read_aloud:'Leitura',answer_question:'Pergunta',describe:'Descrever',shadowing:'Shadowing'};el.innerHTML=acts.map(a=>{const ms=(subs||[]).filter(s=>s.activity_id===a.id);const pend=ms.filter(s=>s.grade==null).length;return`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px"><strong>${a.title}</strong><span class="badge bg2">${TL[a.type]||a.type}</span>${pend?`<span class="badge ba">⏳ ${pend}</span>`:''}</div><p style="font-size:13px;color:var(--muted)">${a.instructions||''}</p><p style="font-size:12px;color:var(--muted);margin-top:4px">${ms.length} submissão(ões)</p></div><div style="display:flex;flex-direction:column;gap:6px"><button class="bs bsm" onclick="viewSpkSubs('${a.id}','${a.title.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')">Ver respostas</button><button class="bd bsm" onclick="delItem('speaking_activities','${a.id}',renderTeacherSpeaking)">✕</button></div></div></div>`}).join('')}
 
 async function viewSpkSubs(actId,actTitle){const el=g('spk-grade-content');g('spk-grade-title').textContent=`Speaking — ${actTitle}`;el.innerHTML='<div class="loading"><span class="spinner"></span></div>';g('mspk-grade').classList.add('active');const {data:subs}=await sb.from('speaking_submissions').select('*,profiles(full_name)').eq('activity_id',actId).order('created_at',{ascending:false});if(!subs?.length){el.innerHTML='<p style="color:var(--muted)">Nenhuma resposta ainda.</p>';return}const byS={};subs.forEach(s=>{if(!byS[s.student_id])byS[s.student_id]={name:s.profiles?.full_name||'Aluno',atts:[]};byS[s.student_id].atts.push(s)});el.innerHTML=Object.values(byS).map(st=>`<div class="card" style="margin-bottom:12px"><strong style="font-size:15px">${st.name}</strong><p style="font-size:13px;color:var(--muted);margin-bottom:.75rem">${st.atts.length} tentativa(s)</p>${st.atts.map((att,i)=>`<div class="attempt-card"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px"><span style="font-size:13px;font-weight:500">Tentativa ${att.attempt_number||i+1} <span style="color:var(--muted);font-size:12px">— ${fmt(att.created_at)}</span></span>${att.grade!=null?`<span class="badge bg2">Nota: ${att.grade}/10</span>`:'<span class="badge ba">Sem nota</span>'}</div>${att.audio_url?`<audio controls src="${att.audio_url}"></audio>`:'<p style="font-size:13px;color:var(--muted);margin-top:.5rem">⚠️ Sem áudio</p>'}${att.feedback?`<p style="font-size:13px;margin-top:.5rem;padding:6px 10px;background:#F9FAFB;border-radius:6px">💬 ${att.feedback}</p>`:''}<div style="display:flex;gap:8px;margin-top:.75rem;align-items:center;flex-wrap:wrap"><label style="font-size:13px;white-space:nowrap">Nota (0-10):</label><input type="number" min="0" max="10" step="0.5" value="${att.grade!=null?att.grade:''}" id="sn-${att.id}" style="width:80px"><input type="text" placeholder="Feedback..." value="${att.feedback||''}" id="sf-${att.id}" style="flex:1;min-width:120px"><button class="bp bsm" onclick="saveSpkGrade('${att.id}',this)">Salvar</button></div></div>`).join('')}</div>`).join('')}
 
@@ -799,15 +804,42 @@ async function renderTeacherListening(){
   const el=g('lis-tl');el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
   const {data:acts}=await sb.from('listening_activities').select('*').order('created_at',{ascending:false});
   if(!acts?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🎧</div><p>Nenhuma atividade de listening ainda.<br>Clique em "+ Nova Atividade" para começar.</p></div>';return}
-  const {data:asgn}=await sb.from('listening_assignments').select('activity_id,profiles(full_name)');
+  const {data:asgn}=await sb.from('listening_assignments').select('activity_id,student_id');
   const {data:subs}=await sb.from('listening_submissions').select('activity_id');
   const {data:qs}=await sb.from('listening_questions').select('activity_id');
+  const {data:studs}=await sb.from('profiles').select('id,full_name');
+  const nameOf=id=>studs?.find(s=>s.id===id)?.full_name||'';
   el.innerHTML=acts.map(a=>{
-    const chips=(asgn||[]).filter(x=>x.activity_id===a.id).map(x=>`<span class="badge bg2" style="margin-right:4px">${x.profiles?.full_name||''}</span>`).join('');
+    const chips=(asgn||[]).filter(x=>x.activity_id===a.id).map(x=>`<span class="badge bg2" style="margin-right:4px">${nameOf(x.student_id)}</span>`).join('');
     const qc=(qs||[]).filter(q=>q.activity_id===a.id).length;
     const sc=(subs||[]).filter(s=>s.activity_id===a.id).length;
-    return`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><strong style="font-size:15px">${a.title}</strong>${a.instructions?`<p style="font-size:13px;color:var(--muted);margin-top:3px">${a.instructions}</p>`:''}<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap"><span class="badge bgr">${qc} questão(ões)</span><span class="badge bgr">${sc} resposta(s)</span>${a.audio_url?`<a href="${a.audio_url}" target="_blank" class="badge bb" style="text-decoration:none">🔗 Áudio</a>`:''}</div><div style="margin-top:8px">${chips||'<span class="badge bgr">Sem alunos atribuídos</span>'}</div></div><button class="bd bsm" onclick="delItem('listening_activities','${a.id}',renderTeacherListening)">✕</button></div></div>`;
+    return`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><strong style="font-size:15px">${a.title}</strong>${a.instructions?`<p style="font-size:13px;color:var(--muted);margin-top:3px">${a.instructions}</p>`:''}<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap"><span class="badge bgr">${qc} questão(ões)</span><span class="badge bgr">${sc} resposta(s)</span>${a.audio_url?`<a href="${a.audio_url}" target="_blank" class="badge bb" style="text-decoration:none">🔗 Áudio</a>`:''}</div><div style="margin-top:8px">${chips||'<span class="badge bgr">Sem alunos atribuídos</span>'}</div></div><div style="display:flex;flex-direction:column;gap:6px"><button class="bs bsm" onclick="viewLisSubs('${a.id}','${a.title.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')">Ver respostas</button><button class="bd bsm" onclick="delItem('listening_activities','${a.id}',renderTeacherListening)">✕</button></div></div></div>`;
   }).join('');
+}
+
+async function viewLisSubs(actId,actTitle){
+  const el=g('lis-grade-content');g('lis-grade-title').textContent=`Listening — ${actTitle}`;el.innerHTML='<div class="loading"><span class="spinner"></span></div>';g('mlis-grade').classList.add('active');
+  const {data:qs}=await sb.from('listening_questions').select('*').eq('activity_id',actId).order('sort_order');
+  const {data:subs}=await sb.from('listening_submissions').select('*').eq('activity_id',actId).order('created_at',{ascending:false});
+  if(!subs?.length){el.innerHTML='<p style="color:var(--muted)">Nenhuma resposta ainda.</p>';return}
+  const ids=[...new Set(subs.map(s=>s.student_id))];
+  const {data:profs}=await sb.from('profiles').select('id,full_name').in('id',ids);
+  const nameOf=id=>profs?.find(p=>p.id===id)?.full_name||'Aluna';
+  el.innerHTML=subs.map(s=>{
+    const rows=(qs||[]).map((q,i)=>{
+      const given=s.answers?.[q.id]||'';
+      const right=(q.correct_answer||'').trim().toLowerCase();
+      const ok=given&&right&&given.trim().toLowerCase()===right;
+      return`<div class="qb" style="margin-top:.5rem"><p style="font-weight:500;margin-bottom:.35rem">${i+1}. ${q.question_text}</p><p style="font-size:13px">${ok?'✅':'❌'} Resposta da aluna: <strong>${given||'<em>(em branco)</em>'}</strong></p>${!ok?`<p style="font-size:13px;color:var(--muted)">Resposta correta: ${q.correct_answer||'—'}</p>`:''}</div>`;
+    }).join('');
+    return`<div class="card" style="margin-bottom:12px"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px"><strong style="font-size:15px">${nameOf(s.student_id)}</strong><span class="badge bg2">${fmt(s.created_at)}</span></div>${rows}<div style="display:flex;gap:8px;margin-top:.75rem;align-items:center;flex-wrap:wrap;border-top:1.5px solid var(--border);padding-top:.75rem"><label style="font-size:13px;white-space:nowrap">Pontuação (score/total):</label><input type="number" min="0" step="1" value="${s.score}" id="ls-sc-${s.id}" style="width:70px"> / <input type="number" min="0" step="1" value="${s.total}" id="ls-tt-${s.id}" style="width:70px"><button class="bp bsm" onclick="saveLisScore('${s.id}',this)">Salvar</button></div></div>`;
+  }).join('');
+}
+
+async function saveLisScore(subId,btn){
+  const score=parseInt(g(`ls-sc-${subId}`)?.value);const total=parseInt(g(`ls-tt-${subId}`)?.value);
+  await sb.from('listening_submissions').update({score:isNaN(score)?0:score,total:isNaN(total)?0:total}).eq('id',subId);
+  if(btn){btn.textContent='✅';btn.disabled=true;setTimeout(()=>{btn.textContent='Salvar';btn.disabled=false},2000)}
 }
 
 async function renderSListening(){
