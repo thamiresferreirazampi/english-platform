@@ -1,0 +1,34 @@
+# Acessa o Supabase a cada 3 dias para o projeto gratuito não ser pausado
+# por inatividade (o Supabase pausa após 7 dias sem uso).
+name: Supabase keep-alive
+
+on:
+  schedule:
+    - cron: "0 12 */3 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Consultar o banco
+        run: |
+          URL=$(grep -oE 'https://[a-z0-9]+\.supabase\.co' index.html | head -1)
+          KEY=$(grep -oE 'eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+' index.html | head -1)
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$URL/rest/v1/profiles?select=id&limit=1" \
+            -H "apikey: $KEY" -H "Authorization: Bearer $KEY")
+          echo "Supabase respondeu: $STATUS"
+          test "$STATUS" = "200"
+
+      # O GitHub desativa rotinas agendadas depois de 60 dias sem commits no
+      # repositório. Reativar a própria rotina zera essa contagem.
+      - name: Manter a rotina ativa
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/supabase-keepalive.yml/enable"
