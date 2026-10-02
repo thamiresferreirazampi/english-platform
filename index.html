@@ -6,6 +6,7 @@
 <title>English Platform — Thamires</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -151,6 +152,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
     <div id="ssuc" class="smsg" style="display:none">Account created! You can now log in.</div>
     <div class="fg"><label>Full Name</label><input type="text" id="sn2" placeholder="Your full name"></div>
     <div class="fg"><label>Email</label><input type="email" id="se" placeholder="your@email.com"></div>
+    <div class="fg"><label>Phone / WhatsApp</label><input type="tel" id="sph" placeholder="(11) 91234-5678"></div>
     <div class="fg"><label>Password</label><input type="password" id="sp" placeholder="At least 6 characters"></div>
     <div class="fg"><label>Confirm Password</label><input type="password" id="sp2" placeholder="Repeat password"></div>
     <button class="bp" style="width:100%;padding:11px" onclick="doSignup()">Sign up</button>
@@ -179,7 +181,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
       <div id="tc" class="tt2"><div class="ph"><h2>Conteúdos</h2><button class="bp" onclick="openM('mc2')">+ Novo Conteúdo</button></div><div id="cl"></div></div>
       <div id="tt" class="tt2" style="display:none"><div class="ph"><h2>Tarefas</h2><button class="bp" onclick="openM('mt')">+ Nova Tarefa</button></div><div id="tl2"></div></div>
       <div id="tp" class="tt2" style="display:none"><div class="ph"><h2>Provas</h2><button class="bp" onclick="openM('mp')">+ Nova Prova</button></div><div id="pl"></div></div>
-      <div id="ts" class="tt2" style="display:none"><div class="ph"><h2>Alunos</h2></div><div id="sl2"></div></div>
+      <div id="ts" class="tt2" style="display:none"><div class="ph"><h2>Alunos</h2><button class="bp" onclick="openM('mstu')">+ Nova Aluna</button></div><div id="sl2"></div></div>
       <div id="tspk" class="tt2" style="display:none"><div class="ph"><h2>Speaking</h2><button class="bp" onclick="openM('mspk')">+ Nova Atividade</button></div><div id="spk-tl"></div></div>
       <div id="tmsg" class="tt2" style="display:none"><div class="ph"><h2>Mensagens</h2></div><div id="tmsg-c"></div></div>
       <div id="tlive" class="tt2" style="display:none"><div class="ph"><h2>Aula ao Vivo</h2></div><div id="tlive-c"></div></div>
@@ -258,6 +260,16 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--rs);pa
   <div class="fe"><button class="bs" onclick="closeM('mc2')">Cancelar</button><button class="bp" onclick="saveContent()">Salvar</button></div>
 </div></div>
 
+<div class="mo" id="mstu"><div class="mbox">
+  <h3>Nova Aluna</h3>
+  <div id="nserr" class="emsg" style="display:none"></div>
+  <div class="fg"><label>Nome completo</label><input type="text" id="nsname"></div>
+  <div class="fg"><label>Email</label><input type="email" id="nsemail" placeholder="email da aluna ou do responsável"></div>
+  <div class="fg"><label>Celular / WhatsApp</label><input type="tel" id="nsphone" placeholder="(11) 91234-5678"></div>
+  <div class="fg"><label>Senha inicial</label><input type="text" id="nspass" placeholder="mínimo 6 caracteres"></div>
+  <div class="fe"><button class="bs" onclick="closeM('mstu')">Cancelar</button><button class="bp" id="nsbtn" onclick="saveStudent()">Cadastrar</button></div>
+</div></div>
+
 <div class="mo" id="mt"><div class="mbox">
   <h3>Nova Tarefa</h3>
   <div class="fg"><label>Nome</label><input type="text" id="tkname"></div>
@@ -318,6 +330,11 @@ const SUPA_URL='https://fkhnrliohydiylsdequb.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZraG5ybGlvaHlkaXlsc2RlcXViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3OTgxNDMsImV4cCI6MjA5MTM3NDE0M30._p20wkWgZqEhTGeW2vXrnMRshVytMU98IsiptJ4jWO0';
 const sb=supabase.createClient(SUPA_URL,SUPA_KEY);
 const TEACHER={email:'professor@englishplatform.com',password:'thamires2024',name:'Professora Thamires'};
+// Aviso por email quando a professora manda mensagem (EmailJS). Preencha os 3 IDs para ativar.
+const EMAILJS={publicKey:'',serviceId:'',templateId:''};
+const MSG_EMAIL_WINDOW_MIN=30; // no máximo 1 email por aluna a cada X minutos
+const PLATFORM_URL='https://thamiresferreirazampi.github.io/english-platform/';
+if(EMAILJS.publicKey)emailjs.init({publicKey:EMAILJS.publicKey});
 
 let CU=null,isTeacher=false,CTI=null,CAs={},NQs=[],GT=null,isTL=false;
 
@@ -350,14 +367,14 @@ async function doLogin(){
 }
 
 async function doSignup(){
-  const name=g('sn2').value.trim(),email=g('se').value.trim(),p=g('sp').value,p2=g('sp2').value;
+  const name=g('sn2').value.trim(),email=g('se').value.trim(),phone=g('sph').value.trim(),p=g('sp').value,p2=g('sp2').value;
   const err=g('serr'),suc=g('ssuc');err.style.display='none';suc.style.display='none';
   if(!name||!email||!p){err.textContent='Please fill all fields.';err.style.display='block';return}
   if(p.length<6){err.textContent='Password must be at least 6 characters.';err.style.display='block';return}
   if(p!==p2){err.textContent='Passwords do not match.';err.style.display='block';return}
   const {data,error}=await sb.auth.signUp({email,password:p});
   if(error){err.textContent=error.message;err.style.display='block';return}
-  if(data.user)await sb.from('profiles').insert({id:data.user.id,full_name:name,role:'student'});
+  if(data.user)await sb.from('profiles').insert({id:data.user.id,full_name:name,role:'student',email,phone:phone||null});
   suc.style.display='block';setTimeout(()=>{show('screen-login');g('le').value=email},2000);
 }
 
@@ -385,7 +402,7 @@ async function saveTest(){const name=g('pname').value.trim();if(!name)return ale
 
 async function renderTests(){const el=g('pl');el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';const {data:tests}=await sb.from('tests').select('*').order('created_at');const {data:asgn}=await sb.from('test_assignments').select('test_id,student_id,profiles(full_name)');const {data:qs}=await sb.from('test_questions').select('test_id');const {data:subs}=await sb.from('test_submissions').select('test_id,needs_grade');if(!tests?.length){el.innerHTML='<div class="es"><div style="font-size:32px">🧪</div><p>Nenhuma prova.</p></div>';return}el.innerHTML=tests.map(t=>{const chips=(asgn||[]).filter(a=>a.test_id===t.id).map(a=>`<span class="badge bg2" style="margin-right:4px">${a.profiles?.full_name||''}</span>`).join('');const qc=(qs||[]).filter(q=>q.test_id===t.id).length;const pend=(subs||[]).filter(s=>s.test_id===t.id&&s.needs_grade).length;return`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><strong>${t.name}</strong>${pend?`<span class="badge ba">⏳ ${pend}</span>`:''}</div><p style="font-size:13px;color:var(--muted);margin-top:3px">${t.description||''}</p><div style="display:flex;gap:6px;margin-top:6px"><span class="badge bgr">${qc} questão(ões)</span>${t.test_date?`<span class="badge bgr">📅 ${t.test_date}</span>`:''}</div><div style="margin-top:8px">${chips||'<span class="badge bgr">Sem alunos</span>'}</div></div><div style="display:flex;flex-direction:column;gap:6px">${pend?`<button class="bs bsm" onclick="openGrade('${t.id}')">Corrigir</button>`:''}<button class="bd bsm" onclick="delItem('tests','${t.id}',renderTests)">✕</button></div></div></div>`}).join('')}
 
-async function renderStudents(){const el=g('sl2');el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';const {data:students}=await sb.from('profiles').select('*').eq('role','student');const {data:subs}=await sb.from('test_submissions').select('student_id,score,total');if(!students?.length){el.innerHTML='<div class="es"><div style="font-size:32px">👩‍🎓</div><p>Nenhum aluno.</p></div>';return}el.innerHTML=students.map(s=>{const ms=(subs||[]).filter(x=>x.student_id===s.id&&x.score!=null);const avg=ms.length?Math.round(ms.reduce((a,b)=>a+(b.score/b.total*10),0)/ms.length*10)/10:null;return`<div class="card"><strong style="font-size:15px">${s.full_name}</strong><p style="font-size:13px;color:var(--muted);margin-top:3px">${s.email||''}</p><div style="margin-top:8px;display:flex;gap:6px">${avg!==null?`<span class="badge bg2">Média: ${avg}/10</span>`:''}<span class="badge bgr">${ms.length} prova(s)</span></div></div>`}).join('')}
+async function renderStudents(){const el=g('sl2');el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';const {data:students}=await sb.from('profiles').select('*').eq('role','student');const {data:subs}=await sb.from('test_submissions').select('student_id,score,total');if(!students?.length){el.innerHTML='<div class="es"><div style="font-size:32px">👩‍🎓</div><p>Nenhum aluno.</p></div>';return}el.innerHTML=students.map(s=>{const ms=(subs||[]).filter(x=>x.student_id===s.id&&x.score!=null);const avg=ms.length?Math.round(ms.reduce((a,b)=>a+(b.score/b.total*10),0)/ms.length*10)/10:null;return`<div class="card"><strong style="font-size:15px">${s.full_name}</strong><p style="font-size:13px;color:var(--muted);margin-top:3px">✉️ ${s.email||'sem email'} · 📱 ${s.phone||'sem celular'} <button class="lbtn" onclick="editContact('${s.id}')">editar</button></p><div style="margin-top:8px;display:flex;gap:6px">${avg!==null?`<span class="badge bg2">Média: ${avg}/10</span>`:''}<span class="badge bgr">${ms.length} prova(s)</span></div></div>`}).join('')}
 
 async function delItem(table,id,cb){if(!confirm('Confirmar exclusão?'))return;await sb.from(table).delete().eq('id',id);cb()}
 
@@ -408,12 +425,46 @@ async function viewSpkSubs(actId,actTitle){const el=g('spk-grade-content');g('sp
 
 async function saveSpkGrade(subId,btn){const grade=parseFloat(g(`sn-${subId}`)?.value);const feedback=g(`sf-${subId}`)?.value||'';await sb.from('speaking_submissions').update({grade:isNaN(grade)?null:grade,feedback}).eq('id',subId);if(btn){btn.textContent='✅';btn.disabled=true;setTimeout(()=>{btn.textContent='Salvar';btn.disabled=false},2000)}}
 
+// Cadastro de aluna pela professora. Usa um cliente separado para o signUp
+// não trocar a sessão da página.
+async function saveStudent(){
+  const name=g('nsname').value.trim(),email=g('nsemail').value.trim(),phone=g('nsphone').value.trim(),pass=g('nspass').value,err=g('nserr');
+  err.style.display='none';
+  if(!name||!email||!pass){err.textContent='Preencha nome, email e senha.';err.style.display='block';return}
+  if(pass.length<6){err.textContent='A senha precisa ter pelo menos 6 caracteres.';err.style.display='block';return}
+  g('nsbtn').disabled=true;
+  const tmp=supabase.createClient(SUPA_URL,SUPA_KEY,{auth:{persistSession:false,autoRefreshToken:false,storageKey:'ep-new-student'}});
+  const {data,error}=await tmp.auth.signUp({email,password:pass});
+  if(error||!data.user){g('nsbtn').disabled=false;err.textContent='Erro: '+(error?.message||'não foi possível criar a conta.');err.style.display='block';return}
+  const {error:pErr}=await tmp.from('profiles').insert({id:data.user.id,full_name:name,role:'student',email,phone:phone||null});
+  g('nsbtn').disabled=false;
+  if(pErr){err.textContent='Conta criada, mas falhou ao salvar o perfil: '+pErr.message;err.style.display='block';return}
+  ['nsname','nsemail','nsphone','nspass'].forEach(x=>g(x).value='');
+  closeM('mstu');renderStudents();
+  alert(`Aluna cadastrada! Envie para ela:\nEmail: ${email}\nSenha: ${pass}`+(data.session?'':'\n\nAtenção: ela precisa confirmar o email antes do primeiro login.'));
+}
+
+async function editContact(sid){const {data:s}=await sb.from('profiles').select('*').eq('id',sid).single();if(!s)return;const email=prompt('Email da aluna (para avisos de mensagem):',s.email||'');if(email===null)return;const phone=prompt('Celular / WhatsApp da aluna:',s.phone||'');if(phone===null)return;const {error}=await sb.from('profiles').update({email:email.trim()||null,phone:phone.trim()||null}).eq('id',sid);if(error){alert('Erro ao salvar: '+error.message);return}renderStudents()}
+
+// Manda um email avisando a aluna, no máximo 1 a cada MSG_EMAIL_WINDOW_MIN minutos
+async function notifyStudentByEmail(sid,content){
+  if(!EMAILJS.publicKey||!EMAILJS.serviceId||!EMAILJS.templateId)return;
+  try{
+    const {data:s}=await sb.from('profiles').select('full_name,email,last_msg_email_at').eq('id',sid).single();
+    if(!s?.email)return;
+    const last=s.last_msg_email_at?new Date(s.last_msg_email_at).getTime():0;
+    if(Date.now()-last<MSG_EMAIL_WINDOW_MIN*60000)return;
+    await emailjs.send(EMAILJS.serviceId,EMAILJS.templateId,{to_email:s.email,to_name:s.full_name,message:content,link:PLATFORM_URL});
+    await sb.from('profiles').update({last_msg_email_at:new Date().toISOString()}).eq('id',sid);
+  }catch(e){console.error('Falha ao enviar aviso por email',e)}
+}
+
 // ===== TEACHER MESSAGES =====
 async function renderTeacherMessages(){const el=g('tmsg-c');el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';const {data:students}=await sb.from('profiles').select('*').eq('role','student');if(!students?.length){el.innerHTML='<div class="es"><p>Nenhum aluno.</p></div>';return}el.innerHTML=`<div class="fg"><label>Selecionar aluna</label><select id="msg-sel" onchange="loadTChat(this.value)"><option value="">Escolha...</option>${students.map(s=>`<option value="${s.id}">${s.full_name}</option>`).join('')}</select></div><div id="tchat" style="display:none"><div class="msg-list" id="tmsgl"></div><div class="msg-input-row"><input type="text" id="tmsgi" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendTMsg()"><button class="bp bsm" onclick="sendTMsg()">Send</button></div></div>`}
 let tChatSid=null;
 async function loadTChat(sid){if(!sid)return;tChatSid=sid;g('tchat').style.display='block';await refreshTChat()}
 async function refreshTChat(){if(!tChatSid)return;const el=g('tmsgl');const {data:msgs}=await sb.from('messages').select('*').or(`and(sender_id.eq.teacher,receiver_id.eq.${tChatSid}),and(sender_id.eq.${tChatSid},receiver_id.eq.teacher)`).order('created_at');el.innerHTML=(msgs||[]).map(m=>{const me=m.sender_id==='teacher';return`<div style="display:flex;flex-direction:column;align-items:${me?'flex-end':'flex-start'}"><div class="msg-bubble ${me?'msg-me':'msg-other'}">${m.content}<div class="msg-time">${fmt(m.created_at)}</div></div></div>`}).join('')||'<p style="text-align:center;color:var(--muted);font-size:13px;padding:1rem">Nenhuma mensagem.</p>';el.scrollTop=el.scrollHeight}
-async function sendTMsg(){const inp=g('tmsgi'),content=inp.value.trim();if(!content||!tChatSid)return;inp.value='';await sb.from('messages').insert({sender_id:'teacher',receiver_id:tChatSid,content});await refreshTChat()}
+async function sendTMsg(){const inp=g('tmsgi'),content=inp.value.trim();if(!content||!tChatSid)return;inp.value='';await sb.from('messages').insert({sender_id:'teacher',receiver_id:tChatSid,content});await refreshTChat();notifyStudentByEmail(tChatSid,content)}
 
 // ===== TEACHER LIVE =====
 async function renderTeacherLive(){const el=g('tlive-c');el.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';const {data:sess}=await sb.from('live_sessions').select('*').eq('active',true).limit(1);const a=sess?.[0];el.innerHTML=a?`<div class="card live-card"><div class="live-icon">🔴</div><h3 style="font-size:17px;font-weight:600;margin-bottom:.5rem">Aula em andamento</h3><p style="font-size:13px;color:var(--muted);margin-bottom:1.25rem">Sala: <strong>${a.room_name}</strong></p><div style="display:flex;gap:8px;justify-content:center"><a href="https://meet.jit.si/${a.room_name}" target="_blank"><button class="bp">Entrar 🎥</button></a><button class="bd" onclick="endLive('${a.id}')">Encerrar</button></div></div>`:`<div class="card live-card"><div class="live-icon">🎥</div><h3 style="font-size:17px;font-weight:600;margin-bottom:.5rem">Iniciar aula ao vivo</h3><p style="font-size:13px;color:var(--muted);margin-bottom:1.25rem">Clique para criar uma sala.</p><button class="bp" onclick="startLive()">▶ Iniciar Aula</button></div>`}
